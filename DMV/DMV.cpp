@@ -8,8 +8,9 @@
 #include "Race.h"
 #include "harmonylib.h"
 
+
 void GenerateMenu();
-Race EditRaceInfo();
+Race EditRaceInfo(std::string Name = "", std::string OptionPack = "", std::string Description = "", SizeEnum::Size Size = SizeEnum::small, std::string SizeChoice = "", int Speed = 0, int FlyingSpd = 0, int SwimmingSpd = 0, int DarkVision = 0, int SkillOptionsCount = 0, int LanguageOptionsCount = 0, int WeaponOptionsCount = 0, bool LizFolkAC = false, bool TortAC = false);
 
 int main()
 {
@@ -51,7 +52,7 @@ void GenerateMenu() {
         case 'B':
         case 'b':
         {
-            std::cout << "B was entered" << std::endl << std::endl;
+            std::cout << std::endl << std::endl;
 
             TestRace = EditRaceInfo();
 
@@ -61,7 +62,10 @@ void GenerateMenu() {
         case 'C':
         case 'c':
         {
-            std::cout << "C was entered" << std::endl << std::endl;
+            std::string input{};
+            std::cout << "Test function: Input check" << std::endl << "Enter input: " << std::endl;
+            std::cin >> input;
+            input = InputCheck(input, "Enter input: ", false, std::vector<std::string>{"0", "1"});
             system("pause");
             break;
         }
@@ -77,11 +81,11 @@ void GenerateMenu() {
     system("cls");
 }
 
-Race EditRaceInfo() {
+Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Description, SizeEnum::Size Size, std::string SizeChoice, std::string Speed, std::string FlyingSpd, std::string SwimmingSpd, std::string DarkVision, std::string SkillOptionsCount, std::string LanguageOptionsCount, std::string WeaponOptionsCount, bool LizFolkAC, bool TortAC) {
     Race NewRace{};
 
     std::string selection{};
-    std::string Name{};
+    /*std::string Name{};
     std::string OptionPack{};
     std::string Description{};
     SizeEnum::Size Size{};
@@ -94,7 +98,7 @@ Race EditRaceInfo() {
     int LanguageOptionsCount{};
     int WeaponOptionsCount{};
     bool LizFolkAC{};
-    bool TortAC{};
+    bool TortAC{};*/
     /*std::vector<std::string> Languages{};
     std::vector<std::string> Tools{};
     std::vector<std::string> SkillOptions{};
@@ -108,24 +112,15 @@ Race EditRaceInfo() {
     bool check{};
 
     std::cout << "Enter name for race: ";
+    std::cin.ignore();
     std::cin >> Name;
+    Name = InputCheck(Name,"Enter name for race: ");
     NewRace.set_name(Name);
-    do {
-        std::cout << "\nDo you want to save it to a custon pack? (y/n) ";
-        std::cin >> selection;
-        for (char i : selection) {
-            if (!isalpha(i) && i != 'y' && i != 'n') {
-                check = false;
-                break;
-            }
-            else {
-                check = true;
-            }
-        }
-        if (!check) {
-            std::cout << "\nPlease enter a valid choice.";
-        }
-    } while (!check);
+
+    std::cout << "\nDo you want to save it to a custon pack? (y/n) ";
+    std::cin.ignore();
+    std::cin >> selection;
+    selection = InputCheck(selection, "\nDo you want to save it to a custon pack? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
     if (selection[0] == 'y') {
         std::string pack{};
         std::cout << "Please enter Pack name: ";
@@ -135,14 +130,17 @@ Race EditRaceInfo() {
     else {
         NewRace.set_optionPack("Default");
     }
+
     std::cout << "\nEnter description: ";
     std::cin.ignore();
     getline(std::cin,Description);
     NewRace.set_description(Description);
 
     std::cout << "\nWhat size is the race: Small (0), Medium (1), Large (2)\n";
+    std::cin.ignore();
     std::cin >> SizeChoice;
-    switch (SizeChoice)
+    int SizeChoiceSelection{ std::stoi(InputCheck(SizeChoice,"\nWhat size is the race: Small (0), Medium (1), Large (2)\n",false, true, std::vector<std::string>{"0","1","2"}))};
+    switch (SizeChoiceSelection)
     {
     case 0:
         NewRace.set_size(SizeEnum::small);
@@ -154,39 +152,66 @@ Race EditRaceInfo() {
         NewRace.set_size(SizeEnum::large);
         break;
     }
+
     std::cout << "\nEnter Speed: ";
+    std::cin.ignore();
     std::cin >> Speed;
-    NewRace.set_speed(Speed);
+    Speed = InputCheck(Speed, "\nEnter Speed: ",false, true);
+    NewRace.set_speed(std::stoi(Speed));
+
     std::cout << "\nEnter Flying Speed: ";
+    std::cin.ignore();
     std::cin >> FlyingSpd;
-    NewRace.set_flySpeed(FlyingSpd);
+    FlyingSpd = InputCheck(FlyingSpd, "\nEnter Flying Speed: ", false, true);
+    NewRace.set_flySpeed(std::stoi(FlyingSpd));
+
     std::cout << "\nEnter Swimming Speed: ";
+    std::cin.ignore();
     std::cin >> SwimmingSpd;
-    NewRace.set_swimSpeed(SwimmingSpd);
+    SwimmingSpd = InputCheck(SwimmingSpd, "\nEnter Swimming Speed: ", false, true);
+    NewRace.set_swimSpeed(std::stoi(SwimmingSpd));
+
     std::cout << "\nEnter Dark vision distance: ";
+    std::cin.ignore();
     std::cin >> DarkVision;
-    NewRace.set_darkVision(DarkVision);
+    DarkVision = InputCheck(DarkVision, "\nEnter Dark vision distance: ", false, true);
+    NewRace.set_darkVision(std::stoi(DarkVision));
+
     std::cout << "\nEnter amount of Skill proficencies: ";
+    std::cin.ignore();
     std::cin >> SkillOptionsCount;
-    NewRace.set_skillOptionsCount(SkillOptionsCount);
+    SkillOptionsCount = InputCheck(SkillOptionsCount, "\nEnter amount of Skill proficencies: ", false, true);
+    NewRace.set_skillOptionsCount(std::stoi(SkillOptionsCount));
+
     std::cout << "\nEnter amount of Language proficencies: ";
+    std::cin.ignore();
     std::cin >> LanguageOptionsCount;
-    NewRace.set_languageOptionsCount(LanguageOptionsCount);
+    LanguageOptionsCount = InputCheck(LanguageOptionsCount, "\nEnter amount of Language proficencies: ", false, true);
+    NewRace.set_languageOptionsCount(std::stoi(LanguageOptionsCount));
+
     std::cout << "\nEnter amount of Weapon proficencies: ";
+    std::cin.ignore();
     std::cin >> WeaponOptionsCount;
-    NewRace.set_weaponOptionsCount(WeaponOptionsCount);
+    WeaponOptionsCount = InputCheck(WeaponOptionsCount, "\nEnter amount of Weapon proficencies: ", false, true);
+    NewRace.set_weaponOptionsCount(std::stoi(WeaponOptionsCount));
+
     std::cout << "\nDo they have Lizard folk AC? (y/n) ";
     selection.clear();
+    std::cin.ignore();
     std::cin >> selection;
+    selection = InputCheck(selection, "\nDo they have Lizard folk AC? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
     if (selection[0] == 'y') {
         NewRace.set_lizFolkAC(true);
     }
     else {
         NewRace.set_lizFolkAC(false);
     }
+
     std::cout << "\nDo they have Tortle AC? (y/n) ";
     selection.clear();
+    std::cin.ignore();
     std::cin >> selection;
+    selection = InputCheck(selection, "\nDo they have Tortle AC? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
     if (selection[0] == 'y') {
         NewRace.set_tortAC(true);
     }
@@ -197,13 +222,3 @@ Race EditRaceInfo() {
     return NewRace;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

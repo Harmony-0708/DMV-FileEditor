@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>D:\Downloads\DMVEditor-main\DMVEditor-main\DMV\x64\Debug\DMV.exe</FullPath>
+      <FullPath>D:\GitProjects\DMVApp\DMV\x64\Debug\DMV.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

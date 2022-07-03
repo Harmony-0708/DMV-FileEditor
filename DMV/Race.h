@@ -81,8 +81,8 @@ public:
 	std::vector<std::string> get_damageImmun();
 	Trait get_trait(int index);
 	std::vector<Trait> get_trait();
-	//Spell get_spell(int index,std::string spellName);
-	//std::vector<std::vector<Spell>> get_spell();
+	Spell get_spell(int index,std::string spellName);
+	std::vector<std::vector<Spell>> get_spell();
 
 	//Setting variables
 	void set_key(std::string key);

@@ -44,7 +44,7 @@ std::string InputCheck(std::string input, std::string repeatString, bool onlyAlp
                         alphacheck = false;
                     }
                 }
-                if (!alphacheck) {
+                if (!alphacheck && input != "") {
                     std::cout << "Only use alphabet characters\n" << repeatString;
                     std::cin >> input;
                 }
@@ -62,7 +62,7 @@ std::string InputCheck(std::string input, std::string repeatString, bool onlyAlp
                         alphacheck = true;
                     }
                 }
-                if (alphacheck) {
+                if (alphacheck && input != "") {
                     std::cout << "Only use numbers\n" << repeatString;
                     std::cin >> input;
                 }
@@ -89,7 +89,7 @@ std::string InputCheck(std::string input, std::string repeatString, bool onlyAlp
                         alphacheck = false;
                     }
                 }
-                if (!(alphacheck) && (std::find(parameters.begin(), parameters.end(), input) == parameters.end())) {
+                if (!(alphacheck) && (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) && input != "") {
                     std::cout << "Invalid input\n" << repeatString;
                     std::cin >> input;
                 }
@@ -107,7 +107,7 @@ std::string InputCheck(std::string input, std::string repeatString, bool onlyAlp
                         alphacheck = true;
                     }
                 }
-                if (alphacheck && (std::find(parameters.begin(), parameters.end(), input) == parameters.end())) {
+                if (alphacheck && (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) && input != "") {
                     std::cout << "Invalid input\n" << repeatString;
                     std::cin >> input;
                 }
@@ -119,7 +119,7 @@ std::string InputCheck(std::string input, std::string repeatString, bool onlyAlp
         }
         else {
             do {
-                if (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) {
+                if (std::find(parameters.begin(), parameters.end(), input) == parameters.end() && input != "") {
                     std::cout << "Invalid input\n" << repeatString;
                     std::cin >> input;
                 }

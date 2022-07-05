@@ -68,11 +68,14 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                     if (isalpha(i)) {
                         lowerInput += tolower(i);
                     }
+                    else if(i == ' ') {
+                        lowerInput += i;
+                    }
                     else {
                         alphacheck = false;
                     }
                 }
-                if (!alphacheck && input != "") {
+                if (!alphacheck || input == "") {
                     std::cout << "Only use alphabet characters\n" << repeatString;
                     std::cin >> input;
                 }
@@ -89,8 +92,11 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                     if (isalpha(i)) {
                         alphacheck = true;
                     }
+                    else if (i == ' ') {
+                        alphacheck = true;
+                    }
                 }
-                if (alphacheck && input != "") {
+                if (alphacheck || input == "") {
                     std::cout << "Only use numbers\n" << repeatString;
                     std::cin >> input;
                 }
@@ -113,11 +119,14 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                     if (isalpha(i)) {
                         lowerInput += tolower(i);
                     }
+                    else if (i == ' ') {
+                        lowerInput += i;
+                    }
                     else {
                         alphacheck = false;
                     }
                 }
-                if (!(alphacheck) && (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) && input != "") {
+                if (!(alphacheck) || (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
                     std::cin >> input;
                 }
@@ -134,8 +143,11 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                     if (isalpha(i)) {
                         alphacheck = true;
                     }
+                    else if (i == ' ') {
+                        alphacheck = true;
+                    }
                 }
-                if (alphacheck && (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) && input != "") {
+                if (alphacheck || (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
                     std::cin >> input;
                 }
@@ -147,7 +159,7 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
         }
         else {
             do {
-                if (std::find(parameters.begin(), parameters.end(), input) == parameters.end() && input != "") {
+                if (std::find(parameters.begin(), parameters.end(), input) == parameters.end() || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
                     std::cin >> input;
                 }

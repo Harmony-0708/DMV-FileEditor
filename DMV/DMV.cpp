@@ -11,14 +11,17 @@
 
 
 void GenerateMenu();
-Race EditRaceInfo(std::string Name = "", std::string OptionPack = "", std::string Description = "", SizeEnum::Size Size = SizeEnum::small, std::string SizeChoice = "", std::string Speed = "", std::string FlyingSpd = "", std::string SwimmingSpd = "", std::string DarkVision = "", std::string SkillOptionsCount = "", std::string LanguageOptionsCount = "", std::string WeaponOptionsCount = "", bool LizFolkAC = false, bool TortAC = false, std::string selection = {}, std::vector<std::string> Languages = {}, std::vector<std::string> Tools = {}, std::vector<std::string> SkillOptions = {}, std::vector<std::string> SkillProf = {}, std::vector<std::string> LanguageOptions = {}, std::vector<std::string> WeaponOptions = {}, std::vector<std::string> WeaponProf = {}, std::vector<std::string> ArmorProf = {}, std::vector<std::string> DamageRes = {}, std::vector<std::string> DamageImmun = {});
+Race EditRaceInfo(std::string Name = "", std::string OptionPack = "", std::string Description = "", SizeEnum::Size Size = SizeEnum::small, std::string Str = "", std::string Dex = "", std::string Con = "", std::string Int = "", std::string Wis = "", std::string Cha = "", std::string SizeChoice = "", std::string Speed = "", std::string FlyingSpd = "", std::string SwimmingSpd = "", std::string DarkVision = "", std::string SkillOptionsCount = "", std::string LanguageOptionsCount = "", std::string WeaponOptionsCount = "", bool LizFolkAC = false, bool TortAC = false, std::string selection = {}, std::vector<std::string> Languages = {}, std::vector<std::string> Tools = {}, std::vector<std::string> SkillOptions = {}, std::vector<std::string> SkillProf = {}, std::vector<std::string> LanguageOptions = {}, std::vector<std::string> WeaponOptions = {}, std::vector<std::string> WeaponProf = {}, std::vector<std::string> ArmorProf = {}, std::vector<std::string> DamageRes = {}, std::vector<std::string> DamageImmun = {});
 std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno = false);
 std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::string> globalVector, std::vector<std::string> inputVar = {});
+std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector = {});
 std::vector<std::string> GlobalLanguages{"Giant", "Common", "Celestial", "Undercommon", "Goblin", "Dwarvish", "Abyssal", "Sylvan", "Orc", "Deep Speech", "Primordial", "Draconic", "Gnomish", "Elvish", "Halfling", "Infernal" };
 std::vector<std::string> GlobalWeapons{"battleaxe", "halberd", "longsword", "dagger", "blowgun", "sickle", "handaxe", "war-pick", "flail", "greatsword", "whip", "rapier", "spear", "net", "shortbow", "warhammer", "mace", "crossbow-heavy", "glaive", "greataxe", "quarterstaff", "crossbow-light", "sling", "javelin", "light-hammer", "longbow", "greatclub", "club", "morningstar", "trident", "maul", "pike", "lance", "shortsword", "crossbow-hand", "scimitar", "dart"};
 std::vector<std::string> GlobalSkills{"religion", "persuasion", "investigation", "acrobatics", "performance", "perception", "sleight-of-hand", "survival", "history", "animal-handling", "nature", "deception", "intimidation", "arcana", "athletics", "insight", "medicine", "stealth"};
-std::vector<std::string> GlobalTools{"cartographers-tools", "painters-supplies", "poisoners-kit", "navigators-tools", "glassblowers-tools", "flute", " : dice-set", "horn", "herbalism-kit", "dulcimer", "disguise-kit", "masons-tools", "land-vehicles", "viol", "thieves-tools", "jewelers-tools", "leatherworkers-tools", "smiths-tools", "drum", "cobblers-tools", "potters-tools", "dragonchess-set", "playing-card-set", "brewers-supplies", "three-dragon-ante-set", "forgery-kit", "pan-flute", "bagpipes", "woodcarvers-tools", "carpenters-tools", "tinkers-tools", "alchemists-supplies", "water-vehicles", "weavers-tools", "shawm", "cooks-utensils", "lute", "calligraphers-supplies", "lyre"};
-    
+std::vector<std::string> GlobalTools{"cartographers-tools", "painters-supplies", "poisoners-kit", "navigators-tools", "glassblowers-tools", "flute", "dice-set", "horn", "herbalism-kit", "dulcimer", "disguise-kit", "masons-tools", "land-vehicles", "viol", "thieves-tools", "jewelers-tools", "leatherworkers-tools", "smiths-tools", "drum", "cobblers-tools", "potters-tools", "dragonchess-set", "playing-card-set", "brewers-supplies", "three-dragon-ante-set", "forgery-kit", "pan-flute", "bagpipes", "woodcarvers-tools", "carpenters-tools", "tinkers-tools", "alchemists-supplies", "water-vehicles", "weavers-tools", "shawm", "cooks-utensils", "lute", "calligraphers-supplies", "lyre"};
+std::vector<std::string> GlobalArmorType{"light","medium", "heavy", "shield"};
+std::vector<std::string> GlobalDamageType{"fire", "acid", "psychic", "force", "bludgeoning", "radiant", "lightning", "slashing", "piercing", "thunder", "cold", "traps", "poison", "necrotic"};
+
 
 int main()
 {
@@ -60,10 +63,7 @@ void GenerateMenu() {
         case 'b':
         {
             std::cout << std::endl << std::endl;
-
             TestRace = EditRaceInfo();
-
-            system("pause");
             break;
         }
         case 'C':
@@ -71,7 +71,7 @@ void GenerateMenu() {
         {
             std::vector<std::string> input{};
             std::cout << "Test function: Vector input" << std::endl << std::endl;
-            input = GetInputVector("tool profs", input, GlobalTools);
+            input = GetInputVector("tool profs", GlobalTools);
             system("pause");
             break;
         }
@@ -84,7 +84,7 @@ void GenerateMenu() {
     system("cls");
 }
 
-Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Description, SizeEnum::Size Size, std::string SizeChoice, std::string Speed, std::string FlyingSpd, std::string SwimmingSpd, std::string DarkVision, std::string SkillOptionsCount, std::string LanguageOptionsCount, std::string WeaponOptionsCount, bool LizFolkAC, bool TortAC, std::string selection, std::vector<std::string> Languages, std::vector<std::string> Tools, std::vector<std::string> SkillOptions, std::vector<std::string> SkillProf, std::vector<std::string> LanguageOptions, std::vector<std::string> WeaponOptions, std::vector<std::string> WeaponProf, std::vector<std::string> ArmorProf, std::vector<std::string> DamageRes, std::vector<std::string> DamageImmun) {
+Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Description, SizeEnum::Size Size, std::string Str, std::string Dex, std::string Con, std::string Int, std::string Wis, std::string Cha, std::string SizeChoice, std::string Speed, std::string FlyingSpd, std::string SwimmingSpd, std::string DarkVision, std::string SkillOptionsCount, std::string LanguageOptionsCount, std::string WeaponOptionsCount, bool LizFolkAC, bool TortAC, std::string selection, std::vector<std::string> Languages, std::vector<std::string> Tools, std::vector<std::string> SkillOptions, std::vector<std::string> SkillProf, std::vector<std::string> LanguageOptions, std::vector<std::string> WeaponOptions, std::vector<std::string> WeaponProf, std::vector<std::string> ArmorProf, std::vector<std::string> DamageRes, std::vector<std::string> DamageImmun) {
     Race NewRace{};
     bool check{};
 
@@ -100,7 +100,7 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
 
     std::cout << "\nDo you want to save it to a custon pack? (y/n) ";
     std::getline(std::cin, selection);
-    selection = HLib::InputCheck(selection, "\nDo you want to save it to a custon pack? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
+    selection = HLib::InputCheck(selection, "\nDo you want to save it to a custon pack? (y/n) ", true,  false, std::vector<std::string>{"y", "n"});
     if (selection[0] == 'y') {
         std::string pack{};
         std::cout << "Please enter Pack name: ";
@@ -131,6 +131,18 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
         break;
     }
 
+    NewRace.set_str(std::stoi(GetInputSingle("Enter Str Mod: ", Str)));
+
+    NewRace.set_dex(std::stoi(GetInputSingle("Enter Dex Mod: ", Dex)));
+
+    NewRace.set_con(std::stoi(GetInputSingle("Enter Con Mod: ", Con)));
+
+    NewRace.set_int(std::stoi(GetInputSingle("Enter Int Mod: ", Int)));
+
+    NewRace.set_wis(std::stoi(GetInputSingle("Enter Wis Mod: ", Wis)));
+
+    NewRace.set_cha(std::stoi(GetInputSingle("Enter Cha Mod: ", Cha)));
+
     NewRace.set_speed(std::stoi(GetInputSingle("\nEnter Speed: ", Speed)));
 
     NewRace.set_flySpeed(std::stoi(GetInputSingle("\nEnter Flying Speed: ", FlyingSpd)));
@@ -159,11 +171,21 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
 
     NewRace.insert_language(GetInputVector("languages", GlobalLanguages));
 
+    NewRace.insert_skillOption(GetInputVector("skills", GlobalSkills));
+
+    NewRace.insert_skillProf(GetInputVector("skill profs", GlobalSkills));
+
     NewRace.insert_weaponOption(GetInputVector("weapon options", GlobalWeapons));
 
     NewRace.insert_weaponProf(GetInputVector("weapon profs", GlobalWeapons));
 
-    std::cout << "\nRace has been finished\n";
+    NewRace.insert_armorProf(GetInputVector("armor profs", GlobalArmorType));
+
+    NewRace.insert_damageRes(GetInputVector("damage resistance", GlobalDamageType));
+
+    NewRace.insert_damageImmun(GetInputVector("damage immunities", GlobalDamageType));
+
+    std::cout << "\n\nRace has been finished\n";
 
     system("pause");
     return NewRace;
@@ -179,7 +201,7 @@ std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno)
     else {
         std::cout << prompt;
         std::getline(std::cin, inputVar);
-        inputVar = HLib::InputCheck(inputVar, prompt, true, false, std::vector<std::string>{"y", "n"});
+        inputVar = HLib::InputCheck(inputVar, prompt,true, false, std::vector<std::string>{"y", "n"});
         if (inputVar[0] == 'y') {
             return "1";
         }
@@ -188,7 +210,6 @@ std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno)
         }
     }
 }
-
 std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::string> globalVector, std::vector<std::string> inputVar) {
 	std::string selection{};
 	do {
@@ -261,3 +282,67 @@ std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::str
 	return inputVar;
 
 }
+
+std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector) {
+    if (defaultVector.empty()){
+        std::string selection{};
+        do {
+            system("CLS");
+            if (!defaultVector.empty()) {
+                std::vector<std::string> displayVector{};
+                for (Trait i : defaultVector) {
+                    displayVector.push_back(i.get_name());
+                }
+                HLib::DisplayVector(100, displayVector);
+            }
+            std::cout << "\nType command then the tool you want to add. Commands: add, edit, remove, clear, done\n";
+            std::cin.clear();
+            std::cin.sync();
+            std::getline(std::cin, selection);
+            if (selection == "") {
+                std::getline(std::cin, selection);
+            }
+            selection = HLib::InputCheck(selection, "\nType command then the tool you want to add. Commands: add, remove, clear, done\n");
+
+            std::string safeSelection{ selection };
+            std::string cmd{};
+            for (char i : safeSelection) {
+                if (i != ' ') {
+                    cmd += i;
+                    selection.erase(0, 1);
+                }
+                else {
+                    selection.erase(0, 1);
+                    break;
+                }
+            }
+
+            if (cmd != "done") {
+                if (cmd != "clear") {
+
+                }
+                else {
+                    std::string choice{};
+                    std::cout << "\nAre you sure? (y/n) ";
+                    std::getline(std::cin, choice);
+                    if (std::stoi(GetInputSingle("\nAre you sure? (y/n) ", choice, true))) {
+                        defaultVector.clear();
+                    }
+                }
+            }
+            else {
+                selection = "done";
+                std::cout << "Items inserted\n";
+                system("pause");
+            }
+
+        } while (selection != "done");
+
+        return defaultVector;
+
+    }
+    else {
+        return defaultVector;
+    }
+}
+

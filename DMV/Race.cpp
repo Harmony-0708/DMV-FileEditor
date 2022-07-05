@@ -86,6 +86,30 @@ SizeEnum::Size Race::get_size()
 {
 	return Size;
 }
+int Race::get_str()
+{
+	return Str;
+}
+int Race::get_dex()
+{
+	return Dex;
+}
+int Race::get_con()
+{
+	return Con;
+}
+int Race::get_int()
+{
+	return Int;
+}
+int Race::get_wis()
+{
+	return Wis;
+}
+int Race::get_cha()
+{
+	return Cha;
+}
 int Race::get_speed()
 {
 	return Speed;
@@ -330,6 +354,30 @@ void Race::set_description(std::string description)
 void Race::set_size(SizeEnum::Size size)
 {
 	Size = size;
+}
+void Race::set_str(int str)
+{
+	Str = str;
+}
+void Race::set_dex(int dex)
+{
+	Dex = dex;
+}
+void Race::set_con(int con)
+{
+	Con = con;
+}
+void Race::set_int(int Inte)
+{
+	Int = Inte;
+}
+void Race::set_wis(int wis)
+{
+	Wis = wis;
+}
+void Race::set_cha(int cha)
+{
+	Cha = cha;
 }
 /// <summary>
 /// Sets new speed for race.
@@ -655,6 +703,12 @@ void Race::display_info()
 	HLib::WordWrap(100, Description);
 	std::cout << std::endl;
 	std::cout << "Size: " << Size << std::endl;
+	std::cout << "Str Mod: " << Str << std::endl;
+	std::cout << "Dex Mod: " << Dex << std::endl;
+	std::cout << "Con Mod: " << Con << std::endl;
+	std::cout << "Int Mod: " << Int << std::endl;
+	std::cout << "Wis Mod: " << Wis << std::endl;
+	std::cout << "Cha Mod: " << Cha << std::endl;
 	std::cout << "Speed: " << Speed << std::endl;
 	std::cout << "Fly Speed: " << FlyingSpd << std::endl;
 	std::cout << "Swimming Speed: " << SwimmingSpd << std::endl;

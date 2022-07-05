@@ -16,6 +16,10 @@ void HLib::WordWrap(int wrapLimit, std::string inputString)
 			std::cout << i;
 			counter++;
 		}
+		else if (inputString[i+1] == ' ' || inputString[i+1] == ',' || inputString[i+1] == '.' || inputString[i+1] == '!' || inputString[i+1] == '?' || inputString[i+1] == ':' || isalnum(i+1) || isalnum(i)) {
+            std::cout << i;
+			counter -= 1;
+		}
 		else {
 			std::cout << std::endl;
 			counter = 0;
@@ -44,7 +48,6 @@ void HLib::DisplayVector(int wrapLimit, std::vector<std::string> inputVector)
             }
         }
     }
-    
     HLib::WordWrap(wrapLimit, stringOfVector);
 }
 
@@ -68,7 +71,7 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                     if (isalpha(i)) {
                         lowerInput += tolower(i);
                     }
-                    else if(i == ' ') {
+                    else if(i == ' ' || i == '-') {
                         lowerInput += i;
                     }
                     else {
@@ -119,7 +122,7 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                     if (isalpha(i)) {
                         lowerInput += tolower(i);
                     }
-                    else if (i == ' ') {
+                    else if (i == ' ' || i == '-') {
                         lowerInput += i;
                     }
                     else {
@@ -143,7 +146,7 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                     if (isalpha(i)) {
                         alphacheck = true;
                     }
-                    else if (i == ' ') {
+                    else if (i == ' ' || i == '-') {
                         alphacheck = true;
                     }
                 }

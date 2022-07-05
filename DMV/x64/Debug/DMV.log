@@ -1,2 +1,3 @@
-﻿  harmonylib.cpp
-  DMV.vcxproj -> D:\GitProjects\DMVApp\DMV\x64\Debug\DMV.exe
+﻿  Race.cpp
+C:\Users\arhea\source\repos\DMV\DMV\Race.cpp(282): warning C4715: 'Race::get_spell': not all control paths return a value
+  DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

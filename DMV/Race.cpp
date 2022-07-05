@@ -50,7 +50,7 @@ void Race::DisplayVector(int wrapLimit, std::vector<Spell> inputVector)
 			stringOfVector += i.get_key() + ", ";
 		}
 	}
-	WordWrap(wrapLimit, stringOfVector);
+	HLib::WordWrap(wrapLimit, stringOfVector);
 }
 void Race::DisplayVector(int wrapLimit, std::vector<Trait> inputVector)
 {
@@ -63,7 +63,7 @@ void Race::DisplayVector(int wrapLimit, std::vector<Trait> inputVector)
 			stringOfVector += i.get_name() + ", ";
 		}
 	}
-	WordWrap(wrapLimit, stringOfVector);
+	HLib::WordWrap(wrapLimit, stringOfVector);
 }
 
 std::string Race::get_key()
@@ -266,24 +266,24 @@ std::vector<Trait> Race::get_trait()
 {
 	return Traits;
 }
-//Spell Race::get_spell(int index,std::string spellName)
-//{
-//	if (index < Spells.size()) {
-//		Spell emptySpell{ "empty" };
-//		return emptySpell;
-//	}
-//	else {
-//		for (Spell i : Spells[index]) {
-//			if (i.get_key() == spellName) {
-//				return i;
-//			}
-//		}
-//	}
-//}
-//std::vector<std::vector<Spell>> Race::get_spell()
-//{
-//	return Spells;
-//}
+Spell Race::get_spell(int index,std::string spellName)
+{
+	if (index < Spells.size()) {
+		Spell emptySpell{ "empty" };
+		return emptySpell;
+	}
+	else {
+		for (Spell i : Spells[index]) {
+			if (i.get_key() == spellName) {
+				return i;
+			}
+		}
+	}
+}
+std::vector<std::vector<Spell>> Race::get_spell()
+{
+	return Spells;
+}
 
 //Assign Functions
 /// <summary>
@@ -652,7 +652,7 @@ void Race::display_info()
 	std::cout << "Race: "		 << Name		<< std::endl;
 	std::cout << "Pack: "		 << OptionPack	<< std::endl;
 	std::cout << "Description: ";
-	WordWrap(100, Description);
+	HLib::WordWrap(100, Description);
 	std::cout << std::endl;
 	std::cout << "Size: " << Size << std::endl;
 	std::cout << "Speed: " << Speed << std::endl;
@@ -662,38 +662,40 @@ void Race::display_info()
 	std::cout << "Skill options count: " << SkillOptionsCount << std::endl;
 	std::cout << "Language options count: " << LanguageOptionsCount << std::endl;
 	std::cout << "Weapon options count: " << WeaponOptionsCount << std::endl;
+	std::cout << std::boolalpha;
 	std::cout << "Do they have Lizard Folk AC: " << LizFolkAC << std::endl;
 	std::cout << "Do they have Tortle AC: " << TortAC << std::endl;
-	//std::cout << "Languages: ";
-	//DisplayVector(100, Languages);
-	//std::cout << std::endl;
-	//std::cout << "Tools: ";
-	//DisplayVector(100, Tools);
-	//std::cout << std::endl;
-	//std::cout << "Skill Options: ";
-	//DisplayVector(100, SkillOptions);
-	//std::cout << std::endl;
-	//std::cout << "Skill Proficencies: ";
-	//DisplayVector(100, SkillProf);
-	//std::cout << std::endl;
-	//std::cout << "Language Options: ";
-	//DisplayVector(100, LanguageOptions);
-	//std::cout << std::endl;
-	//std::cout << "Weapon Options: ";
-	//DisplayVector(100, WeaponOptions);
-	//std::cout << std::endl;
-	//std::cout << "Weapon Proficencies: ";
-	//DisplayVector(100, WeaponProf);
-	//std::cout << std::endl;
-	//std::cout << "Armor Proficencies: ";
-	//DisplayVector(100, ArmorProf);
-	//std::cout << std::endl;
-	//std::cout << "Damage Resistance: ";
-	//DisplayVector(100, DamageRes);
-	//std::cout << std::endl;
-	//std::cout << "Damage Immunites: ";
-	//DisplayVector(100, DamageImmun);
-	//std::cout << std::endl;
+	std::cout << std::boolalpha;
+	std::cout << "Languages: ";
+	HLib::DisplayVector(100, Languages);
+	std::cout << std::endl;
+	std::cout << "Tools: ";
+	HLib::DisplayVector(100, Tools);
+	std::cout << std::endl;
+	std::cout << "Skill Options: ";
+	HLib::DisplayVector(100, SkillOptions);
+	std::cout << std::endl;
+	std::cout << "Skill Proficencies: ";
+	HLib::DisplayVector(100, SkillProf);
+	std::cout << std::endl;
+	std::cout << "Language Options: ";
+	HLib::DisplayVector(100, LanguageOptions);
+	std::cout << std::endl;
+	std::cout << "Weapon Options: ";
+	HLib::DisplayVector(100, WeaponOptions);
+	std::cout << std::endl;
+	std::cout << "Weapon Proficencies: ";
+	HLib::DisplayVector(100, WeaponProf);
+	std::cout << std::endl;
+	std::cout << "Armor Proficencies: ";
+	HLib::DisplayVector(100, ArmorProf);
+	std::cout << std::endl;
+	std::cout << "Damage Resistance: ";
+	HLib::DisplayVector(100, DamageRes);
+	std::cout << std::endl;
+	std::cout << "Damage Immunites: ";
+	HLib::DisplayVector(100, DamageImmun);
+	std::cout << std::endl;
 
 
 }

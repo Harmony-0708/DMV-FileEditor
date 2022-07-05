@@ -38,6 +38,34 @@ Race::Race(std::string name)
 	LizFolkAC = false;
 	TortAC = false;
 }
+
+void Race::DisplayVector(int wrapLimit, std::vector<Spell> inputVector)
+{
+	std::string stringOfVector{};
+	for (Spell i : inputVector) {
+		if (i.get_key() == inputVector.back().get_key()) {
+			stringOfVector += i.get_key() + "\n";
+		}
+		else {
+			stringOfVector += i.get_key() + ", ";
+		}
+	}
+	WordWrap(wrapLimit, stringOfVector);
+}
+void Race::DisplayVector(int wrapLimit, std::vector<Trait> inputVector)
+{
+	std::string stringOfVector{};
+	for (Trait i : inputVector) {
+		if (i.get_name() == inputVector.back().get_name()) {
+			stringOfVector += i.get_name() + "\n";
+		}
+		else {
+			stringOfVector += i.get_name() + ", ";
+		}
+	}
+	WordWrap(wrapLimit, stringOfVector);
+}
+
 std::string Race::get_key()
 {
 	return Key;

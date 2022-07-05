@@ -44,6 +44,10 @@ public:
 	Race();
 	Race(std::string);
 
+	//DisplayVector overrides
+	void DisplayVector(int wrapLimit, std::vector<Spell> inputVector);
+	void DisplayVector(int wrapLimit, std::vector<Trait> inputVector);
+
 	//Get variables
 	std::string get_key();
 	std::string get_name();

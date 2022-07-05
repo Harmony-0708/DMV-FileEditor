@@ -63,9 +63,8 @@ void GenerateMenu() {
         case 'c':
         {
             std::string input{};
-            std::cout << "Test function: Input check" << std::endl << "Enter input: " << std::endl;
-            std::cin >> input;
-            input = InputCheck(input, "Enter input: ", false, true, std::vector<std::string>{"0", "1"});
+            std::cout << "Test function: Vector display" << std::endl << std::endl;
+            DisplayVector(100, std::vector<std::string>{"String1", "String2", "String3", "String4"});
             system("pause");
             break;
         }
@@ -85,20 +84,6 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
     Race NewRace{};
 
     std::string selection{};
-    /*std::string Name{};
-    std::string OptionPack{};
-    std::string Description{};
-    SizeEnum::Size Size{};
-    int SizeChoice{};
-    int Speed{};
-    int FlyingSpd{};
-    int SwimmingSpd{};
-    int DarkVision{};
-    int SkillOptionsCount{};
-    int LanguageOptionsCount{};
-    int WeaponOptionsCount{};
-    bool LizFolkAC{};
-    bool TortAC{};*/
     /*std::vector<std::string> Languages{};
     std::vector<std::string> Tools{};
     std::vector<std::string> SkillOptions{};
@@ -112,19 +97,22 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
     bool check{};
 
     std::cout << "Enter name for race: ";
-    getline(std::cin, Name);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.clear();
+    std::cin.sync();
+    std::getline(std::cin, Name);
+    if (Name == "") {
+        std::getline(std::cin, Name);
+    }
     Name = InputCheck(Name,"Enter name for race: ");
     NewRace.set_name(Name);
 
     std::cout << "\nDo you want to save it to a custon pack? (y/n) ";
-    getline(std::cin, selection);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, selection);
     selection = InputCheck(selection, "\nDo you want to save it to a custon pack? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
     if (selection[0] == 'y') {
         std::string pack{};
         std::cout << "Please enter Pack name: ";
-        std::cin >> pack;
+        std::getline(std::cin,pack);
         NewRace.set_optionPack(pack);
     }
     else {
@@ -132,11 +120,10 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
     }
 
     std::cout << "\nEnter description: ";
-    getline(std::cin,Description);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,Description);
     NewRace.set_description(Description);
     std::cout << "\nWhat size is the race: Small (0), Medium (1), Large (2)\n";
-    getline(std::cin, SizeChoice);
+    std::getline(std::cin, SizeChoice);
     int SizeChoiceSelection{ std::stoi(InputCheck(SizeChoice,"\nWhat size is the race: Small (0), Medium (1), Large (2)\n",false, true, std::vector<std::string>{"0","1","2"}))};
     switch (SizeChoiceSelection)
     {
@@ -152,51 +139,43 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
     }
 
     std::cout << "\nEnter Speed: ";
-    getline(std::cin,Speed);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,Speed);
     Speed = InputCheck(Speed, "\nEnter Speed: ",false, true);
     NewRace.set_speed(std::stoi(Speed));
 
     std::cout << "\nEnter Flying Speed: ";
-    getline(std::cin,FlyingSpd);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,FlyingSpd);
     FlyingSpd = InputCheck(FlyingSpd, "\nEnter Flying Speed: ", false, true);
     NewRace.set_flySpeed(std::stoi(FlyingSpd));
 
     std::cout << "\nEnter Swimming Speed: ";
-    getline(std::cin,SwimmingSpd);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,SwimmingSpd);
     SwimmingSpd = InputCheck(SwimmingSpd, "\nEnter Swimming Speed: ", false, true);
     NewRace.set_swimSpeed(std::stoi(SwimmingSpd));
 
     std::cout << "\nEnter Dark vision distance: ";
-    getline(std::cin,DarkVision);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,DarkVision);
     DarkVision = InputCheck(DarkVision, "\nEnter Dark vision distance: ", false, true);
     NewRace.set_darkVision(std::stoi(DarkVision));
 
     std::cout << "\nEnter amount of Skill proficencies: ";
-    getline(std::cin,SkillOptionsCount);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,SkillOptionsCount);
     SkillOptionsCount = InputCheck(SkillOptionsCount, "\nEnter amount of Skill proficencies: ", false, true);
     NewRace.set_skillOptionsCount(std::stoi(SkillOptionsCount));
 
     std::cout << "\nEnter amount of Language proficencies: ";
-    getline(std::cin,LanguageOptionsCount);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,LanguageOptionsCount);
     LanguageOptionsCount = InputCheck(LanguageOptionsCount, "\nEnter amount of Language proficencies: ", false, true);
     NewRace.set_languageOptionsCount(std::stoi(LanguageOptionsCount));
 
     std::cout << "\nEnter amount of Weapon proficencies: ";
-    getline(std::cin,WeaponOptionsCount);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,WeaponOptionsCount);
     WeaponOptionsCount = InputCheck(WeaponOptionsCount, "\nEnter amount of Weapon proficencies: ", false, true);
     NewRace.set_weaponOptionsCount(std::stoi(WeaponOptionsCount));
 
     std::cout << "\nDo they have Lizard folk AC? (y/n) ";
     selection.clear();
-    getline(std::cin,selection);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,selection);
     selection = InputCheck(selection, "\nDo they have Lizard folk AC? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
     if (selection[0] == 'y') {
         NewRace.set_lizFolkAC(true);
@@ -207,8 +186,7 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
 
     std::cout << "\nDo they have Tortle AC? (y/n) ";
     selection.clear();
-    getline(std::cin,selection);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,selection);
     selection = InputCheck(selection, "\nDo they have Tortle AC? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
     if (selection[0] == 'y') {
         NewRace.set_tortAC(true);
@@ -216,6 +194,8 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
     else {
         NewRace.set_tortAC(false);
     }
+
+
 
     return NewRace;
 }

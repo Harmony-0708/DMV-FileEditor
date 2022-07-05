@@ -1,5 +1,22 @@
 #include "harmonylib.h"
 
+
+//template<typename T>
+void DisplayVector(int wrapLimit, std::vector<std::string> inputVector)
+{
+    std::string stringOfVector{};
+    for (std::string i : inputVector) {
+        /*stringOfVector += to_string(i) + ", ";*/
+        if (i == inputVector.back()) {
+            stringOfVector += i + "\n";
+        }
+        else {
+            stringOfVector += i + ", ";
+        }
+    }
+    WordWrap(wrapLimit, stringOfVector);
+}
+
 /// <summary>
 /// Wraps the words in the console around a specific limit
 /// </summary>
@@ -132,13 +149,3 @@ std::string InputCheck(std::string input, std::string repeatString, bool onlyAlp
     }
 }
 
-//template<typename T>
-//void DisplayVector(int wrapLimit, std::vector<T> inputVector)
-//{
-//	std::string stringOfVector{};
-//	for (T i : inputVector) {
-//		stringOfVector += to_string(i) + ", ";
-//	}
-//	WordWrap(wrapLimit, stringOfVector);
-//
-//}

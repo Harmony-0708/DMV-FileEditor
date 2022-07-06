@@ -15,6 +15,11 @@ Race EditRaceInfo(std::string Name = "", std::string OptionPack = "", std::strin
 std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno = false);
 std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::string> globalVector, std::vector<std::string> inputVar = {});
 std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector = {});
+std::vector<Spell> remove(std::vector<Spell> input, int index);
+std::vector<Trait> remove(std::vector<Trait> input, int index);
+int index(std::string input, std::vector<std::string> inputVector);
+
+//Globals
 std::vector<std::string> GlobalLanguages{"Giant", "Common", "Celestial", "Undercommon", "Goblin", "Dwarvish", "Abyssal", "Sylvan", "Orc", "Deep Speech", "Primordial", "Draconic", "Gnomish", "Elvish", "Halfling", "Infernal" };
 std::vector<std::string> GlobalWeapons{"battleaxe", "halberd", "longsword", "dagger", "blowgun", "sickle", "handaxe", "war-pick", "flail", "greatsword", "whip", "rapier", "spear", "net", "shortbow", "warhammer", "mace", "crossbow-heavy", "glaive", "greataxe", "quarterstaff", "crossbow-light", "sling", "javelin", "light-hammer", "longbow", "greatclub", "club", "morningstar", "trident", "maul", "pike", "lance", "shortsword", "crossbow-hand", "scimitar", "dart"};
 std::vector<std::string> GlobalSkills{"religion", "persuasion", "investigation", "acrobatics", "performance", "perception", "sleight-of-hand", "survival", "history", "animal-handling", "nature", "deception", "intimidation", "arcana", "athletics", "insight", "medicine", "stealth"};
@@ -69,9 +74,9 @@ void GenerateMenu() {
         case 'C':
         case 'c':
         {
-            std::vector<std::string> input{};
-            std::cout << "Test function: Vector input" << std::endl << std::endl;
-            input = GetInputVector("tool profs", GlobalTools);
+            std::vector<Trait> input{};
+            std::cout << "Test function: Trait adding" << std::endl << std::endl;
+            input = InsertTraitsPrompt();
             system("pause");
             break;
         }
@@ -185,6 +190,8 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
 
     NewRace.insert_damageImmun(GetInputVector("damage immunities", GlobalDamageType));
 
+    NewRace.insert_trait(InsertTraitsPrompt());
+
     std::cout << "\n\nRace has been finished\n";
 
     system("pause");
@@ -283,13 +290,41 @@ std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::str
 
 }
 
+std::vector<Trait> remove(std::vector<Trait> input, int index) {
+    std::vector<Trait> newVector{};
+    int counter{};
+    for (Trait i : input) {
+        if (counter != index) {
+            newVector.push_back(i);
+        }
+        counter++;
+    }
+    return newVector;
+}
+std::vector<Spell> remove(std::vector<Spell> input, int index) {
+    std::vector<Spell> newVector{};
+    int counter{};
+    for (Spell i : input) {
+        if (counter != index) {
+            newVector.push_back(i);
+        }
+        counter++;
+    }
+    return newVector;
+}
+int index(std::string input, std::vector<std::string> inputVector) {
+    return (std::distance(inputVector.begin(), std::find(inputVector.begin(), inputVector.end(), input)));
+}
+
 std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector) {
     if (defaultVector.empty()){
         std::string selection{};
         do {
             system("CLS");
+            std::cout << "Enter traits/feats for race\n\n";
+            std::vector<std::string> displayVector{};
             if (!defaultVector.empty()) {
-                std::vector<std::string> displayVector{};
+                std::cout << "Current Traits: ";
                 for (Trait i : defaultVector) {
                     displayVector.push_back(i.get_name());
                 }
@@ -319,7 +354,52 @@ std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector) {
 
             if (cmd != "done") {
                 if (cmd != "clear") {
-
+					if (cmd == "add") {
+						Trait newTrait{};
+						newTrait = newTrait.create_trait();
+                        if (std::find(displayVector.begin(), displayVector.end(), newTrait.get_name()) != displayVector.end()) {
+                            std::cout << "\nItem already in list. To remove an element use 'remove'\n";
+                            system("pause");
+                        }
+                        else {
+                            defaultVector.push_back(newTrait);
+                        }
+					}
+					else if (cmd == "edit") {
+                        if (std::find(displayVector.begin(), displayVector.end(), selection) != displayVector.end()) {
+                            Trait newTrait{ defaultVector[index(selection,displayVector)] };
+                            std::string choice{};
+                            std::cout << "\nWhat would you like to edit (name, description, type): ";
+                            std::getline(std::cin, choice);
+                            HLib::InputCheck(choice, "\nWhat would you like to edit (name, description, type): ", true, false, std::vector<std::string>{"name", "description", "type"});
+                            if (choice == "name") {
+                                defaultVector[index(selection, displayVector)] = newTrait.create_trait("", newTrait.get_description(), newTrait.get_typename());
+                            }
+                            else if (choice == "description") {
+                                defaultVector[index(selection, displayVector)] = newTrait.create_trait(newTrait.get_name(), "", newTrait.get_typename());
+                            }
+                            else {
+                                defaultVector[index(selection, displayVector)] = newTrait.create_trait(newTrait.get_name(), newTrait.get_description(), "");
+                            }
+                        }
+                        else {
+                            std::cout << "\nItem not in list.\n";
+                            system("pause");
+                        }
+                    }
+                    else if (cmd == "remove") {
+                        if (std::find(displayVector.begin(), displayVector.end(), selection) != displayVector.end()) {
+                            defaultVector = remove(defaultVector, index(selection, displayVector));
+                        }
+                        else {
+                            std::cout << "\nItem not in list.\n";
+                            system("pause");
+                        }
+                    }
+                    else {
+                        std::cout << "\n\nCommand not found";
+                        system("pause");
+                    }
                 }
                 else {
                     std::string choice{};

@@ -4,6 +4,10 @@
 #include <vector>
 
 namespace HLib {
+
+	/*template <typename T>
+	void remove(std::vector<T>& vec, size_t pos);*/
+
 	void DisplayVector(int wrapLimit, std::vector<std::string> inputVector);
 
 	void WordWrap(int wrapLimit, std::string inputString);

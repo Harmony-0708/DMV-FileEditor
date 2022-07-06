@@ -38,6 +38,32 @@ Race::Race(std::string name)
 	LizFolkAC = false;
 	TortAC = false;
 }
+
+void Race::DisplayVector(int wrapLimit, std::vector<Spell> inputVector)
+{
+	std::string stringOfVector{};
+	for (Spell i : inputVector) {
+		if (i.get_key() == inputVector.back().get_key()) {
+			stringOfVector += i.get_key() + "\n";
+		}
+		else {
+			stringOfVector += i.get_key() + ", ";
+		}
+	}
+	HLib::WordWrap(wrapLimit, stringOfVector);
+}
+void Race::DisplayVector(int wrapLimit, std::vector<Trait> inputVector)
+{
+	std::string outputString{};
+	for (Trait i : inputVector) {
+		std::string name{i.get_name()};
+		std::string desc{i.get_description()};
+		std::string type{i.get_typename()};
+		outputString += "\n" + name + " (" + type + ")\n\n" + desc + "\n";
+	}
+	HLib::WordWrap(wrapLimit, outputString);
+}
+
 std::string Race::get_key()
 {
 	return Key;
@@ -57,6 +83,30 @@ std::string Race::get_description()
 SizeEnum::Size Race::get_size()
 {
 	return Size;
+}
+int Race::get_str()
+{
+	return Str;
+}
+int Race::get_dex()
+{
+	return Dex;
+}
+int Race::get_con()
+{
+	return Con;
+}
+int Race::get_int()
+{
+	return Int;
+}
+int Race::get_wis()
+{
+	return Wis;
+}
+int Race::get_cha()
+{
+	return Cha;
 }
 int Race::get_speed()
 {
@@ -238,24 +288,24 @@ std::vector<Trait> Race::get_trait()
 {
 	return Traits;
 }
-//Spell Race::get_spell(int index,std::string spellName)
-//{
-//	if (index < Spells.size()) {
-//		Spell emptySpell{ "empty" };
-//		return emptySpell;
-//	}
-//	else {
-//		for (Spell i : Spells[index]) {
-//			if (i.get_key() == spellName) {
-//				return i;
-//			}
-//		}
-//	}
-//}
-//std::vector<std::vector<Spell>> Race::get_spell()
-//{
-//	return Spells;
-//}
+Spell Race::get_spell(int index,std::string spellName)
+{
+	if (index < Spells.size()) {
+		Spell emptySpell{ "empty" };
+		return emptySpell;
+	}
+	else {
+		for (Spell i : Spells[index]) {
+			if (i.get_key() == spellName) {
+				return i;
+			}
+		}
+	}
+}
+std::vector<std::vector<Spell>> Race::get_spell()
+{
+	return Spells;
+}
 
 //Assign Functions
 /// <summary>
@@ -302,6 +352,30 @@ void Race::set_description(std::string description)
 void Race::set_size(SizeEnum::Size size)
 {
 	Size = size;
+}
+void Race::set_str(int str)
+{
+	Str = str;
+}
+void Race::set_dex(int dex)
+{
+	Dex = dex;
+}
+void Race::set_con(int con)
+{
+	Con = con;
+}
+void Race::set_int(int Inte)
+{
+	Int = Inte;
+}
+void Race::set_wis(int wis)
+{
+	Wis = wis;
+}
+void Race::set_cha(int cha)
+{
+	Cha = cha;
 }
 /// <summary>
 /// Sets new speed for race.
@@ -624,9 +698,15 @@ void Race::display_info()
 	std::cout << "Race: "		 << Name		<< std::endl;
 	std::cout << "Pack: "		 << OptionPack	<< std::endl;
 	std::cout << "Description: ";
-	WordWrap(100, Description);
+	HLib::WordWrap(100, Description);
 	std::cout << std::endl;
 	std::cout << "Size: " << Size << std::endl;
+	std::cout << "Str Mod: " << Str << std::endl;
+	std::cout << "Dex Mod: " << Dex << std::endl;
+	std::cout << "Con Mod: " << Con << std::endl;
+	std::cout << "Int Mod: " << Int << std::endl;
+	std::cout << "Wis Mod: " << Wis << std::endl;
+	std::cout << "Cha Mod: " << Cha << std::endl;
 	std::cout << "Speed: " << Speed << std::endl;
 	std::cout << "Fly Speed: " << FlyingSpd << std::endl;
 	std::cout << "Swimming Speed: " << SwimmingSpd << std::endl;
@@ -634,38 +714,41 @@ void Race::display_info()
 	std::cout << "Skill options count: " << SkillOptionsCount << std::endl;
 	std::cout << "Language options count: " << LanguageOptionsCount << std::endl;
 	std::cout << "Weapon options count: " << WeaponOptionsCount << std::endl;
+	std::cout << std::boolalpha;
 	std::cout << "Do they have Lizard Folk AC: " << LizFolkAC << std::endl;
 	std::cout << "Do they have Tortle AC: " << TortAC << std::endl;
-	/*std::cout << "Languages: ";
-	DisplayVector(100, Languages);
+	std::cout << std::boolalpha;
+	std::cout << "Languages: ";
+	HLib::DisplayVector(100, Languages);
 	std::cout << std::endl;
 	std::cout << "Tools: ";
-	DisplayVector(100, Tools);
+	HLib::DisplayVector(100, Tools);
 	std::cout << std::endl;
 	std::cout << "Skill Options: ";
-	DisplayVector(100, SkillOptions);
+	HLib::DisplayVector(100, SkillOptions);
 	std::cout << std::endl;
 	std::cout << "Skill Proficencies: ";
-	DisplayVector(100, SkillProf);
+	HLib::DisplayVector(100, SkillProf);
 	std::cout << std::endl;
 	std::cout << "Language Options: ";
-	DisplayVector(100, LanguageOptions);
+	HLib::DisplayVector(100, LanguageOptions);
 	std::cout << std::endl;
 	std::cout << "Weapon Options: ";
-	DisplayVector(100, WeaponOptions);
+	HLib::DisplayVector(100, WeaponOptions);
 	std::cout << std::endl;
 	std::cout << "Weapon Proficencies: ";
-	DisplayVector(100, WeaponProf);
+	HLib::DisplayVector(100, WeaponProf);
 	std::cout << std::endl;
 	std::cout << "Armor Proficencies: ";
-	DisplayVector(100, ArmorProf);
+	HLib::DisplayVector(100, ArmorProf);
 	std::cout << std::endl;
 	std::cout << "Damage Resistance: ";
-	DisplayVector(100, DamageRes);
+	HLib::DisplayVector(100, DamageRes);
 	std::cout << std::endl;
 	std::cout << "Damage Immunites: ";
-	DisplayVector(100, DamageImmun);
-	std::cout << std::endl;*/
-
-
+	HLib::DisplayVector(100, DamageImmun);
+	std::cout << std::endl;
+	std::cout << "Traits: ";
+	DisplayVector(100, Traits);
+	std::cout << std::endl;
 }

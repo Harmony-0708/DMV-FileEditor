@@ -17,6 +17,12 @@ private:
 	std::string OptionPack{};
 	std::string Description{};
 	SizeEnum::Size Size{};
+	int Str{};
+	int Dex{};
+	int Con{};
+	int Int{};
+	int Wis{};
+	int Cha{};
 	int Speed{};
 	int FlyingSpd{};
 	int SwimmingSpd{};
@@ -44,12 +50,22 @@ public:
 	Race();
 	Race(std::string);
 
+	//DisplayVector overrides
+	void DisplayVector(int wrapLimit, std::vector<Spell> inputVector);
+	void DisplayVector(int wrapLimit, std::vector<Trait> inputVector);
+
 	//Get variables
 	std::string get_key();
 	std::string get_name();
 	std::string get_optionPack();
 	std::string get_description();
 	SizeEnum::Size get_size();
+	int get_str();
+	int get_dex();
+	int get_con();
+	int get_int();
+	int get_wis();
+	int get_cha();
 	int get_speed();
 	int get_flySpeed();
 	int get_swimSpeed();
@@ -81,8 +97,8 @@ public:
 	std::vector<std::string> get_damageImmun();
 	Trait get_trait(int index);
 	std::vector<Trait> get_trait();
-	//Spell get_spell(int index,std::string spellName);
-	//std::vector<std::vector<Spell>> get_spell();
+	Spell get_spell(int index,std::string spellName);
+	std::vector<std::vector<Spell>> get_spell();
 
 	//Setting variables
 	void set_key(std::string key);
@@ -90,6 +106,12 @@ public:
 	void set_optionPack(std::string optionPack);
 	void set_description(std::string description);
 	void set_size(SizeEnum::Size size);
+	void set_str(int str);
+	void set_dex(int dex);
+	void set_con(int con);
+	void set_int(int Inte);
+	void set_wis(int wis);
+	void set_cha(int cha);
 	void set_speed(int speed);
 	void set_flySpeed(int flyspeed);
 	void set_swimSpeed(int swimspeed);

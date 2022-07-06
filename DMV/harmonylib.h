@@ -3,10 +3,18 @@
 #include <iostream>
 #include <vector>
 
+namespace HLib {
 
-void WordWrap(int wrapLimit, std::string inputString);
-//template<typename T>
-//void DisplayVector(int wrapLimit, std::vector<T> inputVector);
+	/*template <typename T>
+	void remove(std::vector<T>& vec, size_t pos);*/
+
+	void DisplayVector(int wrapLimit, std::vector<std::string> inputVector);
+
+	void WordWrap(int wrapLimit, std::string inputString);
+	std::string InputCheck(std::string input, std::string repeatString, bool onlyAlpha = true, bool onlyNums = false, std::vector<std::string> parameters = {});
+}
+
+
 
 
 

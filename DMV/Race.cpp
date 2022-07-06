@@ -54,16 +54,14 @@ void Race::DisplayVector(int wrapLimit, std::vector<Spell> inputVector)
 }
 void Race::DisplayVector(int wrapLimit, std::vector<Trait> inputVector)
 {
-	std::string stringOfVector{};
+	std::string outputString{};
 	for (Trait i : inputVector) {
-		if (i.get_name() == inputVector.back().get_name()) {
-			stringOfVector += i.get_name() + "\n";
-		}
-		else {
-			stringOfVector += i.get_name() + ", ";
-		}
+		std::string name{i.get_name()};
+		std::string desc{i.get_description()};
+		std::string type{i.get_typename()};
+		outputString += "\n" + name + " (" + type + ")\n\n" + desc + "\n";
 	}
-	HLib::WordWrap(wrapLimit, stringOfVector);
+	HLib::WordWrap(wrapLimit, outputString);
 }
 
 std::string Race::get_key()
@@ -750,6 +748,7 @@ void Race::display_info()
 	std::cout << "Damage Immunites: ";
 	HLib::DisplayVector(100, DamageImmun);
 	std::cout << std::endl;
-
-
+	std::cout << "Traits: ";
+	DisplayVector(100, Traits);
+	std::cout << std::endl;
 }

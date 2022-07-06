@@ -1,6 +1,5 @@
 #include "Trait.h"
 
-
 Trait::Trait()
 {
 	Name = "";

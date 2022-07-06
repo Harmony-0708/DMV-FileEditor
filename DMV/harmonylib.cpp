@@ -1,14 +1,6 @@
 #include "harmonylib.h"
 using namespace HLib;
 
-//template <typename T>
-//void HLib::remove(std::vector<T>& vec, size_t pos)
-//{
-//    std::vector<T>::iterator it = vec.begin();
-//    std::advance(it, pos);
-//    vec.erase(it);
-//}
-
 /// <summary>
 /// Wraps the words in the console around a specific limit
 /// </summary>

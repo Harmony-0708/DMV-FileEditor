@@ -1,3 +1,9 @@
-﻿  Race.cpp
-C:\Users\arhea\source\repos\DMV\DMV\Race.cpp(304): warning C4715: 'Race::get_spell': not all control paths return a value
+﻿  DMV.cpp
+C:\Users\arhea\source\repos\DMV\DMV\DMV.cpp(315,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
+  Race.cpp
+  Trait.cpp
+  Generating Code...
+C:\Users\arhea\source\repos\DMV\DMV\Trait.cpp(35): warning C4715: 'Trait::get_typename': not all control paths return a value
+C:\Users\arhea\source\repos\DMV\DMV\Race.cpp(97): warning C4715: 'Race::get_sizename': not all control paths return a value
+C:\Users\arhea\source\repos\DMV\DMV\Race.cpp(315): warning C4715: 'Race::get_spell': not all control paths return a value
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

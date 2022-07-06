@@ -1,11 +1,14 @@
-// DMV.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdlib>
 #include <map>
+#include <vector>
+#include <string>
+#include "TraitType.h"
+#include "SizeEnum.h"
+#include "Spell.h"
+#include "Trait.h"
 #include "Race.h"
 #include "harmonylib.h"
 
@@ -37,11 +40,7 @@ int main()
 void GenerateMenu() {
     
     char selection{};
-    Race TestRace{ "Test" };
-    //TestRace.set_optionPack("TestOptionPack");
-    //TestRace.set_description("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
-    //TestRace.set_description("Giff are tall, broad-shouldered folk with hippo-like features. Some have smooth skin, while others have short bristles on their faces and the tops of their heads. As beings of impressive size and unforgettable appearance, giff are noticed wherever they go.");
-
+    Race TestRace{ "" };
     do {
         system("cls");
 

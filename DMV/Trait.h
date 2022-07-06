@@ -1,8 +1,13 @@
 #pragma once
-#include <string>
 #include <iostream>
-#include "harmonylib.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstdlib>
+#include <map>
+#include <vector>
+#include <string>
 #include "TraitType.h"
+#include "harmonylib.h"
 class Trait
 {
 private:

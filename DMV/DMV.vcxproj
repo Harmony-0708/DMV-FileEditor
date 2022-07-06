@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="AbilityScore.h" />
     <ClInclude Include="harmonylib.h" />
+    <ClInclude Include="Includes.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Race.h" />
     <ClInclude Include="SizeEnum.h" />

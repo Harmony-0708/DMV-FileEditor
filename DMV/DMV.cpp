@@ -99,9 +99,8 @@ void GenerateMenu() {
         case 'T':
         case 't':
         {
-            std::vector<Trait> input{};
             std::cout << "Test function: Trait adding" << std::endl << std::endl;
-            input = InsertTraitsPrompt();
+            menuGUI.MakeBox(1);
             system("pause");
             break;
         }

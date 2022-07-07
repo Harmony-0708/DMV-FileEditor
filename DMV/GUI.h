@@ -1,4 +1,9 @@
 ﻿#pragma once
+#include <vector>
+#include <string>
+#include <iostream>
+#include <iomanip>
+
 class GUI
 {
 public:
@@ -47,5 +52,13 @@ public:
 	int thicktop{ 223 }; // ▀
 	int thickleft{ 221 }; // 
 	int thickright{ 222 }; // 
+
+
+
+	void MakeBox(int input, int style = 0);
+	void MakeBox(std::string input, int style = 0);
+	void MakeBox(std::vector<std::string> input, int style = 0);
+	void MakeBox(std::vector<int> input, int style = 0);
+	void MakeBox(std::vector<float> input, int style = 0);
 };
 

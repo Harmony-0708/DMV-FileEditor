@@ -11,6 +11,7 @@
 #include "Spell.h"
 #include "Trait.h"
 #include "Race.h"
+#include "GUI.h"
 #include "harmonylib.h"
 
 
@@ -23,51 +24,6 @@ std::vector<Spell> remove(std::vector<Spell> input, int index);
 std::vector<Trait> remove(std::vector<Trait> input, int index);
 int index(std::string input, std::vector<std::string> inputVector);
 
-int straightline{ 186 }; // ║
-int bottomintersection{ 203 }; // ╦
-int upperintersection{ 202 }; // ╩
-int rightintersection{185}; // ╣
-int leftintersection{204}; // ╠
-int fullintersection{206}; // ╬
-int cornertplf{ 201 }; // ╔
-int cornertprt{ 187 }; // ╗
-int cornerbtlf{ 200 }; // ╚
-int cornerbtrt{ 188 }; // ╝
-int across{ 205 }; // ═
-int lightstraightline{179}; // │
-int lightbottomintersection{194}; // ┬
-int lightupperintersection{193}; // ┴
-int lightrightintersection{180}; // ┤
-int lightleftintersection{195}; // ├
-int lightfullintersection{197}; //┼
-int lightcornertplf{218}; // ┌
-int lightcornertprt{191}; // ┐
-int lightcornerbtlf{192}; // └
-int lightcornerbtrt{217}; // ┘
-int lightacross{196}; // ─
-int thicktothinbottomintersection{207}; // ╧
-int thicktothinupperintersection{209}; // ╤
-int thicktothinrightintersection{181}; // ╡
-int thicktothinleftintersection{199}; // ╟
-int thicktothinfullintersection{216}; // ╪
-int thicktothincornertplf{214}; // ╓
-int thicktothincornertprt{184}; // ╕
-int thicktothincornerbtlf{211}; // ╙
-int thicktothincornerbtrt{190}; //  ╛
-int thintothickbottomintersection{208}; // ╨
-int thintothickupperintersection{210}; // ╥
-int thintothickrightintersection{182}; // ╢
-int thintothickleftintersection{198}; // ╞
-int thintothickfullintersection{215}; // ╫
-int thintothickcornertplf{213}; // ╒
-int thintothickcornertprt{ 183 }; // ╖
-int thintothickcornerbtlf{212}; // ╘
-int thintothickcornerbtrt{189}; // ╜
-int thickfull{219}; // 
-int thickbottom{220}; // 
-int thicktop{223}; // 
-int thickleft{221}; // 
-int thickright{222}; // 
 
 //Globals
 std::vector<std::string> GlobalLanguages{"Giant", "Common", "Celestial", "Undercommon", "Goblin", "Dwarvish", "Abyssal", "Sylvan", "Orc", "Deep Speech", "Primordial", "Draconic", "Gnomish", "Elvish", "Halfling", "Infernal" };
@@ -95,29 +51,34 @@ int main()
 
 
 void GenerateMenu() {
-    
-    char selection{};
+    GUI menuGUI{};
+    std::string selection{};
     Race TestRace{ "" };
     do {
         system("cls");
         std::cout
-            << (char)thickfull << std::string(46, (char)thicktop) << (char)thickfull << std::endl
-            << (char)thickfull << " Harmony's Dungeon Master's Vault file editor " << (char)thickfull << std::endl
-            << (char)thickfull << std::string(46, (char)thickbottom) << (char)thickfull << std::endl << std::endl;
+            << (char)menuGUI.thickfull << std::string(45, (char)menuGUI.thicktop) << (char)menuGUI.thickfull << std::endl
+            << (char)menuGUI.thickfull << " Austin's Dungeon Master's Vault file editor " << (char)menuGUI.thickfull << std::endl
+            << (char)menuGUI.thickfull << std::string(45, (char)menuGUI.thickbottom) << (char)menuGUI.thickfull << std::endl << std::endl
 
-        std::cout
-            << (char)cornertplf << std::string(20, (char)across) << (char)cornertprt << std::endl
-            << (char)straightline << std::setw(16) << "Menu Options" << std::setw(5) << (char)straightline<< std::endl
-            << (char)thicktothinleftintersection << std::string(20, (char)lightacross) << (char)thintothickrightintersection << std::endl
-            << (char)straightline << "D - Display" << std::setw(10) << (char)straightline << std::endl
-            << (char)straightline << "E - Edit Info" << std::setw(8) << (char)straightline << std::endl
-            << (char)straightline << "T - Testing" << std::setw(10) << (char)straightline << std::endl
-            << (char)straightline << "Q - Quit" << std::setw(13) << (char)straightline << std::endl
-            << (char)cornerbtlf   << std::string(20,(char)across) << (char)cornerbtrt   << std::endl << std::endl;
-        std::cout << "Enter choice:";
-        std::cin >> selection;
+            << (char)menuGUI.cornertplf << std::string(20, (char)menuGUI.across) << (char)menuGUI.cornertprt << std::endl
+            << (char)menuGUI.straightline << std::setw(16) << "Menu Options" << std::setw(5) << (char)menuGUI.straightline<< std::endl
+            << (char)menuGUI.thicktothinleftintersection << std::string(20, (char)menuGUI.lightacross) << (char)menuGUI.thintothickrightintersection << std::endl
+            << (char)menuGUI.straightline << "D - Display" << std::setw(10) << (char)menuGUI.straightline << std::endl
+            << (char)menuGUI.straightline << "E - Edit Info" << std::setw(8) << (char)menuGUI.straightline << std::endl
+            << (char)menuGUI.straightline << "T - Testing" << std::setw(10) << (char)menuGUI.straightline << std::endl
+            << (char)menuGUI.straightline << "Q - Quit" << std::setw(13) << (char)menuGUI.straightline << std::endl
+            << (char)menuGUI.cornerbtlf   << std::string(20,(char)menuGUI.across) << (char)menuGUI.cornerbtrt   << std::endl << std::endl
+            << "Enter choice: ";
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, selection);
+        if (selection == "") {
+            std::getline(std::cin, selection);
+        }
+        selection = HLib::InputCheck(selection,"Enter choice: ", true, false, std::vector<std::string>{"D","d","E","e","T","t","Q","q"});
 
-        switch (selection)
+        switch (selection[0])
         {
         case 'D':
         case 'd':
@@ -149,7 +110,7 @@ void GenerateMenu() {
         }
 
         
-    } while (selection != 'Q' && selection != 'q');
+    } while (selection[0] != 'Q' && selection[0] != 'q');
     system("cls");
 }
 

@@ -10,6 +10,7 @@
 #include "SizeEnum.h"
 #include "Spell.h"
 #include "Trait.h"
+#include "GUI.h"
 #include "harmonylib.h"
 class Race
 {

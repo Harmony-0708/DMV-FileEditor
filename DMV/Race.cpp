@@ -704,7 +704,8 @@ void Race::insert_spell(std::vector<std::vector<Spell>> spellList)
 void Race::display_info()
 {
 	int counter{};
-	
+	GUI displayGUI{};
+
 	std::cout << std::endl << std::endl;
 	std::cout << "Race: " << get_name() << std::endl;
 	std::cout << "Pack: " << get_optionPack() << std::endl;
@@ -712,16 +713,21 @@ void Race::display_info()
 	HLib::WordWrap(100, get_description());
 	std::cout << std::endl;
 	std::cout << "Size: " << get_sizename() << std::endl;
-	std::cout << "Str Mod: " << get_str() << std::endl;
-	std::cout << "Dex Mod: " << get_dex() << std::endl;
-	std::cout << "Con Mod: " << get_con() << std::endl;
-	std::cout << "Int Mod: " << get_int() << std::endl;
-	std::cout << "Wis Mod: " << get_wis() << std::endl;
-	std::cout << "Cha Mod: " << get_cha() << std::endl;
-	std::cout << "Speed: " << get_speed() << std::endl;
-	std::cout << "Fly Speed: " << get_flySpeed() << std::endl;
-	std::cout << "Swimming Speed: " << get_swimSpeed() << std::endl;
-	std::cout << "Dark Vision: " << get_darkVision() << std::endl;
+	std::cout
+		<< (char)displayGUI.lightcornertplf << std::string(70, (char)displayGUI.lightacross) << (char)displayGUI.lightcornertprt << std::endl
+		<< (char)displayGUI.lightstraightline << "Str Mod: " << get_str() << (char)displayGUI.lightstraightline
+		<< (char)displayGUI.lightstraightline << "Dex Mod: " << get_dex() << (char)displayGUI.lightstraightline
+		<< (char)displayGUI.lightstraightline << "Con Mod: " << get_con() << (char)displayGUI.lightstraightline
+		<< (char)displayGUI.lightstraightline << "Int Mod: " << get_int() << (char)displayGUI.lightstraightline
+		<< (char)displayGUI.lightstraightline << "Wis Mod: " << get_wis() << (char)displayGUI.lightstraightline
+		<< (char)displayGUI.lightstraightline << "Cha Mod: " << get_cha() << (char)displayGUI.lightstraightline << std::endl
+		<< (char)displayGUI.lightcornerbtlf << std::string(70, (char)displayGUI.lightacross) << (char)displayGUI.lightcornerbtrt << std::endl
+		<< (char)displayGUI.lightcornertplf << std::string(58, (char)displayGUI.lightacross) << (char)displayGUI.lightcornertprt << std::endl
+		<< (char)displayGUI.lightstraightline << "Speed: " << get_speed() << (char)displayGUI.lightstraightline
+		<< (char)displayGUI.lightstraightline << "Fly Speed: " << get_flySpeed() << (char)displayGUI.lightstraightline
+		<< (char)displayGUI.lightstraightline << "Swimming Speed: " << get_swimSpeed() << (char)displayGUI.lightstraightline
+		<< (char)displayGUI.lightstraightline << "Dark Vision: " << get_darkVision() << (char)displayGUI.lightstraightline << std::endl
+		<< (char)displayGUI.lightcornerbtlf << std::string(58, (char)displayGUI.lightacross) << (char)displayGUI.lightcornerbtrt << std::endl;
 	std::cout << "Skill options count: " << get_skillOptionsCount() << std::endl;
 	std::cout << "Language options count: " << get_languageOptionsCount() << std::endl;
 	std::cout << "Weapon options count: " << get_weaponOptionsCount() << std::endl;

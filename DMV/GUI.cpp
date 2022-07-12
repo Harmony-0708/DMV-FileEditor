@@ -1,5 +1,37 @@
 #include "GUI.h"
 
+
+
+void GUI::GUIWordWrap(int wrapLimit, std::string inputString)
+{
+	int counter{};
+	for (char i : inputString) {
+		if (counter == 0) {
+			std::cout << (char)straightline << " ";
+		}
+		if (counter < wrapLimit + 1) {
+			std::cout << i;
+			counter++;
+		}
+		if (i == ' ' || i == ',' || i == '.' || i == '!' || i == '?' || i == ':') {
+			bool check{false};
+			for (int k{ 0 }; k < 10; k++) {
+				if (inputString[i + k] == ' ') {
+					check = true;
+				}
+			}
+			if (!check) {
+				std::cout << std::string(wrapLimit-counter,' ') << " " << (char)straightline << std::endl;
+				counter = 0;
+			}
+		}
+		/*else {
+			std::cout << " " << (char)straightline << std::endl;
+			counter = 0;
+		}*/
+	}
+}
+
 /// <summary>
 /// Creates a border around the input, depending on the style.
 /// </summary>
@@ -278,14 +310,22 @@ void GUI::MakeBox(std::vector<float> input, int style, bool wordWrap, int wordWr
 void GUI::GenerateMenu(std::string header, std::vector<std::string> menuOptions, std::string footer)
 {
 	int longestLen{};
+	bool longCheck{};
 	if (header.length() > footer.length()) { longestLen = header.length(); }else { longestLen = footer.length(); }
 	longestLen = HLib::FindLongest(menuOptions, longestLen);
-	if ((longestLen % 2) == 1) {
-		longestLen++;
+	if (longestLen > 102) {
+		longestLen = 100;
+		longCheck = true;
 	}
-	if ((header.length() % 2) == 1) {
-		header = " " + header;
+	if ((longestLen % 2 != 1) || (header.length() % 2 != 1)) {
+		if ((longestLen % 2) == 1) {
+			longestLen++;
+		}
+		if ((header.length() % 2) == 1) {
+			header = " " + header;
+		}
 	}
+	
 	if ((footer.length() % 2) == 1) {
 		footer = " " + footer;
 	}
@@ -296,7 +336,12 @@ void GUI::GenerateMenu(std::string header, std::vector<std::string> menuOptions,
 		<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl;
 	
 	for (std::string i : menuOptions) {
-		std::cout << (char)straightline << " " << i << std::string(longestLen - i.length(), ' ') << " " << (char)straightline << std::endl;
+		if (longCheck) {
+			GUIWordWrap(100, i);
+		}
+		else {
+			std::cout << (char)straightline << " " << i << std::string(longestLen - i.length(), ' ') << " " << (char)straightline << std::endl;
+		}
 	}
 	if (footer != "") {
 		std::cout
@@ -314,6 +359,7 @@ void GUI::GenerateMenu(std::string header, std::vector<std::string> menuOptions,
 /// <param name="width">- Optional width of grid</param>
 void GUI::GenerateGrid(std::vector<std::string> objects, int height, int width)
 {
+	std::cout << std::boolalpha;
 	if (height == 0 && width == 0) {
 		width = objects.size();
 		height = 1;

@@ -707,34 +707,38 @@ void Race::display_info()
 	GUI displayGUI{};
 
 	std::cout << std::endl << std::endl;
-	std::cout << "Race: " << get_name() << std::endl;
-	std::cout << "Pack: " << get_optionPack() << std::endl;
-	std::cout << "Description: ";
-	HLib::WordWrap(100, get_description());
+	displayGUI.MakeBox("Race", 2);
 	std::cout << std::endl;
-	std::cout << "Size: " << get_sizename() << std::endl;
-	std::cout
-		<< (char)displayGUI.lightcornertplf << std::string(70, (char)displayGUI.lightacross) << (char)displayGUI.lightcornertprt << std::endl
-		<< (char)displayGUI.lightstraightline << "Str Mod: " << get_str() << (char)displayGUI.lightstraightline
-		<< (char)displayGUI.lightstraightline << "Dex Mod: " << get_dex() << (char)displayGUI.lightstraightline
-		<< (char)displayGUI.lightstraightline << "Con Mod: " << get_con() << (char)displayGUI.lightstraightline
-		<< (char)displayGUI.lightstraightline << "Int Mod: " << get_int() << (char)displayGUI.lightstraightline
-		<< (char)displayGUI.lightstraightline << "Wis Mod: " << get_wis() << (char)displayGUI.lightstraightline
-		<< (char)displayGUI.lightstraightline << "Cha Mod: " << get_cha() << (char)displayGUI.lightstraightline << std::endl
-		<< (char)displayGUI.lightcornerbtlf << std::string(70, (char)displayGUI.lightacross) << (char)displayGUI.lightcornerbtrt << std::endl
-		<< (char)displayGUI.lightcornertplf << std::string(58, (char)displayGUI.lightacross) << (char)displayGUI.lightcornertprt << std::endl
-		<< (char)displayGUI.lightstraightline << "Speed: " << get_speed() << (char)displayGUI.lightstraightline
-		<< (char)displayGUI.lightstraightline << "Fly Speed: " << get_flySpeed() << (char)displayGUI.lightstraightline
-		<< (char)displayGUI.lightstraightline << "Swimming Speed: " << get_swimSpeed() << (char)displayGUI.lightstraightline
-		<< (char)displayGUI.lightstraightline << "Dark Vision: " << get_darkVision() << (char)displayGUI.lightstraightline << std::endl
-		<< (char)displayGUI.lightcornerbtlf << std::string(58, (char)displayGUI.lightacross) << (char)displayGUI.lightcornerbtrt << std::endl;
-	std::cout << "Skill options count: " << get_skillOptionsCount() << std::endl;
-	std::cout << "Language options count: " << get_languageOptionsCount() << std::endl;
-	std::cout << "Weapon options count: " << get_weaponOptionsCount() << std::endl;
-	std::cout << std::boolalpha;
-	std::cout << "Do they have Lizard Folk AC: " << get_lizFolkAC() << std::endl;
-	std::cout << "Do they have Tortle AC: " << get_tortAC() << std::endl;
-	std::cout << std::boolalpha;
+	displayGUI.GenerateGrid(std::vector<std::string>{
+		"Race: " + get_name(),
+		"Pack: " + get_optionPack(),
+		"Size: " + get_sizename()
+	});
+	std::cout << std::endl;
+	displayGUI.GenerateMenu("Description", std::vector<std::string>{get_description()});
+	std::cout << std::endl;
+	displayGUI.GenerateGrid(std::vector<std::string>{
+		"Str Mod: " + std::to_string(get_str()),
+		"Dex Mod: " + std::to_string(get_dex()),
+		"Con Mod: " + std::to_string(get_con()),
+		"Int Mod: " + std::to_string(get_int()),
+		"Wis Mod: " + std::to_string(get_wis()), 
+		"Cha Mod: " + std::to_string(get_cha()),
+		"Speed: " + std::to_string(get_speed()),
+		"Fly Speed: " + std::to_string(get_flySpeed()),
+		"Swimming Speed: " + std::to_string(get_swimSpeed()),
+		"Dark Vision: " + std::to_string(get_darkVision()),
+		"",
+		"",
+		"Skill options count: " + std::to_string(get_skillOptionsCount()),
+		"Language options count: " + std::to_string(get_languageOptionsCount()),
+		"Weapon options count: " + std::to_string(get_weaponOptionsCount()),
+		"",
+		"",
+		"",
+		"Do they have Lizard Folk AC: " + std::to_string(get_lizFolkAC()),
+		"Do they have Tortle AC: " + std::to_string(get_tortAC()),
+	},4,6);
 	std::cout << "Languages: ";
 	HLib::DisplayVector(100, get_language());
 	std::cout << std::endl;

@@ -7,7 +7,7 @@
 
 class GUI
 {
-public:
+private:
 	int straightline{ 186 }; // ║
 	int bottomintersection{ 203 }; // ╦
 	int upperintersection{ 202 }; // ╩
@@ -54,7 +54,8 @@ public:
 	int thickleft{ 221 }; // 
 	int thickright{ 222 }; // 
 
-
+public:
+	void GUIWordWrap(int wrapLimit, std::string input);
 
 	void MakeBox(int input, int style = 0, bool wordWrap = false, int wordWrapLimit = 0);
 	void MakeBox(float input, int style = 0, bool wordWrap = false, int wordWrapLimit = 0);

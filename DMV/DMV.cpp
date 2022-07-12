@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdlib>
+#include <cmath>
 #include <map>
 #include <vector>
 #include <string>
@@ -89,12 +90,8 @@ void GenerateMenu() {
         case 'T':
         case 't':
         {
-            std::string input{};
-            std::cout << "Test function: Box testing" << std::endl << std::endl;
-            std::cin.clear();
-            std::cin.sync();
-            std::getline(std::cin, input);
-            menuGUI.GenerateMenu("Menu Options", std::vector<std::string>{"D - Display", "E - Edit Info", "T - Testing", "Q - Quit"});
+            std::cout << "Test function: Grid testing" << std::endl << std::endl;
+            menuGUI.GenerateGrid(std::vector<std::string>{"Test","Test","Test","Test","Test","Test","Test","Test","Test","Test"}, 0, 0);
             system("pause");
             break;
         }

@@ -1,3 +1,4 @@
 ﻿  DMV.cpp
-C:\Users\arhea\source\repos\DMV\DMV\DMV.cpp(334,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\DMV.cpp(96,23): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\DMV.cpp(336,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

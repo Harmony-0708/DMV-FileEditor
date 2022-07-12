@@ -173,3 +173,19 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
     }
 }
 
+/// <summary>
+/// Finds the length of the longest string and returns the length, also allows for a basevalue to check from
+/// </summary>
+/// <param name="input">- Vector of strings to check</param>
+/// <param name="longestLen">- Optional length to check from</param>
+/// <returns></returns>
+int HLib::FindLongest(std::vector<std::string> input, int longestLen)
+{
+    for (std::string i : input) {
+        if (i.length() > longestLen) {
+            longestLen = i.length();
+        }
+    }
+    return longestLen;
+}
+

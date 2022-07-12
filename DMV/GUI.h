@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include "harmonylib.h"
 
 class GUI
 {
@@ -64,6 +65,6 @@ public:
 
 	void GenerateMenu(std::string header, std::vector<std::string> menuOptions, std::string footer = "");
 
-	void GenerateGrid(std::vector<std::string> objects, int style = 0, int height = 0, int width = 0);
+	void GenerateGrid(std::vector<std::string> objects, int height = 0, int width = 0);
 };
 

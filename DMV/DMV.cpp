@@ -56,20 +56,10 @@ void GenerateMenu() {
     Race TestRace{ "" };
     do {
         system("cls");
-        std::cout
-            << (char)menuGUI.thickfull << std::string(45, (char)menuGUI.thicktop) << (char)menuGUI.thickfull << std::endl
-            << (char)menuGUI.thickfull << " Austin's Dungeon Master's Vault file editor " << (char)menuGUI.thickfull << std::endl
-            << (char)menuGUI.thickfull << std::string(45, (char)menuGUI.thickbottom) << (char)menuGUI.thickfull << std::endl << std::endl
-
-            << (char)menuGUI.cornertplf << std::string(20, (char)menuGUI.across) << (char)menuGUI.cornertprt << std::endl
-            << (char)menuGUI.straightline << std::setw(16) << "Menu Options" << std::setw(5) << (char)menuGUI.straightline<< std::endl
-            << (char)menuGUI.thicktothinleftintersection << std::string(20, (char)menuGUI.lightacross) << (char)menuGUI.thintothickrightintersection << std::endl
-            << (char)menuGUI.straightline << "D - Display" << std::setw(10) << (char)menuGUI.straightline << std::endl
-            << (char)menuGUI.straightline << "E - Edit Info" << std::setw(8) << (char)menuGUI.straightline << std::endl
-            << (char)menuGUI.straightline << "T - Testing" << std::setw(10) << (char)menuGUI.straightline << std::endl
-            << (char)menuGUI.straightline << "Q - Quit" << std::setw(13) << (char)menuGUI.straightline << std::endl
-            << (char)menuGUI.cornerbtlf   << std::string(20,(char)menuGUI.across) << (char)menuGUI.cornerbtrt   << std::endl << std::endl
-            << "Enter choice: ";
+        menuGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
+        std::cout << std::endl;
+        menuGUI.GenerateMenu("Menu Options", std::vector<std::string>{"D - Display", "E - Edit Info", "T - Testing", "Q - Quit"});
+        std::cout << "Enter choice: ";
         std::cin.clear();
         std::cin.sync();
         std::getline(std::cin, selection);
@@ -99,8 +89,12 @@ void GenerateMenu() {
         case 'T':
         case 't':
         {
-            std::cout << "Test function: Trait adding" << std::endl << std::endl;
-            menuGUI.MakeBox(1);
+            std::string input{};
+            std::cout << "Test function: Box testing" << std::endl << std::endl;
+            std::cin.clear();
+            std::cin.sync();
+            std::getline(std::cin, input);
+            menuGUI.GenerateMenu("Menu Options", std::vector<std::string>{"D - Display", "E - Edit Info", "T - Testing", "Q - Quit"});
             system("pause");
             break;
         }

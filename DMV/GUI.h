@@ -55,10 +55,15 @@ public:
 
 
 
-	void MakeBox(int input, int style = 0);
-	void MakeBox(std::string input, int style = 0);
-	void MakeBox(std::vector<std::string> input, int style = 0);
-	void MakeBox(std::vector<int> input, int style = 0);
-	void MakeBox(std::vector<float> input, int style = 0);
+	void MakeBox(int input, int style = 0, bool wordWrap = false, int wordWrapLimit = 0);
+	void MakeBox(float input, int style = 0, bool wordWrap = false, int wordWrapLimit = 0);
+	void MakeBox(std::string input, int style = 0, bool wordWrap = false, int wordWrapLimit = 0);
+	void MakeBox(std::vector<std::string> input, int style = 0, bool wordWrap = false, int wordWrapLimit = 0);
+	void MakeBox(std::vector<int> input, int style = 0, bool wordWrap = false, int wordWrapLimit = 0);
+	void MakeBox(std::vector<float> input, int style = 0, bool wordWrap = false, int wordWrapLimit = 0);
+
+	void GenerateMenu(std::string header, std::vector<std::string> menuOptions, std::string footer = "");
+
+	void GenerateGrid(std::vector<std::string> objects, int style = 0, int height = 0, int width = 0);
 };
 

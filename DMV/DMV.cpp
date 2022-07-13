@@ -70,7 +70,7 @@ void GenerateMenu() {
         system("cls");
         menuGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
         std::cout << std::endl;
-        menuGUI.GenerateMenu("Menu Options", std::vector<std::string>{"D - Display", "E - Edit Info", "T - Testing", "Q - Quit"});
+        menuGUI.GenerateMenu("Menu Options", std::vector<std::string>{"D - Display", "E - Edit Info", "S - Save Race", "T - Testing", "Q - Quit"});
         std::cout << "Enter choice: ";
         std::cin.clear();
         std::cin.sync();
@@ -78,7 +78,7 @@ void GenerateMenu() {
         if (selection == "") {
             std::getline(std::cin, selection);
         }
-        selection = HLib::InputCheck(selection,"Enter choice: ", true, false, std::vector<std::string>{"D","d","E","e","T","t","Q","q"});
+        selection = HLib::InputCheck(selection,"Enter choice: ", true, false, std::vector<std::string>{"D","d","E","e","T","t","S","s", "Q", "q"});
 
         switch (selection[0])
         {
@@ -93,6 +93,13 @@ void GenerateMenu() {
         }
         case 'E':
         case 'e':
+        {
+            system("cls");
+            TestRace = EditRaceInfo();
+            break;
+        }
+        case 'S':
+        case 's':
         {
             std::cout << std::endl << std::endl;
             TestRace = EditRaceInfo();

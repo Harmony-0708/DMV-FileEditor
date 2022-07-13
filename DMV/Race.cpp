@@ -703,7 +703,6 @@ void Race::insert_spell(std::vector<std::vector<Spell>> spellList)
 /// </summary>
 void Race::display_info()
 {
-<<<<<<< HEAD
 	GUI displayGUI{};
 
 	std::cout << std::endl << std::endl;
@@ -749,63 +748,6 @@ void Race::display_info()
 	displayGUI.GenerateMenu("Armor Proficencies", get_armorProf(), "", true, 4);
 	displayGUI.GenerateMenu("Damage Resistance", get_damageRes(), "", true, 4);
 	displayGUI.GenerateMenu("Damage Immunites", get_damageImmun(), "", true, 4);
-=======
-	int counter{};
-	
-	std::cout << std::endl << std::endl;
-	std::cout << "Race: " << get_name() << std::endl;
-	std::cout << "Pack: " << get_optionPack() << std::endl;
-	std::cout << "Description: ";
-	HLib::WordWrap(100, get_description());
-	std::cout << std::endl;
-	std::cout << "Size: " << get_sizename() << std::endl;
-	std::cout << "Str Mod: " << get_str() << std::endl;
-	std::cout << "Dex Mod: " << get_dex() << std::endl;
-	std::cout << "Con Mod: " << get_con() << std::endl;
-	std::cout << "Int Mod: " << get_int() << std::endl;
-	std::cout << "Wis Mod: " << get_wis() << std::endl;
-	std::cout << "Cha Mod: " << get_cha() << std::endl;
-	std::cout << "Speed: " << get_speed() << std::endl;
-	std::cout << "Fly Speed: " << get_flySpeed() << std::endl;
-	std::cout << "Swimming Speed: " << get_swimSpeed() << std::endl;
-	std::cout << "Dark Vision: " << get_darkVision() << std::endl;
-	std::cout << "Skill options count: " << get_skillOptionsCount() << std::endl;
-	std::cout << "Language options count: " << get_languageOptionsCount() << std::endl;
-	std::cout << "Weapon options count: " << get_weaponOptionsCount() << std::endl;
-	std::cout << std::boolalpha;
-	std::cout << "Do they have Lizard Folk AC: " << get_lizFolkAC() << std::endl;
-	std::cout << "Do they have Tortle AC: " << get_tortAC() << std::endl;
-	std::cout << std::boolalpha;
-	std::cout << "Languages: ";
-	HLib::DisplayVector(100, get_language());
-	std::cout << std::endl;
-	std::cout << "Tools: ";
-	HLib::DisplayVector(100, get_tool());
-	std::cout << std::endl;
-	std::cout << "Skill Options: ";
-	HLib::DisplayVector(100, get_skillOption());
-	std::cout << std::endl;
-	std::cout << "Skill Proficencies: ";
-	HLib::DisplayVector(100, get_skillProf());
-	std::cout << std::endl;
-	std::cout << "Language Options: ";
-	HLib::DisplayVector(100, get_languageOption());
-	std::cout << std::endl;
-	std::cout << "Weapon Options: ";
-	HLib::DisplayVector(100, get_weaponOption());
-	std::cout << std::endl;
-	std::cout << "Weapon Proficencies: ";
-	HLib::DisplayVector(100, get_weaponProf());
-	std::cout << std::endl;
-	std::cout << "Armor Proficencies: ";
-	HLib::DisplayVector(100, get_armorProf());
-	std::cout << std::endl;
-	std::cout << "Damage Resistance: ";
-	HLib::DisplayVector(100, get_damageRes());
-	std::cout << std::endl;
-	std::cout << "Damage Immunites: ";
-	HLib::DisplayVector(100, get_damageImmun());
->>>>>>> master
 	std::cout << std::endl;
 	std::cout << "Traits: ";
 	DisplayVector(100, get_trait());

@@ -133,6 +133,7 @@
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="harmonylib.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="Pack.cpp" />
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Spell.cpp" />
     <ClCompile Include="Trait.cpp" />
@@ -143,6 +144,7 @@
     <ClInclude Include="harmonylib.h" />
     <ClInclude Include="Includes.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="Pack.h" />
     <ClInclude Include="Race.h" />
     <ClInclude Include="SizeEnum.h" />
     <ClInclude Include="Spell.h" />

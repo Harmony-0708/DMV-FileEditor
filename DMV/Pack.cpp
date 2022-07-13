@@ -91,7 +91,6 @@ void Pack::print_pack()
 			<< "}, :profs {";
 		if (i.get_tool().size() > 0) {
 			int counter{};
-			counter = i.get_tool().size();
 			myfile
 				<< " :tool{";
 			for (std::string k : i.get_tool()) {
@@ -107,7 +106,6 @@ void Pack::print_pack()
 		}
 		if (i.get_skillOption().size() > 0) {
 			int counter{};
-			counter = i.get_skillOption().size();
 			myfile
 				<< " :skill-options {"
 				<< " :choose " << i.get_skillOptionsCount()
@@ -123,14 +121,49 @@ void Pack::print_pack()
 			myfile
 				<< "}},";
 		}
+		/*:draconic true,
+		: deep-speech true,
+		: orc true,
+		: dwarvish true,
+		: gnomish true,
+		: sylvan true,
+		: elvish true,
+		: abyssal true,
+		: infernal true,
+		: celestial true,
+		: common true,
+		: undercommon true,
+		: primordial true,
+		: giant true,
+		: halfling true,
+		: goblin true*/
 		if (i.get_languageOption().size() > 0) {
 			int counter{};
-			counter = i.get_languageOption().size();
+			std::vector<std::string> languagesOrdered{"draconic","deep-speech","orc","dwarvish","gnomish","sylvan","elvish","abyssal","infernal","celestial","common","undercommon","primordial","giant","halfling","goblin"};
+			std::vector<std::string> newLanguages{"","","","","","","","","","","","","","","","","","","","",};
+			for (std::string k : i.get_languageOption()) {
+				std::string newK;
+				for (char j : k) {
+					if (isalpha(j)) {
+						newK += tolower(j);
+					}
+					else if(j == '-') {
+						newK += j;
+					}
+				}
+				int jcounter{};
+				for (std::string j : languagesOrdered) {
+					if (j == newK) {
+						newLanguages.push_back(newK);
+						break;
+					}
+				}
+			}
 			myfile
 				<< " :language-options {"
 				<< " :choose " << i.get_languageOptionsCount()
 				<< ", :options {";
-			for (std::string k : i.get_languageOption()) {
+			for (std::string k : newLanguages) {
 				myfile
 					<< " :" << k << " true";
 				if (counter + 1 != i.get_languageOption().size()) {
@@ -143,7 +176,6 @@ void Pack::print_pack()
 		}
 		if (i.get_weaponOption().size() > 0) {
 			int counter{};
-			counter = i.get_weaponOption().size();
 			myfile
 				<< " :weapon-proficiency-options {"
 				<< " :choose " << i.get_weaponOptionsCount()
@@ -163,7 +195,6 @@ void Pack::print_pack()
 			<< "}, :props {";
 		if (i.get_weaponProf().size() > 0) {
 			int counter{};
-			counter = i.get_weaponProf().size();
 			myfile
 				<< " :weaponProf{";
 			for (std::string k : i.get_weaponProf()) {
@@ -179,7 +210,6 @@ void Pack::print_pack()
 		}
 		if (i.get_armorProf().size() > 0) {
 			int counter{};
-			counter = i.get_armorProf().size();
 			myfile
 				<< " :armor-prof{";
 			for (std::string k : i.get_armorProf()) {
@@ -195,7 +225,6 @@ void Pack::print_pack()
 		}
 		if (i.get_damageRes().size() > 0) {
 			int counter{};
-			counter = i.get_damageRes().size();
 			myfile
 				<< " :damage_resistance{";
 			for (std::string k : i.get_damageRes()) {
@@ -211,7 +240,6 @@ void Pack::print_pack()
 		}
 		if (i.get_damageImmun().size() > 0) {
 			int counter{};
-			counter = i.get_damageImmun().size();
 			myfile
 				<< " :damage-immunity{";
 			for (std::string k : i.get_damageImmun()) {
@@ -226,7 +254,6 @@ void Pack::print_pack()
 		}
 		if (i.get_skillProf().size() > 0) {
 			int counter{};
-			counter = i.get_skillProf().size();
 			myfile
 				<< " :skill-prof{";
 			for (std::string k : i.get_skillProf()) {

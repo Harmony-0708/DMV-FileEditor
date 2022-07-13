@@ -7,6 +7,8 @@
 #include <cstdlib>
 #include <cmath>
 #include <map>
+#include <algorithm>
+#include <cctype>
 #include <vector>
 #include <string>
 #include "GUI.h"

@@ -1,12 +1,17 @@
 #pragma once
-#include <string>
-#include <vector>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstdlib>
+#include <map>
+#include <vector>
+#include <string>
+#include "TraitType.h"
 #include "SizeEnum.h"
 #include "Spell.h"
 #include "Trait.h"
+#include "GUI.h"
 #include "harmonylib.h"
-
 class Race
 {
 private:
@@ -60,6 +65,7 @@ public:
 	std::string get_optionPack();
 	std::string get_description();
 	SizeEnum::Size get_size();
+	std::string get_sizename();
 	int get_str();
 	int get_dex();
 	int get_con();

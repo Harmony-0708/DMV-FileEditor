@@ -1,3 +1,11 @@
-﻿  Race.cpp
-C:\Users\arhea\source\repos\DMV\DMV\Race.cpp(304): warning C4715: 'Race::get_spell': not all control paths return a value
+﻿  GUI.cpp
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(346,72): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(347,38): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(457,25): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(463,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(543,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(548,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(628,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(633,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(717,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

@@ -1,12 +1,18 @@
-// DMV.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-#include <iostream>
+﻿#include <iostream>
+#include <iomanip>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdlib>
+#include <cmath>
 #include <map>
+#include <vector>
+#include <string>
+#include "TraitType.h"
+#include "SizeEnum.h"
+#include "Spell.h"
+#include "Trait.h"
 #include "Race.h"
+#include "GUI.h"
 #include "harmonylib.h"
 
 
@@ -19,6 +25,7 @@ std::vector<Spell> remove(std::vector<Spell> input, int index);
 std::vector<Trait> remove(std::vector<Trait> input, int index);
 int index(std::string input, std::vector<std::string> inputVector);
 
+
 //Globals
 std::vector<std::string> GlobalLanguages{"Giant", "Common", "Celestial", "Undercommon", "Goblin", "Dwarvish", "Abyssal", "Sylvan", "Orc", "Deep Speech", "Primordial", "Draconic", "Gnomish", "Elvish", "Halfling", "Infernal" };
 std::vector<std::string> GlobalWeapons{"battleaxe", "halberd", "longsword", "dagger", "blowgun", "sickle", "handaxe", "war-pick", "flail", "greatsword", "whip", "rapier", "spear", "net", "shortbow", "warhammer", "mace", "crossbow-heavy", "glaive", "greataxe", "quarterstaff", "crossbow-light", "sling", "javelin", "light-hammer", "longbow", "greatclub", "club", "morningstar", "trident", "maul", "pike", "lance", "shortsword", "crossbow-hand", "scimitar", "dart"};
@@ -28,35 +35,55 @@ std::vector<std::string> GlobalArmorType{"light","medium", "heavy", "shield"};
 std::vector<std::string> GlobalDamageType{"fire", "acid", "psychic", "force", "bludgeoning", "radiant", "lightning", "slashing", "piercing", "thunder", "cold", "traps", "poison", "necrotic"};
 
 
+void UnicodeTest() {
+    int val{ 175 };
+    for (int i{ 175 }; i < 224; i++) {
+        std::cout << " " << (char)val << " - " << val << std::endl;
+        val = i;
+    }
+}
+
 int main()
 {
+    //UnicodeTest();
     GenerateMenu();
     return 0;
 }
 
-void GenerateMenu() {
-    
-    char selection{};
-    Race TestRace{ "Test" };
-    //TestRace.set_optionPack("TestOptionPack");
-    //TestRace.set_description("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
-    //TestRace.set_description("Giff are tall, broad-shouldered folk with hippo-like features. Some have smooth skin, while others have short bristles on their faces and the tops of their heads. As beings of impressive size and unforgettable appearance, giff are noticed wherever they go.");
 
+void GenerateMenu() {
+    GUI menuGUI{};
+    std::string selection{};
+    Race TestRace{ "Giff" };
+    TestRace.insert_tool(GlobalTools);
+    TestRace.insert_language(GlobalLanguages);
+    TestRace.insert_languageOption(GlobalLanguages);
+    TestRace.insert_armorProf(GlobalArmorType);
+    TestRace.insert_weaponProf(GlobalWeapons);
+    TestRace.insert_weaponOption(GlobalWeapons);
+    TestRace.insert_skillProf(GlobalSkills);
+    TestRace.insert_skillOption(GlobalSkills);
+    TestRace.insert_damageRes(GlobalDamageType);
+    TestRace.insert_damageImmun(GlobalDamageType);
+    TestRace.set_description("Giff are tall, broad-shouldered folk with hippo-like features. Some have smooth skin, while others have short bristles on their faces and the tops of their heads. As beings of impressive size and unforgettable appearance, giff are noticed wherever they go. Storytelling is a rich tradition among giff, and it’s not uncommon to see a giff recounting their past exploits to an enraptured crowd. Having a friendly giff nearby when a tavern brawl erupts can also be useful, for a giff can usually more than hold their own when pleasant revelry devolves into fisticuffs. The giff are split into two camps concerning how their name is pronounced. Half of them say it with a hard g, half with a soft g. Disagreements over the correct pronunciation often blossom into hard feelings, loud arguments, and headbutting contests, but rarely escalate beyond that.");
     do {
         system("cls");
+        menuGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
+        std::cout << std::endl;
+        menuGUI.GenerateMenu("Menu Options", std::vector<std::string>{"D - Display", "E - Edit Info", "T - Testing", "Q - Quit"});
+        std::cout << "Enter choice: ";
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, selection);
+        if (selection == "") {
+            std::getline(std::cin, selection);
+        }
+        selection = HLib::InputCheck(selection,"Enter choice: ", true, false, std::vector<std::string>{"D","d","E","e","T","t","Q","q"});
 
-
-        std::cout << "A - Display" << std::endl
-                  << "B - Edit Info" << std::endl
-                  << "C - Option C" << std::endl
-                  << "Q - Quit"     << std::endl;
-        std::cout << "==========================" << std::endl << std::endl;
-        std::cin >> selection;
-
-        switch (selection)
+        switch (selection[0])
         {
-        case 'A':
-        case 'a':
+        case 'D':
+        case 'd':
         {
             std::cout << std::endl << std::endl;
             TestRace.display_info();
@@ -64,19 +91,18 @@ void GenerateMenu() {
             system("pause");
             break;
         }
-        case 'B':
-        case 'b':
+        case 'E':
+        case 'e':
         {
             std::cout << std::endl << std::endl;
             TestRace = EditRaceInfo();
             break;
         }
-        case 'C':
-        case 'c':
+        case 'T':
+        case 't':
         {
-            std::vector<Trait> input{};
-            std::cout << "Test function: Trait adding" << std::endl << std::endl;
-            input = InsertTraitsPrompt();
+            std::cout << "Test function: Grid testing" << std::endl << std::endl;
+            menuGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
             system("pause");
             break;
         }
@@ -85,7 +111,7 @@ void GenerateMenu() {
         }
 
         
-    } while (selection != 'Q' && selection != 'q');
+    } while (selection[0] != 'Q' && selection[0] != 'q');
     system("cls");
 }
 

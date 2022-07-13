@@ -33,6 +33,9 @@
     <ClCompile Include="harmonylib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Item.h">
@@ -41,22 +44,25 @@
     <ClInclude Include="Race.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SizeEnum.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Spell.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AbilityScore.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Trait.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TraitType.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="harmonylib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AbilityScore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TraitType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SizeEnum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -62,7 +62,11 @@
     <ClInclude Include="SizeEnum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="GUI.h">
+=======
+    <ClInclude Include="Includes.h">
+>>>>>>> master
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

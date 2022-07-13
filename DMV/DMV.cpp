@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 ﻿#include <iostream>
 #include <iomanip>
+=======
+#include <iostream>
+>>>>>>> master
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdlib>
@@ -50,6 +54,7 @@ int main()
     return 0;
 }
 
+<<<<<<< HEAD
 
 void GenerateMenu() {
     GUI menuGUI{};
@@ -66,6 +71,12 @@ void GenerateMenu() {
     TestRace.insert_damageRes(GlobalDamageType);
     TestRace.insert_damageImmun(GlobalDamageType);
     TestRace.set_description("Giff are tall, broad-shouldered folk with hippo-like features. Some have smooth skin, while others have short bristles on their faces and the tops of their heads. As beings of impressive size and unforgettable appearance, giff are noticed wherever they go. Storytelling is a rich tradition among giff, and it’s not uncommon to see a giff recounting their past exploits to an enraptured crowd. Having a friendly giff nearby when a tavern brawl erupts can also be useful, for a giff can usually more than hold their own when pleasant revelry devolves into fisticuffs. The giff are split into two camps concerning how their name is pronounced. Half of them say it with a hard g, half with a soft g. Disagreements over the correct pronunciation often blossom into hard feelings, loud arguments, and headbutting contests, but rarely escalate beyond that.");
+=======
+void GenerateMenu() {
+    
+    char selection{};
+    Race TestRace{ "" };
+>>>>>>> master
     do {
         system("cls");
         menuGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);

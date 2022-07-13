@@ -1,7 +1,11 @@
 #include "GUI.h"
 
 
-
+/// <summary>
+/// Acts the same as HLib::WordWrap but places a line around each row
+/// </summary>
+/// <param name="wrapLimit">- Wrap Limit</param>
+/// <param name="inputString">- String to be wrapped</param>
 void GUI::GUIWordWrap(int wrapLimit, std::string inputString)
 {
 	int counter{};
@@ -335,6 +339,8 @@ void GUI::MakeBox(std::vector<float> input, int style, bool wordWrap, int wordWr
 /// <param name="header">- Header of the menu</param>
 /// <param name="menuOptions">- All menu options</param>
 /// <param name="footer">- Optional footer at the bottom</param>
+/// <param name="multiCol">- Optional Allows for multiple options a column</param>
+/// <param name="cols">- Optional Amount of columns for multicolumn</param>
 void GUI::GenerateMenu(std::string header, std::vector<std::string> menuOptions, std::string footer, bool multiCol, int cols)
 {
 	if (cols == 1) {

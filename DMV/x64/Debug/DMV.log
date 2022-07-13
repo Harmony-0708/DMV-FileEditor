@@ -1,11 +1,11 @@
 ﻿  GUI.cpp
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(314,71): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(314,109): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(364,25): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(370,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(450,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(455,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(535,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(540,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(624,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(346,72): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(347,38): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(457,25): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(463,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(543,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(548,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(628,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(633,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(717,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

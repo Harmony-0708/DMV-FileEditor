@@ -8,21 +8,32 @@ using namespace HLib;
 /// <param name="inputString">String to be displayed</param>
 void HLib::WordWrap(int wrapLimit, std::string inputString)
 {
-	int counter{};
-	for (char i : inputString) {
-		if (counter < wrapLimit + 1) {
-			std::cout << i;
-			counter++;
-		}
-		else if (inputString[i+1] == ' ' || inputString[i+1] == ',' || inputString[i+1] == '.' || inputString[i+1] == '!' || inputString[i+1] == '?' || inputString[i+1] == ':' || isalnum(i+1) || isalnum(i)) {
+    int counter{};
+    for (char i : inputString) {
+        if (counter < wrapLimit + 1) {
             std::cout << i;
-			counter -= 1;
-		}
-		else {
-			std::cout << std::endl;
-			counter = 0;
-		}
-	}
+            counter++;
+        }
+        if (i == ' ' || i == ',' || i == '.' || i == '!' || i == '?' || i == ':') {
+            bool check{ false };
+            std::string tempString{};
+            for (int k{ 0 }; k < 10; k++) {
+                if (inputString[i + k] == ' ') {
+                    check = true;
+                    break;
+                }
+                tempString += inputString[i + k];
+            }
+            if (!check) {
+                std::cout << std::string(wrapLimit - counter, ' ') << std::endl;
+                counter = 0;
+            }
+            else if (tempString.length() >= (wrapLimit - counter)) {
+                std::cout << std::string(wrapLimit - counter, ' ') << std::endl;
+                counter = 0;
+            }
+        }
+    }
 }
 
 /// <summary>

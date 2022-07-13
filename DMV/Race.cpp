@@ -703,11 +703,10 @@ void Race::insert_spell(std::vector<std::vector<Spell>> spellList)
 /// </summary>
 void Race::display_info()
 {
-	int counter{};
 	GUI displayGUI{};
 
 	std::cout << std::endl << std::endl;
-	displayGUI.MakeBox("Race", 2);
+	displayGUI.MakeBox(get_name(), 2);
 	std::cout << std::endl;
 	displayGUI.GenerateGrid(std::vector<std::string>{
 		"Race: " + get_name(),
@@ -730,44 +729,25 @@ void Race::display_info()
 		"Dark Vision: " + std::to_string(get_darkVision()),
 		"",
 		"",
-		"Skill options count: " + std::to_string(get_skillOptionsCount()),
-		"Language options count: " + std::to_string(get_languageOptionsCount()),
-		"Weapon options count: " + std::to_string(get_weaponOptionsCount()),
+		"Skill options: " + std::to_string(get_skillOptionsCount()),
+		"Language options: " + std::to_string(get_languageOptionsCount()),
+		"Weapon options: " + std::to_string(get_weaponOptionsCount()),
 		"",
 		"",
 		"",
-		"Do they have Lizard Folk AC: " + std::to_string(get_lizFolkAC()),
-		"Do they have Tortle AC: " + std::to_string(get_tortAC()),
+		"Lizard Folk AC: " + std::to_string(get_lizFolkAC()),
+		"Tortle AC: " + std::to_string(get_tortAC()),
 	},4,6);
-	std::cout << "Languages: ";
-	HLib::DisplayVector(100, get_language());
-	std::cout << std::endl;
-	std::cout << "Tools: ";
-	HLib::DisplayVector(100, get_tool());
-	std::cout << std::endl;
-	std::cout << "Skill Options: ";
-	HLib::DisplayVector(100, get_skillOption());
-	std::cout << std::endl;
-	std::cout << "Skill Proficencies: ";
-	HLib::DisplayVector(100, get_skillProf());
-	std::cout << std::endl;
-	std::cout << "Language Options: ";
-	HLib::DisplayVector(100, get_languageOption());
-	std::cout << std::endl;
-	std::cout << "Weapon Options: ";
-	HLib::DisplayVector(100, get_weaponOption());
-	std::cout << std::endl;
-	std::cout << "Weapon Proficencies: ";
-	HLib::DisplayVector(100, get_weaponProf());
-	std::cout << std::endl;
-	std::cout << "Armor Proficencies: ";
-	HLib::DisplayVector(100, get_armorProf());
-	std::cout << std::endl;
-	std::cout << "Damage Resistance: ";
-	HLib::DisplayVector(100, get_damageRes());
-	std::cout << std::endl;
-	std::cout << "Damage Immunites: ";
-	HLib::DisplayVector(100, get_damageImmun());
+	displayGUI.GenerateMenu("Languages", get_language(), "", true, 4);
+	displayGUI.GenerateMenu("Tools", get_tool(), "", true, 4);
+	displayGUI.GenerateMenu("Skill Options", get_skillOption(), "", true, 4);
+	displayGUI.GenerateMenu("Language Options", get_languageOption(), "", true, 4);
+	displayGUI.GenerateMenu("Weapon Options", get_weaponOption(), "", true, 4);
+	displayGUI.GenerateMenu("Skill Proficencies", get_skillProf(), "", true, 4);
+	displayGUI.GenerateMenu("Weapon Proficencies", get_weaponProf(), "", true, 4);
+	displayGUI.GenerateMenu("Armor Proficencies", get_armorProf(), "", true, 4);
+	displayGUI.GenerateMenu("Damage Resistance", get_damageRes(), "", true, 4);
+	displayGUI.GenerateMenu("Damage Immunites", get_damageImmun(), "", true, 4);
 	std::cout << std::endl;
 	std::cout << "Traits: ";
 	DisplayVector(100, get_trait());

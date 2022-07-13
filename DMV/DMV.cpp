@@ -54,7 +54,17 @@ int main()
 void GenerateMenu() {
     GUI menuGUI{};
     std::string selection{};
-    Race TestRace{ "" };
+    Race TestRace{ "Giff" };
+    TestRace.insert_tool(GlobalTools);
+    TestRace.insert_language(GlobalLanguages);
+    TestRace.insert_languageOption(GlobalLanguages);
+    TestRace.insert_armorProf(GlobalArmorType);
+    TestRace.insert_weaponProf(GlobalWeapons);
+    TestRace.insert_weaponOption(GlobalWeapons);
+    TestRace.insert_skillProf(GlobalSkills);
+    TestRace.insert_skillOption(GlobalSkills);
+    TestRace.insert_damageRes(GlobalDamageType);
+    TestRace.insert_damageImmun(GlobalDamageType);
     TestRace.set_description("Giff are tall, broad-shouldered folk with hippo-like features. Some have smooth skin, while others have short bristles on their faces and the tops of their heads. As beings of impressive size and unforgettable appearance, giff are noticed wherever they go. Storytelling is a rich tradition among giff, and it’s not uncommon to see a giff recounting their past exploits to an enraptured crowd. Having a friendly giff nearby when a tavern brawl erupts can also be useful, for a giff can usually more than hold their own when pleasant revelry devolves into fisticuffs. The giff are split into two camps concerning how their name is pronounced. Half of them say it with a hard g, half with a soft g. Disagreements over the correct pronunciation often blossom into hard feelings, loud arguments, and headbutting contests, but rarely escalate beyond that.");
     do {
         system("cls");
@@ -92,7 +102,7 @@ void GenerateMenu() {
         case 't':
         {
             std::cout << "Test function: Grid testing" << std::endl << std::endl;
-            menuGUI.GenerateGrid(std::vector<std::string>{"Test","Test","Test","Test","Test","Test","Test","Test","Test","Test"}, 0, 0);
+            menuGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
             system("pause");
             break;
         }

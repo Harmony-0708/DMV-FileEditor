@@ -5,31 +5,59 @@
 void GUI::GUIWordWrap(int wrapLimit, std::string inputString)
 {
 	int counter{};
+	bool spaceStart{false};
 	for (char i : inputString) {
 		if (counter == 0) {
-			std::cout << (char)straightline << " ";
+			if (i != ' ') {
+				std::cout << (char)straightline << " ";
+				spaceStart = false;
+			}
+			else {
+				std::cout << (char)straightline;
+				spaceStart = true;
+			}
 		}
-		if (counter < wrapLimit + 1) {
+		if (counter < wrapLimit) {
 			std::cout << i;
 			counter++;
 		}
 		if (i == ' ' || i == ',' || i == '.' || i == '!' || i == '?' || i == ':') {
 			bool check{false};
+			std::string tempString{};
 			for (int k{ 0 }; k < 10; k++) {
 				if (inputString[i + k] == ' ') {
 					check = true;
+					break;
 				}
+				tempString += inputString[i + k];
 			}
 			if (!check) {
-				std::cout << std::string(wrapLimit-counter,' ') << " " << (char)straightline << std::endl;
+				if (spaceStart) {
+					std::cout << std::string(wrapLimit - counter, ' ') << "  " << (char)straightline << std::endl;
+				}
+				else {
+					std::cout << std::string(wrapLimit - counter, ' ') << " " << (char)straightline << std::endl;
+				}
+				counter = 0;
+			}
+			else if (tempString.length() >=  (wrapLimit - counter)) {
+				if (spaceStart) {
+					std::cout << std::string(wrapLimit - counter, ' ') << "  " << (char)straightline << std::endl;
+				}
+				else {
+					std::cout << std::string(wrapLimit - counter, ' ') << " " << (char)straightline << std::endl;
+				}
 				counter = 0;
 			}
 		}
-		/*else {
-			std::cout << " " << (char)straightline << std::endl;
-			counter = 0;
-		}*/
 	}
+	if (spaceStart) {
+		std::cout << std::string(wrapLimit-counter, ' ') << "  " << (char)straightline << std::endl;
+	}
+	else {
+		std::cout << std::string(wrapLimit - counter, ' ') << " " << (char)straightline << std::endl;
+	}
+	
 }
 
 /// <summary>
@@ -307,49 +335,115 @@ void GUI::MakeBox(std::vector<float> input, int style, bool wordWrap, int wordWr
 /// <param name="header">- Header of the menu</param>
 /// <param name="menuOptions">- All menu options</param>
 /// <param name="footer">- Optional footer at the bottom</param>
-void GUI::GenerateMenu(std::string header, std::vector<std::string> menuOptions, std::string footer)
+void GUI::GenerateMenu(std::string header, std::vector<std::string> menuOptions, std::string footer, bool multiCol, int cols)
 {
-	int longestLen{};
-	bool longCheck{};
-	if (header.length() > footer.length()) { longestLen = header.length(); }else { longestLen = footer.length(); }
-	longestLen = HLib::FindLongest(menuOptions, longestLen);
-	if (longestLen > 102) {
-		longestLen = 100;
-		longCheck = true;
+	if (cols == 1) {
+		multiCol = false;
 	}
-	if ((longestLen % 2 != 1) || (header.length() % 2 != 1)) {
+	if (!multiCol) {
+		int longestLen{};
+		bool longCheck{};
+		if (header.length() > footer.length()) { longestLen = header.length(); }
+		else { longestLen = footer.length(); }
+		longestLen = HLib::FindLongest(menuOptions, longestLen);
+		if (longestLen > 102) {
+			longestLen = 100;
+			longCheck = true;
+		}
+		if ((longestLen % 2 != 1) || (header.length() % 2 != 1)) {
+			if ((longestLen % 2) == 1) {
+				longestLen++;
+			}
+			if ((header.length() % 2) == 1) {
+				header = " " + header;
+			}
+		}
+
+		if ((footer.length() % 2) == 1) {
+			footer = " " + footer;
+		}
+		std::cout
+			<< (char)cornertplf << std::string(longestLen + 2, (char)across) << (char)cornertprt << std::endl
+			<< (char)straightline << " " << std::string((longestLen - header.length()) / 2, ' ') << header << std::string((longestLen - header.length()) / 2, ' ') << " " << (char)straightline << std::endl
+			<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl;
+		for (std::string i : menuOptions) {
+			if (longCheck) {
+				GUIWordWrap(100, i);
+			}
+			else {
+				std::cout << (char)straightline << " " << i << std::string(longestLen - i.length(), ' ') << " " << (char)straightline << std::endl;
+			}
+		}
+		if (footer != "") {
+			std::cout
+				<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl
+				<< (char)straightline << " " << std::string((longestLen - footer.length()) / 2, ' ') << footer << std::string((longestLen - footer.length()) / 2, ' ') << " " << (char)straightline << std::endl;
+		}
+		std::cout << (char)cornerbtlf << std::string(longestLen + 2, (char)across) << (char)cornerbtrt << std::endl << std::endl;
+	}
+	else {
+		int longestLen{};
+		int trueLongest{};
+		bool longCheck{};
+		trueLongest = HLib::FindLongest(menuOptions) + 3;
+		longestLen = trueLongest * cols + (cols - 1) - 2;
 		if ((longestLen % 2) == 1) {
 			longestLen++;
 		}
 		if ((header.length() % 2) == 1) {
 			header = " " + header;
 		}
-	}
-	
-	if ((footer.length() % 2) == 1) {
-		footer = " " + footer;
-	}
+		if ((footer.length() % 2) == 1) {
+			footer = " " + footer;
+		}
 
-	std::cout
-		<< (char)cornertplf << std::string(longestLen + 2, (char)across) << (char)cornertprt << std::endl
-		<< (char)straightline << " " << std::string((longestLen - header.length()) / 2, ' ') << header << std::string((longestLen - header.length()) / 2, ' ') << " " << (char)straightline << std::endl
-		<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl;
-	
-	for (std::string i : menuOptions) {
-		if (longCheck) {
-			GUIWordWrap(100, i);
-		}
-		else {
-			std::cout << (char)straightline << " " << i << std::string(longestLen - i.length(), ' ') << " " << (char)straightline << std::endl;
-		}
-	}
-	if (footer != "") {
 		std::cout
-			<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl
-			<< (char)straightline << " " << std::string((longestLen - footer.length()) / 2, ' ') << footer << std::string((longestLen - footer.length()) / 2, ' ') << " " << (char)straightline << std::endl;
+			<< (char)cornertplf << std::string(longestLen, (char)across) << (char)cornertprt << std::endl
+			<< (char)straightline << std::string((longestLen - header.length()) / 2, ' ') << header << std::string((longestLen - header.length()) / 2, ' ') << (char)straightline << std::endl
+			<< (char)thicktothinleftintersection << std::string(longestLen, (char)lightacross) << (char)thintothickrightintersection << std::endl;
+
+		int colIndex{ 0 };
+		bool endCheck{ false };
+		for (std::string i : menuOptions) {
+			if (colIndex == 0) {
+				std::cout << (char)straightline << " " << i << std::string((trueLongest - 2) - i.length(), ' ') << " " << (char)lightstraightline;
+				colIndex++;
+				endCheck = false;
+			}
+			else if (colIndex + 1 == cols) {
+				std::cout << " " << i << std::string((trueLongest - 2) - i.length(), ' ') << (char)straightline << std::endl;
+				colIndex = 0;
+				endCheck = true;
+			}
+			else {
+				std::cout << " " << i << std::string(((trueLongest - 2) - i.length()), ' ') << " " << (char)lightstraightline;
+				colIndex++;
+				endCheck = false;
+			}
+		}
+		while (colIndex != cols && endCheck != true) {
+			if (colIndex == 0) {
+				std::cout << (char)straightline;
+				colIndex++;
+			}
+			if (colIndex + 1 == cols) {
+				std::cout << " " << std::string((trueLongest - 2), ' ') << (char)straightline << std::endl;
+				colIndex = cols;
+			}
+			else {
+				std::cout << " " << std::string((trueLongest - 2), ' ') << " " << (char)lightstraightline;
+				colIndex++;
+			}
+		}
+		if (footer != "") {
+			std::cout
+				<< (char)thicktothinleftintersection << std::string(longestLen, (char)lightacross) << (char)thintothickrightintersection << std::endl
+				<< (char)straightline << std::string((longestLen - footer.length()) / 2, ' ') << footer << std::string((longestLen - footer.length()) / 2, ' ') << (char)straightline << std::endl;
+		}
+		std::cout << (char)cornerbtlf << std::string(longestLen, (char)across) << (char)cornerbtrt << std::endl << std::endl;
 	}
-	std::cout << (char)cornerbtlf << std::string(longestLen + 2, (char)across) << (char)cornerbtrt << std::endl << std::endl;
 }
+
 
 /// <summary>
 /// Generates a grid pased on the given objects vector, if given a height or width it will make it a specific height and width
@@ -359,7 +453,6 @@ void GUI::GenerateMenu(std::string header, std::vector<std::string> menuOptions,
 /// <param name="width">- Optional width of grid</param>
 void GUI::GenerateGrid(std::vector<std::string> objects, int height, int width)
 {
-	std::cout << std::boolalpha;
 	if (height == 0 && width == 0) {
 		width = objects.size();
 		height = 1;

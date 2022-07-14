@@ -1,11 +1,14 @@
 ﻿  Pack.cpp
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(94,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(110,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(128,43): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(146,41): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(166,39): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(182,38): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(198,38): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(214,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(229,38): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(124,37): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(125,44): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(144,42): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(145,49): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(151,42): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(152,49): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(174,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(175,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(180,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(181,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(186,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(187,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

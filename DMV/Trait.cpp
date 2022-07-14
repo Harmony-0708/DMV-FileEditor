@@ -12,6 +12,12 @@ Trait::Trait(std::string name)
 	Description = "";
 	Type = TraitType::Other;
 }
+void Trait::clear()
+{
+	Name = "";
+	Description = "";
+	Type = TraitType::Other;
+}
 std::string Trait::get_name()
 {
 	return Name;
@@ -26,7 +32,7 @@ std::string Trait::get_typename()
 	case TraitType::Action:
 		return "action";
 	case TraitType::BAction:
-		return "bonus action";
+		return "b-action";
 	case TraitType::Reaction:
 		return "reaction";
 	case TraitType::Other:

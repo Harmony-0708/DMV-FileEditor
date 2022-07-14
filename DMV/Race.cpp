@@ -1,7 +1,7 @@
 #include "Race.h"
 Race::Race()
 {
-	Key = "key";
+	Key = "";
 	Name = "";
 	OptionPack = "";
 	Description = "";
@@ -37,6 +37,35 @@ Race::Race(std::string name)
 	WeaponOptionsCount = 1;
 	LizFolkAC = false;
 	TortAC = false;
+}
+
+void Race::clear()
+{
+	Key = "";
+	Name = "";
+	OptionPack = "";
+	Description = "";
+	Size = SizeEnum::small;
+	Speed = 30;
+	FlyingSpd = 0;
+	SwimmingSpd = 0;
+	DarkVision = 0;
+	SkillOptionsCount = 1;
+	LanguageOptionsCount = 1;
+	WeaponOptionsCount = 1;
+	LizFolkAC = false;
+	TortAC = false;
+	Languages.clear();
+	Tools.clear();
+	SkillOptions.clear();
+	SkillProf.clear();
+	LanguageOptions.clear();
+	WeaponOptions.clear();
+	WeaponProf.clear();
+	ArmorProf.clear();
+	DamageRes.clear();
+	DamageImmun.clear();
+	Traits.clear();
 }
 
 void Race::DisplayVector(int wrapLimit, std::vector<Spell> inputVector)
@@ -749,7 +778,8 @@ void Race::display_info()
 	displayGUI.GenerateMenu("Damage Resistance", get_damageRes(), "", true, 4);
 	displayGUI.GenerateMenu("Damage Immunites", get_damageImmun(), "", true, 4);
 	std::cout << std::endl;
-	std::cout << "Traits: ";
-	DisplayVector(100, get_trait());
+	for (Trait i : get_trait()) {
+		displayGUI.GenerateMenu(i.get_name(), std::vector<std::string>{i.get_description()}, i.get_typename());
+	}
 	std::cout << std::endl;
 }

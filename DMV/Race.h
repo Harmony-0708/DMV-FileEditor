@@ -55,6 +55,9 @@ public:
 	Race();
 	Race(std::string);
 
+	//Clear
+	void clear();
+
 	//DisplayVector overrides
 	void DisplayVector(int wrapLimit, std::vector<Spell> inputVector);
 	void DisplayVector(int wrapLimit, std::vector<Trait> inputVector);

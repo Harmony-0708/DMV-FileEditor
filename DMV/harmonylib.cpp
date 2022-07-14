@@ -89,7 +89,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                 }
                 if (!alphacheck || input == "") {
                     std::cout << "Only use alphabet characters\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -110,7 +112,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                 }
                 if (alphacheck || input == "") {
                     std::cout << "Only use numbers\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -140,7 +144,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                 }
                 if (!(alphacheck) || (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -161,7 +167,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                 }
                 if (alphacheck || (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -173,7 +181,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
             do {
                 if (std::find(parameters.begin(), parameters.end(), input) == parameters.end() || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;

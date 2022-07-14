@@ -343,110 +343,112 @@ void GUI::MakeBox(std::vector<float> input, int style, bool wordWrap, int wordWr
 /// <param name="cols">- Optional Amount of columns for multicolumn</param>
 void GUI::GenerateMenu(std::string header, std::vector<std::string> menuOptions, std::string footer, bool multiCol, int cols)
 {
-	if (cols == 1) {
-		multiCol = false;
-	}
-	if (!multiCol) {
-		int longestLen{};
-		bool longCheck{};
-		if (header.length() > footer.length()) { longestLen = header.length(); }
-		else { longestLen = footer.length(); }
-		longestLen = HLib::FindLongest(menuOptions, longestLen);
-		if (longestLen > 102) {
-			longestLen = 100;
-			longCheck = true;
+	if (menuOptions.size() != 0) {
+		if (cols == 1) {
+			multiCol = false;
 		}
-		if ((longestLen % 2 != 1) || (header.length() % 2 != 1)) {
+		if (!multiCol) {
+			int longestLen{};
+			bool longCheck{};
+			if (header.length() > footer.length()) { longestLen = header.length(); }
+			else { longestLen = footer.length(); }
+			longestLen = HLib::FindLongest(menuOptions, longestLen);
+			if (longestLen > 102) {
+				longestLen = 100;
+				longCheck = true;
+			}
+			if ((longestLen % 2 != 1) || (header.length() % 2 != 1)) {
+				if ((longestLen % 2) == 1) {
+					longestLen++;
+				}
+				if ((header.length() % 2) == 1) {
+					header = " " + header;
+				}
+			}
+
+			if ((footer.length() % 2) == 1) {
+				footer = " " + footer;
+			}
+			std::cout
+				<< (char)cornertplf << std::string(longestLen + 2, (char)across) << (char)cornertprt << std::endl
+				<< (char)straightline << " " << std::string((longestLen - header.length()) / 2, ' ') << header << std::string((longestLen - header.length()) / 2, ' ') << " " << (char)straightline << std::endl
+				<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl;
+			for (std::string i : menuOptions) {
+				if (longCheck) {
+					GUIWordWrap(100, i);
+				}
+				else {
+					std::cout << (char)straightline << " " << i << std::string(longestLen - i.length(), ' ') << " " << (char)straightline << std::endl;
+				}
+			}
+			if (footer != "") {
+				std::cout
+					<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl
+					<< (char)straightline << " " << std::string((longestLen - footer.length()) / 2, ' ') << footer << std::string((longestLen - footer.length()) / 2, ' ') << " " << (char)straightline << std::endl;
+			}
+			std::cout << (char)cornerbtlf << std::string(longestLen + 2, (char)across) << (char)cornerbtrt << std::endl << std::endl;
+		}
+		else {
+			int longestLen{};
+			int trueLongest{};
+			bool longCheck{};
+			trueLongest = HLib::FindLongest(menuOptions) + 3;
+			longestLen = trueLongest * cols + (cols - 1) - 2;
 			if ((longestLen % 2) == 1) {
 				longestLen++;
 			}
 			if ((header.length() % 2) == 1) {
 				header = " " + header;
 			}
-		}
+			if ((footer.length() % 2) == 1) {
+				footer = " " + footer;
+			}
 
-		if ((footer.length() % 2) == 1) {
-			footer = " " + footer;
-		}
-		std::cout
-			<< (char)cornertplf << std::string(longestLen + 2, (char)across) << (char)cornertprt << std::endl
-			<< (char)straightline << " " << std::string((longestLen - header.length()) / 2, ' ') << header << std::string((longestLen - header.length()) / 2, ' ') << " " << (char)straightline << std::endl
-			<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl;
-		for (std::string i : menuOptions) {
-			if (longCheck) {
-				GUIWordWrap(100, i);
-			}
-			else {
-				std::cout << (char)straightline << " " << i << std::string(longestLen - i.length(), ' ') << " " << (char)straightline << std::endl;
-			}
-		}
-		if (footer != "") {
 			std::cout
-				<< (char)thicktothinleftintersection << std::string(longestLen + 2, (char)lightacross) << (char)thintothickrightintersection << std::endl
-				<< (char)straightline << " " << std::string((longestLen - footer.length()) / 2, ' ') << footer << std::string((longestLen - footer.length()) / 2, ' ') << " " << (char)straightline << std::endl;
-		}
-		std::cout << (char)cornerbtlf << std::string(longestLen + 2, (char)across) << (char)cornerbtrt << std::endl << std::endl;
-	}
-	else {
-		int longestLen{};
-		int trueLongest{};
-		bool longCheck{};
-		trueLongest = HLib::FindLongest(menuOptions) + 3;
-		longestLen = trueLongest * cols + (cols - 1) - 2;
-		if ((longestLen % 2) == 1) {
-			longestLen++;
-		}
-		if ((header.length() % 2) == 1) {
-			header = " " + header;
-		}
-		if ((footer.length() % 2) == 1) {
-			footer = " " + footer;
-		}
+				<< (char)cornertplf << std::string(longestLen, (char)across) << (char)cornertprt << std::endl
+				<< (char)straightline << std::string((longestLen - header.length()) / 2, ' ') << header << std::string((longestLen - header.length()) / 2, ' ') << (char)straightline << std::endl
+				<< (char)thicktothinleftintersection << std::string(longestLen, (char)lightacross) << (char)thintothickrightintersection << std::endl;
 
-		std::cout
-			<< (char)cornertplf << std::string(longestLen, (char)across) << (char)cornertprt << std::endl
-			<< (char)straightline << std::string((longestLen - header.length()) / 2, ' ') << header << std::string((longestLen - header.length()) / 2, ' ') << (char)straightline << std::endl
-			<< (char)thicktothinleftintersection << std::string(longestLen, (char)lightacross) << (char)thintothickrightintersection << std::endl;
-
-		int colIndex{ 0 };
-		bool endCheck{ false };
-		for (std::string i : menuOptions) {
-			if (colIndex == 0) {
-				std::cout << (char)straightline << " " << i << std::string((trueLongest - 2) - i.length(), ' ') << " " << (char)lightstraightline;
-				colIndex++;
-				endCheck = false;
+			int colIndex{ 0 };
+			bool endCheck{ false };
+			for (std::string i : menuOptions) {
+				if (colIndex == 0) {
+					std::cout << (char)straightline << " " << i << std::string((trueLongest - 2) - i.length(), ' ') << " " << (char)lightstraightline;
+					colIndex++;
+					endCheck = false;
+				}
+				else if (colIndex + 1 == cols) {
+					std::cout << " " << i << std::string((trueLongest - 2) - i.length(), ' ') << (char)straightline << std::endl;
+					colIndex = 0;
+					endCheck = true;
+				}
+				else {
+					std::cout << " " << i << std::string(((trueLongest - 2) - i.length()), ' ') << " " << (char)lightstraightline;
+					colIndex++;
+					endCheck = false;
+				}
 			}
-			else if (colIndex + 1 == cols) {
-				std::cout << " " << i << std::string((trueLongest - 2) - i.length(), ' ') << (char)straightline << std::endl;
-				colIndex = 0;
-				endCheck = true;
+			while (colIndex != cols && endCheck != true) {
+				if (colIndex == 0) {
+					std::cout << (char)straightline;
+					colIndex++;
+				}
+				if (colIndex + 1 == cols) {
+					std::cout << " " << std::string((trueLongest - 2), ' ') << (char)straightline << std::endl;
+					colIndex = cols;
+				}
+				else {
+					std::cout << " " << std::string((trueLongest - 2), ' ') << " " << (char)lightstraightline;
+					colIndex++;
+				}
 			}
-			else {
-				std::cout << " " << i << std::string(((trueLongest - 2) - i.length()), ' ') << " " << (char)lightstraightline;
-				colIndex++;
-				endCheck = false;
+			if (footer != "") {
+				std::cout
+					<< (char)thicktothinleftintersection << std::string(longestLen, (char)lightacross) << (char)thintothickrightintersection << std::endl
+					<< (char)straightline << std::string((longestLen - footer.length()) / 2, ' ') << footer << std::string((longestLen - footer.length()) / 2, ' ') << (char)straightline << std::endl;
 			}
+			std::cout << (char)cornerbtlf << std::string(longestLen, (char)across) << (char)cornerbtrt << std::endl << std::endl;
 		}
-		while (colIndex != cols && endCheck != true) {
-			if (colIndex == 0) {
-				std::cout << (char)straightline;
-				colIndex++;
-			}
-			if (colIndex + 1 == cols) {
-				std::cout << " " << std::string((trueLongest - 2), ' ') << (char)straightline << std::endl;
-				colIndex = cols;
-			}
-			else {
-				std::cout << " " << std::string((trueLongest - 2), ' ') << " " << (char)lightstraightline;
-				colIndex++;
-			}
-		}
-		if (footer != "") {
-			std::cout
-				<< (char)thicktothinleftintersection << std::string(longestLen, (char)lightacross) << (char)thintothickrightintersection << std::endl
-				<< (char)straightline << std::string((longestLen - footer.length()) / 2, ' ') << footer << std::string((longestLen - footer.length()) / 2, ' ') << (char)straightline << std::endl;
-		}
-		std::cout << (char)cornerbtlf << std::string(longestLen, (char)across) << (char)cornerbtrt << std::endl << std::endl;
 	}
 }
 

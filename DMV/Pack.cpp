@@ -260,7 +260,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}") {
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
 						vector.push_back(segment);
 					}
 				}
@@ -272,7 +272,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -285,7 +285,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -298,7 +298,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -311,7 +311,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -324,7 +324,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -337,7 +337,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -350,7 +350,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -363,7 +363,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -376,7 +376,7 @@ int Pack::load_pack()
 				std::vector<std::string> vector{};
 				while (std::getline(ssvar, segment, '\"'))
 				{
-					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}"){
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != ""){
 						vector.push_back(segment);
 					}
 				}
@@ -386,7 +386,9 @@ int Pack::load_pack()
 				inTraits = true;
 			}
 			else if (!inTraits && declared == "}") {
+				if (newRace.get_name() != "") {
 				myRaces.push_back(newRace);
+				}
 				newRace.clear();
 			}
 		}

@@ -1,14 +1,3 @@
-﻿  Pack.cpp
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(124,37): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(125,44): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(144,42): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(145,49): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(151,42): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(152,49): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(174,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(175,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(180,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(181,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(186,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(187,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+﻿  DMV.cpp
+C:\Users\arhea\source\repos\DMV\DMV\DMV.cpp(687,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

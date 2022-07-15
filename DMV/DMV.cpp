@@ -15,6 +15,7 @@
 #include "GUI.h"
 #include "harmonylib.h"
 #include "Pack.h"
+#include "HPack.h"
 
 
 void GenerateMenu();
@@ -23,6 +24,7 @@ std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno 
 std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::string> globalVector, std::vector<std::string> inputVar = {});
 std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector = {});
 std::vector<std::string> RaceOptions{ "Name", "OptionPack", "Description", "Str", "Dex", "Con", "Int", "Wis", "Cha", "SizeChoice", "Speed", "FlyingSpd", "SwimmingSpd", "DarkVision", "SkillOptionsCount", "LanguageOptionsCount", "WeaponOptionsCount", "LizFolkAC", "TortAC", "Languages", "Tools", "SkillOptions", "SkillProf", "LanguageOptions", "WeaponOptions", "WeaponProf", "ArmorProf", "DamageRes", "DamageImmun", "Traits"};
+Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packName = "");
 std::vector<Spell> remove(std::vector<Spell> input, int index);
 std::vector<Trait> remove(std::vector<Trait> input, int index);
 int index(std::string input, std::vector<std::string> inputVector);
@@ -58,6 +60,7 @@ void GenerateMenu() {
     std::string selection{};
     std::vector<Race> savedRaces{};
     std::vector<Pack> savedPacks{};
+    HPack SaveFile{"Test"};
 
     std::vector<std::string> namesOfPacks{};
     std::vector<std::string> namesOfRaces{};
@@ -71,7 +74,7 @@ void GenerateMenu() {
             for (Race k : i.get_races()) {
                 if (std::find(namesOfRaces.begin(), namesOfRaces.end(), k.get_name()) == namesOfRaces.end()) {
                     savedRaces.push_back(k);
-                    namesOfRaces.push_back(k.get_name());
+                    namesOfRaces.push_back(k.get_name() + " (" + i.get_name() + ")");
                 }
             }
             namesOfPacks.push_back(i.get_name());
@@ -97,11 +100,43 @@ void GenerateMenu() {
             if (savedRaces.size() != 0) {
                 std::string choice{};
                 menuGUI.GenerateMenu("Select race", namesOfRaces);
+                namesOfRaces.push_back("filter");
+                std::cout << "To filter by pack use 'filter'\n";
                 std::cout << "Enter choice: ";
                 std::cin.clear();
                 std::cin.sync();
                 std::getline(std::cin, choice);
                 choice = HLib::InputCheck(choice, "Enter choice: ", false, false, namesOfRaces);
+                if (choice == "filter") {
+                    std::string filterChoice{};
+                    std::vector<std::string> filteredNamesOfRaces{};
+                    Pack filterPack{};
+                    std::cout << "Enter Filter: ";
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, filterChoice);
+                    filterChoice = HLib::InputCheck(filterChoice, "Enter Filter: ", false, false, namesOfPacks);
+                    for (Pack i : savedPacks) {
+                        if (i.get_name() == filterChoice) {
+                            filterPack = i;
+                            break;
+                        }
+                    }
+                    for (Race i : filterPack.get_races()) {
+                        filteredNamesOfRaces.push_back(i.get_name());
+                    }
+                    menuGUI.GenerateMenu("Select race", filteredNamesOfRaces);
+                    std::cout << "Enter choice: ";
+                    choice.clear();
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, choice);
+                    choice = HLib::InputCheck(choice, "Enter choice: ", false, false, filteredNamesOfRaces);
+                    savedRaces.at(index(choice, filteredNamesOfRaces)).display_info();
+                    system("cls");
+                    system("pause");
+                    break;
+                }
                 system("cls");
                 savedRaces.at(index(choice, namesOfRaces)).display_info();
             }
@@ -116,10 +151,36 @@ void GenerateMenu() {
         case 'a':
         {
             system("cls");
-            savedRaces.push_back(EditRaceInfo());
-            if (std::find(namesOfPacks.begin(), namesOfPacks.end(), savedRaces.back().get_name()) == namesOfPacks.end()) {
-                Pack newPack{ savedRaces.back().get_optionPack() };
-                newPack.set_races(savedRaces);
+            Race newRace{};
+            newRace = EditRaceInfo();
+            bool found{};
+            int pcounter{ 0 };
+            for (Pack i : savedPacks) {
+                if (newRace.get_optionPack() == i.get_name()) {
+                    found = true;
+                    std::vector<Race> races{ i.get_races() };
+                    for (Race k : races) {
+                        if (k.get_name() == newRace.get_name()) {
+                            if (isalpha(k.get_name()[-1])) {
+                                newRace.set_name(newRace.get_name() + '1');
+                            }
+                            else {
+                                int num{ (k.get_name()[-1] -'0' ) + 1};
+                                newRace.set_name(newRace.get_name() + std::to_string(num));
+                            }
+                        }
+                    }
+                    races.push_back(newRace);
+                    savedPacks.at(pcounter).set_races(races);
+                }
+                pcounter++;
+            }
+            if (!found) {
+                std::vector<Race> races{};
+                races.push_back(newRace);
+                Pack newPack{};
+                newPack.set_name(newRace.get_optionPack());
+                newPack.set_races(races);
                 savedPacks.push_back(newPack);
             }
             break;
@@ -133,12 +194,43 @@ void GenerateMenu() {
                 std::vector<std::string> editChoices{"empty"};
                 Race editedRace{};
                 menuGUI.GenerateMenu("Select race", namesOfRaces);
+                namesOfRaces.push_back("filter");
+                std::cout << "To filter by pack use 'filter'\n";
                 std::cout << "Enter choice: ";
                 std::cin.clear();
                 std::cin.sync();
                 std::getline(std::cin, choice);
                 choice = HLib::InputCheck(choice, "Enter choice: ", false, false, namesOfRaces);
-                editedRace = savedRaces.at(index(choice, namesOfRaces));
+                if (choice == "filter") {
+                    std::string filterChoice{};
+                    std::vector<std::string> filteredNamesOfRaces{};
+                    Pack filterPack{};
+                    std::cout << "Enter Filter: ";
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, filterChoice);
+                    filterChoice = HLib::InputCheck(filterChoice, "Enter Filter: ", false, false, namesOfPacks);
+                    for (Pack i : savedPacks) {
+                        if (i.get_name() == filterChoice) {
+                            filterPack = i;
+                            break;
+                        }
+                    }
+                    for (Race i : filterPack.get_races()) {
+                        filteredNamesOfRaces.push_back(i.get_name());
+                    }
+                    menuGUI.GenerateMenu("Select race", filteredNamesOfRaces);
+                    std::cout << "Enter choice: ";
+                    choice.clear();
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, choice);
+                    choice = HLib::InputCheck(choice, "Enter choice: ", false, false, filteredNamesOfRaces);
+                    editedRace = savedRaces.at(index(choice, filteredNamesOfRaces));
+                }
+                else {
+                    editedRace = savedRaces.at(index(choice, namesOfRaces));
+                }
                 system("cls");
                 editChoices = GetInputVector("edit option", RaceOptions,editChoices);
                 if (!editChoices.empty()) {
@@ -348,9 +440,13 @@ void GenerateMenu() {
                 std::cin.clear();
                 std::cin.sync();
                 std::getline(std::cin, name);
-                newPack.load(name);
-                if (std::find(namesOfPacks.begin(), namesOfPacks.end(), newPack.get_name()) == namesOfPacks.end()) {
-                    savedPacks.push_back(newPack);
+                if (std::find(namesOfPacks.begin(), namesOfPacks.end(), name) == namesOfPacks.end()) {
+                    if (newPack.load_pack(name) == 0) {
+                        savedPacks.push_back(newPack);
+                    }
+                    else {
+                        std::cout << "Couldn't find pack. Make sure you spell it exactly as it's titled\n";
+                    }
                 }
                 else {
                     std::cout << "Pack is already loaded" << std::endl;
@@ -397,9 +493,9 @@ void GenerateMenu() {
         case 'T':
         case 't':
         {
-            std::cout << "Test function: Grid testing" << std::endl << std::endl;
-            menuGUI.GenerateMenu("Tools", std::vector<std::string>{}, "", true, 4);
-            //displayGUI.GenerateMenu("Tools", get_tool(), "", true, 4);
+            std::cout << "Test function: File Saving" << std::endl << std::endl;
+            SaveFile.set_packs(savedPacks);
+            SaveFile.save();
             system("pause");
             break;
         }
@@ -795,5 +891,28 @@ std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector) {
     else {
         return defaultVector;
     }
+}
+
+Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packName) {
+    Race foundRace{};
+    for (Pack i : packSet) {
+        if (packName != "") {
+            if (i.get_name() == packName) {
+                for (Race k : i.get_races()) {
+                    if (k.get_name() == raceName) {
+                        foundRace = k;
+                    }
+                }
+            }
+        }
+        else {
+            for (Race k : i.get_races()) {
+                if (k.get_name() == raceName) {
+                    foundRace = k;
+                }
+            }
+        }
+    }
+    return foundRace;
 }
 

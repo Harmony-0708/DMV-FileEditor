@@ -59,37 +59,15 @@ void Pack::set_items(std::vector<Item> inputItems)
 {
 }
 
-void Pack::load(std::string packName)
+int Pack::load_pack(std::string packName)
 {
 	Name = packName;
-	int load_err{};
-	load_err = load_pack();
-	switch (load_err) {
-	case 0:
-		std::cout << "\nPack loaded\n";
-		break;
-	case 1:
-		std::cout << "\nCustomPacks Folder does not exsist\n";
-		break;
-	case 2:
-		std::cout << "\nPack not found in folder. Make sure your pack in inside of the CustomPacks folder.\n";
-		break;
-	}
-}
-
-int Pack::load_pack()
-{
 	std::ifstream myfile{};
 	std::vector<Race> myRaces{ Races };
 	Race newRace{};
 	Trait newTrait{};
 
-	if (!std::filesystem::exists("CustomPacks")) {
-		return 1;
-	}
-	else if (!std::filesystem::exists("CustomPacks/" + Name + ".pck")) {
-		return 2;
-	}
+	
 
 	myfile.open("CustomPacks/" + Name + ".pck", std::ios::out);
 
@@ -553,6 +531,153 @@ void Pack::save_pack()
 		<< "}\n";
 
 }
+void Pack::save_pack(std::ofstream& myfile)
+{
+	std::vector<Race> myRaces{ Races };
+
+	myfile
+		<< "name=\"" << Name
+		<< "\"\nRaces{\n";
+	for (Race i : Races) {
+		myfile
+			<< i.get_key() << "{\n"
+			<< "Name=\"" << i.get_name()
+			<< "\"\nOptionPack=\"" << i.get_optionPack()
+			<< "\"\nDescription=\"" << i.get_description()
+			<< "\"\nSize=" << i.get_sizename()
+			<< "\nStr=" << i.get_str()
+			<< "\nDex=" << i.get_dex()
+			<< "\nCon=" << i.get_con()
+			<< "\nInt=" << i.get_int()
+			<< "\nWis=" << i.get_wis()
+			<< "\nCha=" << i.get_cha()
+			<< "\nSpeed=" << i.get_speed()
+			<< "\nFlySpeed=" << i.get_flySpeed()
+			<< "\nSwimSpeed=" << i.get_swimSpeed()
+			<< "\nDarkVision=" << i.get_darkVision()
+			<< "\nSKOC=" << i.get_skillOptionsCount()
+			<< "\nLNOC=" << i.get_languageOptionsCount()
+			<< "\nWPOC=" << i.get_weaponOptionsCount()
+			<< "\nLizFolkAC=" << i.get_lizFolkAC()
+			<< "\nTortAC=" << i.get_tortAC();
+		myfile
+			<< "\nLanguages={";
+		if (i.get_language().size() > 0) {
+			for (std::string k : i.get_language()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nLanguageOptions={";
+		if (i.get_languageOption().size() > 0) {
+			for (std::string k : i.get_languageOption()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nSkillProf={";
+		if (i.get_skillProf().size() > 0) {
+			for (std::string k : i.get_skillProf()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nSkillOptions={";
+		if (i.get_skillOption().size() > 0) {
+			for (std::string k : i.get_skillOption()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nWeaponProf={";
+		if (i.get_weaponProf().size() > 0) {
+			for (std::string k : i.get_weaponProf()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nWeaponOptions={";
+		if (i.get_weaponOption().size() > 0) {
+			for (std::string k : i.get_weaponOption()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nDamageRes={";
+		if (i.get_damageRes().size() > 0) {
+			for (std::string k : i.get_damageRes()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nDamageImmun={";
+		if (i.get_damageImmun().size() > 0) {
+			for (std::string k : i.get_damageImmun()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nArmorProf={";
+		if (i.get_armorProf().size() > 0) {
+			for (std::string k : i.get_armorProf()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nTools={";
+		if (i.get_tool().size() > 0) {
+			for (std::string k : i.get_tool()) {
+				myfile
+					<< "\"" << k << "\"";
+			}
+		}
+		myfile
+			<< "}";
+		myfile
+			<< "\nTraits={";
+		if (i.get_trait().size() > 0) {
+			for (Trait k : i.get_trait()) {
+				myfile
+					<< "\n{name=\"" << k.get_name()
+					<< "\"\ndescription=\"" << k.get_description()
+					<< "\"\ntype=" << k.get_type()
+					<< "\n}";
+			}
+		}
+		myfile
+			<< "\n}\n}\n";
+	}
+	myfile
+		<< "}\n";
+
+}
 
 void Pack::print_pack()
 {
@@ -566,7 +691,7 @@ void Pack::print_pack()
 	myfile.open("OrcbrewPacks/" + Name + ".orcbrew", std::ios::in | std::ios::trunc);
 	myfile
 		<< "{\"" << Name
-		<< "\"{:orcpub.dnd.e5/races{";
+		<< "\"\n{:orcpub.dnd.e5/races\n{\n";
 
 	for (Race i : Races) 
 	{
@@ -575,22 +700,22 @@ void Pack::print_pack()
 		}
 		myfile
 			<< ":" << i.get_key()
-			<< "{:key :" << i.get_key()
-			<< ", :name \"" << i.get_name()
-			<< "\", :swimming-speed " << i.get_swimSpeed()
-			<< ", :help \"" << i.get_description()
-			<< "\", :option-pack \"" << i.get_optionPack()
-			<< "\", :speed " << i.get_speed()
-			<< ", :flying-speed " << i.get_flySpeed()
-			<< ", :darkvision " << i.get_darkVision()
+			<< "\n{:key :" << i.get_key()
+			<< "\n, :name \"" << i.get_name()
+			<< "\n\", :swimming-speed " << i.get_swimSpeed()
+			<< "\n, :help \"" << i.get_description()
+			<< "\n\", :option-pack \"" << i.get_optionPack()
+			<< "\n\", :speed " << i.get_speed()
+			<< "\n, :flying-speed " << i.get_flySpeed()
+			<< "\n, :darkvision " << i.get_darkVision()
 			<< std::boolalpha
-			<< ", :lizardfolk-ac " << i.get_lizFolkAC()
-			<< ", :tortle-ac " << i.get_tortAC()
+			<< "\n, :lizardfolk-ac " << i.get_lizFolkAC()
+			<< "\n, :tortle-ac " << i.get_tortAC()
 			<< std::boolalpha
-			<< ", :abilities{";
+			<< "\n, :abilities{";
 		if (i.get_str() != 0) {
 			myfile
-				<< " :orcpub.dnd.e5.character/str " << i.get_str();
+				<< "\n :orcpub.dnd.e5.character/str " << i.get_str();
 			if (i.get_dex() != 0 || i.get_con() != 0 || i.get_int() != 0 || i.get_wis() != 0 || i.get_cha() != 0) {
 				myfile
 					<< ",";
@@ -598,7 +723,7 @@ void Pack::print_pack()
 		}
 		if (i.get_dex() != 0) {
 			myfile
-				<< " :orcpub.dnd.e5.character/dex " << i.get_dex();
+				<< "\n :orcpub.dnd.e5.character/dex " << i.get_dex();
 			if (i.get_con() != 0 || i.get_int() != 0 || i.get_wis() != 0 || i.get_cha() != 0) {
 				myfile
 					<< ",";
@@ -606,7 +731,7 @@ void Pack::print_pack()
 		}
 		if (i.get_con() != 0) {
 			myfile
-				<< " :orcpub.dnd.e5.character/con " << i.get_con();
+				<< "\n :orcpub.dnd.e5.character/con " << i.get_con();
 			if (i.get_int() != 0 || i.get_wis() != 0 || i.get_cha() != 0) {
 				myfile
 					<< ",";
@@ -614,7 +739,7 @@ void Pack::print_pack()
 		}
 		if (i.get_int() != 0) {
 			myfile
-				<< " :orcpub.dnd.e5.character/int " << i.get_int();
+				<< "\n :orcpub.dnd.e5.character/int " << i.get_int();
 			if (i.get_wis() != 0 || i.get_cha() != 0) {
 				myfile
 					<< ",";
@@ -622,7 +747,7 @@ void Pack::print_pack()
 		}
 		if (i.get_wis() != 0) {
 			myfile
-				<< " :orcpub.dnd.e5.character/wis " << i.get_wis();
+				<< "\n :orcpub.dnd.e5.character/wis " << i.get_wis();
 			if (i.get_cha() != 0) {
 				myfile
 					<< ",";
@@ -630,50 +755,50 @@ void Pack::print_pack()
 		}
 		if (i.get_cha() != 0) {
 			myfile
-				<< " :orcpub.dnd.e5.character/cha " << i.get_cha();
+				<< "\n :orcpub.dnd.e5.character/cha " << i.get_cha();
 		}
 
 		myfile
-			<< "}, :languages #{";
+			<< "\n},\n :languages \n#{\n";
 		if (i.get_language().size() > 0) {
 			for (std::string k : i.get_language()) {
 				myfile
-					<< " \"" << k << "\"";
+					<< "\n \"" << k << "\"";
 			}
 		}
 		myfile
-			<< "}, :profs {";
+			<< "\n}, \n:profs \n{";
 		if (i.get_tool().size() > 0) {
 			int counter{};
 			myfile
-				<< " :tool{";
+				<< " \n:tool\n{";
 			for (std::string k : i.get_tool()) {
 				myfile
-					<< " :" << k << " true";
+					<< "\n :" << k << " true";
 				if (counter + 1 != i.get_tool().size()) {
 					myfile << ",";
 				}
 				counter++;
 			}
 			myfile
-				<< "},";
+				<< "\n},\n";
 		}
 		if (i.get_skillOption().size() > 0) {
 			int counter{};
 			myfile
-				<< " :skill-options {"
-				<< " :choose " << i.get_skillOptionsCount()
-				<< ", :options {";
+				<< "\n :skill-options \n{\n"
+				<< "\n :choose " << i.get_skillOptionsCount()
+				<< "\n, :options \n{";
 			for (std::string k : i.get_skillOption()) {
 				myfile
-					<< " :" << k << " true";
+					<< "\n :" << k << " true";
 				if (counter + 1 != i.get_skillOption().size()) {
 					myfile << ",";
 				}
 				counter++;
 			}
 			myfile
-				<< "}},";
+				<< "\n}\n},\n";
 		}
 		if (i.get_languageOption().size() > 0) {
 			int counter{};
@@ -707,12 +832,12 @@ void Pack::print_pack()
 				index++;
 			}
 			myfile
-				<< " :language-options {"
-				<< " :choose " << i.get_languageOptionsCount()
-				<< ", :options {";
+				<< "\n :language-options \n{"
+				<< "\n :choose " << i.get_languageOptionsCount()
+				<< "\n, :options \n{\n";
 			for (std::string k : newLanguages) {
 				myfile
-					<< " :" << k << " true";
+					<< "\n :" << k << " true";
 				if (counter + 1 != i.get_languageOption().size()) {
 					myfile << ",";
 				}
@@ -724,9 +849,9 @@ void Pack::print_pack()
 		if (i.get_weaponOption().size() > 0) {
 			int counter{};
 			myfile
-				<< " :weapon-proficiency-options {"
-				<< " :choose " << i.get_weaponOptionsCount()
-				<< ", :options {";
+				<< "\n :weapon-proficiency-options \n{\n"
+				<< "\n :choose " << i.get_weaponOptionsCount()
+				<< "\n, :options {";
 			for (std::string k : i.get_weaponOption()) {
 				myfile
 					<< " :" << k << " true";
@@ -736,107 +861,102 @@ void Pack::print_pack()
 				counter++;
 			}
 			myfile
-				<< "}}";
+				<< "\n}\n}\n";
 		}
 		myfile
-			<< "}, :props {";
+			<< "\n},\n :props \n{\n";
 		if (i.get_weaponProf().size() > 0) {
 			int counter{};
 			myfile
-				<< " :weaponProf{";
+				<< "\n :weaponProf\n{\n";
 			for (std::string k : i.get_weaponProf()) {
 				myfile
-					<< " :" << k << " true";
+					<< "\n :" << k << " true";
 				if (counter + 1 != i.get_weaponProf().size()) {
 					myfile << ",";
 				}
 				counter++;
 			}
 			myfile
-				<< "},";
+				<< "\n},\n";
 		}
 		if (i.get_armorProf().size() > 0) {
 			int counter{};
 			myfile
-				<< " :armor-prof{";
+				<< "\n :armor-prof\n{\n";
 			for (std::string k : i.get_armorProf()) {
 				myfile
-					<< " :" << k << " true";
+					<< "\n :" << k << " true";
 				if (counter + 1 != i.get_armorProf().size()) {
 					myfile << ",";
 				}
 				counter++;
 			}
 			myfile
-				<< "},";
+				<< "\n},\n";
 		}
 		if (i.get_damageRes().size() > 0) {
 			int counter{};
 			myfile
-				<< " :damage_resistance{";
+				<< "\n :damage_resistance\n{\n";
 			for (std::string k : i.get_damageRes()) {
 				myfile
-					<< " :" << k << " true";
+					<< "\n :" << k << " true";
 				if (counter + 1 != i.get_damageRes().size()) {
 					myfile << ",";
 				}
 				counter++;
 			}
 			myfile
-				<< "},";
+				<< "\n},\n";
 		}
 		if (i.get_damageImmun().size() > 0) {
 			int counter{};
 			myfile
-				<< " :damage-immunity{";
+				<< "\n :damage-immunity\n{\n";
 			for (std::string k : i.get_damageImmun()) {
 				myfile
-					<< " :" << k << " true";
+					<< "\n :" << k << " true";
 				if (counter + 1 != i.get_damageImmun().size()) {
 					myfile << ",";
 				}
 			}
 			myfile
-				<< "},";
+				<< "\n},\n";
 		}
 		if (i.get_skillProf().size() > 0) {
 			int counter{};
 			myfile
-				<< " :skill-prof{";
+				<< "\n :skill-prof\n{\n";
 			for (std::string k : i.get_skillProf()) {
 				myfile
-					<< " :" << k << " true";
+					<< "\n :" << k << " true";
 				if (counter + 1 != i.get_skillProf().size()) {
 					myfile << ",";
 				}
 				counter++;
 			}
 			myfile
-				<< "}";
+				<< "\n}\n";
 		}
 		myfile
-			<< "}, :traits [";
+			<< "\n},\n :traits \n[\n";
 		if (i.get_trait().size() > 0) {
 			for (Trait i : i.get_trait()) {
 				myfile
-					<< "{"
-					<< " :type :" << i.get_typename()
-					<< ", :name \"" << i.get_name()
-					<< "\", :description \"" << i.get_description() << "\""
-					<< "}";
+					<< "\n{"
+					<< "\n :type :" << i.get_typename()
+					<< "\n, :name \"" << i.get_name()
+					<< "\n\", :description \"" << i.get_description() << "\""
+					<< "\n}\n";
 			}
 		}
 		myfile
-			<< "]}}}}";
+			<< "\n]\n}";
 
 	}
-		/*<< myRace.get_key()
-		<< "{:key " << myRace.get_key()
-		<< ", :name \"" << myRace.get_name()
-		<< "\", :option-pack \"" << myRace.get_optionPack()
-		<< "\", :languages #{}, :size :" << myRace.get_size()
-		<< ", :speed " << myRace.get_speed()
-		<< "}}}}";*/
+	myfile
+		<< "\n}\n}\n}";
 
 	myfile.close();
 

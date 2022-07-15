@@ -13,6 +13,7 @@ Wis=0
 Cha=0
 Speed=30
 FlySpeed=0
+SwimSpeed=0
 DarkVision=0
 SKOC=1
 LNOC=1
@@ -44,6 +45,47 @@ type=3
 }
 {name="Natural Armor"
 description="You have thick, leathery skin. When you aren't wearing armor, your AC is 12 + your Constitution modifier. You can use your natural armor to determine your AC if the armor you wear would leave you with a lower AC. A shield's benefits apply as normal while you use your natural armor."
+type=3
+}
+}
+}
+vampire{
+Name="Vampire"
+OptionPack="Austin's Pack"
+Description="Vampires are associated with necromancy. Their existence is predicated on draining the life from others to fuel their own existence, and on putting their own lives ahead of all other concerns. Philosophically, they do not constrain themselves with artificial rules of morality, but believe that the strong can and should take what they need from the weak."
+Size=Medium
+Str=0
+Dex=0
+Con=0
+Int=1
+Wis=0
+Cha=2
+Speed=30
+FlySpeed=0
+SwimSpeed=30
+DarkVision=60
+SKOC=1
+LNOC=1
+WPOC=1
+LizFolkAC=0
+TortAC=0
+Languages={"Common"}
+LanguageOptions={"Giant""Common""Celestial""Undercommon""Goblin""Dwarvish""Abyssal""Sylvan""Orc""Deep Speech""Primordial""Draconic""Gnomish""Elvish""Halfling""Infernal"}
+SkillProf={}
+SkillOptions={}
+WeaponProf={}
+WeaponOptions={}
+DamageRes={"necrotic"}
+DamageImmun={}
+ArmorProf={}
+Tools={}
+Traits={
+{name="Bloodthirst"
+description="You can drain blood and life energy from a willing creature, or one that is grappled by you, incapacitated, or restrained. Make a melee attack against the target. If you hit, you deal 1 piercing damage and 1d6 necrotic damage. The target's hit point maximum is reduced by an amount equal to the necrotic damage taken, and you regain hit points equal to that amount. The reduction lasts until the target finishes a long rest. The target dies if this effect reduces its hit point maximum to 0."
+type=0
+}
+{name="Feast of Blood"
+description="When you drain blood with your Bloodthirst ability, you experience a surge of vitality. Your speed increases by 10 feet, and you gain advantage on Strength and Dexterity checks and saving throws for 1 minute."
 type=3
 }
 }

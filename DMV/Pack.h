@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <stdio.h>
 #include <stdlib.h>
-#include<direct.h>
+#include <direct.h>
 #include <cstdlib>
 #include <cmath>
 #include <map>
@@ -49,9 +49,9 @@ public:
 	void set_items(Item inputItem);
 	void set_items(std::vector<Item> inputItems);
 
-	void load(std::string packName);
-	int load_pack();
+	int load_pack(std::string packName);
 	void save_pack();
+	void save_pack(std::ofstream& myfile);
 	void print_pack();
 
 };

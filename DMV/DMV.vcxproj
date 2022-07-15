@@ -132,7 +132,9 @@
     <ClCompile Include="DMV.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="harmonylib.cpp" />
+    <ClCompile Include="HPack.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="Orcbrew.cpp" />
     <ClCompile Include="Pack.cpp" />
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Spell.cpp" />
@@ -142,8 +144,10 @@
     <ClInclude Include="AbilityScore.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="harmonylib.h" />
+    <ClInclude Include="HPack.h" />
     <ClInclude Include="Includes.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="Orcbrew.h" />
     <ClInclude Include="Pack.h" />
     <ClInclude Include="Race.h" />
     <ClInclude Include="SizeEnum.h" />

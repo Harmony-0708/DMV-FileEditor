@@ -39,6 +39,12 @@
     <ClCompile Include="Pack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Orcbrew.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Item.h">
@@ -72,6 +78,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Pack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Orcbrew.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HPack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

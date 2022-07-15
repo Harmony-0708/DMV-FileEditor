@@ -8,12 +8,33 @@
 /// <param name="inputString">- String to be wrapped</param>
 void GUI::GUIWordWrap(int wrapLimit, std::string inputString)
 {
-	int counter{};
-	bool spaceStart{false};
-	for (char i : inputString) {
+	int counter{0};
+	int index{};
+	bool spaceStart{ false };
+
+	std::stringstream ssvar(inputString);
+	std::string segment{};
+	std::string carryOver{};
+	std::vector<std::string> vector{};
+	while (std::getline(ssvar, segment, ' '))
+	{
+		if (segment != "") {
+			vector.push_back(segment);
+		}
+	}
+
+	for (std::string i : vector) {
 		if (counter == 0) {
-			if (i != ' ') {
-				std::cout << (char)straightline << " ";
+			if (i[0] != ' ') {
+				if (carryOver != "") {
+					std::cout << (char)straightline << " " << carryOver << " ";
+					counter += carryOver.length() + 2;
+					carryOver.clear();
+				}
+				else {
+					std::cout << (char)straightline << " ";
+					counter += 1;
+				}
 				spaceStart = false;
 			}
 			else {
@@ -21,47 +42,29 @@ void GUI::GUIWordWrap(int wrapLimit, std::string inputString)
 				spaceStart = true;
 			}
 		}
-		if (counter < wrapLimit) {
-			std::cout << i;
-			counter++;
+		if (counter + i.length() + 1 >= wrapLimit) {
+			counter--;
+			carryOver = i;
+			if (spaceStart) {
+				std::cout << std::string(wrapLimit - counter, ' ') << "  " << (char)straightline << std::endl;
+			}
+			else {
+				std::cout << std::string(wrapLimit - counter, ' ') << " " << (char)straightline << std::endl;
+			}
+			counter = 0;
 		}
-		if (i == ' ' || i == ',' || i == '.' || i == '!' || i == '?' || i == ':') {
-			bool check{false};
-			std::string tempString{};
-			for (int k{ 0 }; k < 10; k++) {
-				if (inputString[i + k] == ' ') {
-					check = true;
-					break;
-				}
-				tempString += inputString[i + k];
-			}
-			if (!check) {
-				if (spaceStart) {
-					std::cout << std::string(wrapLimit - counter, ' ') << "  " << (char)straightline << std::endl;
-				}
-				else {
-					std::cout << std::string(wrapLimit - counter, ' ') << " " << (char)straightline << std::endl;
-				}
-				counter = 0;
-			}
-			else if (tempString.length() >=  (wrapLimit - counter)) {
-				if (spaceStart) {
-					std::cout << std::string(wrapLimit - counter, ' ') << "  " << (char)straightline << std::endl;
-				}
-				else {
-					std::cout << std::string(wrapLimit - counter, ' ') << " " << (char)straightline << std::endl;
-				}
-				counter = 0;
-			}
+		else if (counter < wrapLimit) {
+			std::cout << i << " ";
+			counter += i.length() + 1;
 		}
 	}
+	counter--;
 	if (spaceStart) {
-		std::cout << std::string(wrapLimit-counter, ' ') << "  " << (char)straightline << std::endl;
+		std::cout << std::string(wrapLimit - counter, ' ') << "  " << (char)straightline << std::endl;
 	}
 	else {
 		std::cout << std::string(wrapLimit - counter, ' ') << " " << (char)straightline << std::endl;
 	}
-	
 }
 
 /// <summary>

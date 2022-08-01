@@ -50,9 +50,12 @@ public:
 	void set_items(std::vector<Item> inputItems);
 
 	int load_pack(std::string packName);
+	Pack load_pack(std::fstream& myfile);
+	Pack load_orcbrew(std::fstream& myfile);
 	void save_pack();
 	void save_pack(std::ofstream& myfile);
 	void print_pack();
+	void print_pack(bool multi, std::ofstream& outputfile);
 
 };
 

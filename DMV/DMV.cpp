@@ -61,6 +61,7 @@ void GenerateMenu() {
     std::vector<Race> savedRaces{};
     std::vector<Pack> savedPacks{};
     HPack SaveFile{"Test"};
+    Orcbrew SaveOrcbrew{};
 
     std::vector<std::string> namesOfPacks{};
     std::vector<std::string> namesOfRaces{};
@@ -493,9 +494,8 @@ void GenerateMenu() {
         case 'T':
         case 't':
         {
-            std::cout << "Test function: File Saving" << std::endl << std::endl;
-            SaveFile.set_packs(savedPacks);
-            SaveFile.save();
+            std::cout << "Test function: File Loading" << std::endl << std::endl;
+            SaveOrcbrew.load("Tester");
             system("pause");
             break;
         }

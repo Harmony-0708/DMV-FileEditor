@@ -21,12 +21,14 @@
 class Orcbrew
 {
 private:
-	std::string Name{};
+	std::string Name{"Tester"};
 	std::vector<Pack> Packs{};
 
 public:
 	std::vector<Pack> merge(std::vector<std::vector<Pack>> PackSet);
 	Orcbrew merge(std::vector<Orcbrew> OrcbrewPack);
+
+	void set_packs(std::vector<Pack> packs);
 
 	void load(std::string fileName);
 	void save();

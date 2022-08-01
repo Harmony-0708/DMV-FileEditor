@@ -1,0 +1,313 @@
+{
+"Austin's Pack"
+{
+cmd :orcpub.dnd.e5/races
+{
+cmd :giff
+{
+cmd :key
+cmd :giff
+cmd :name
+"Giff"
+cmd :swimming-speed
+0
+cmd :help
+"Giff are tall, broad-shouldered folk with hippo-like features. Some have smooth skin, while others have short bristles on their faces and the tops of their heads. As beings of impressive size and unforgettable appearance, giff are noticed wherever they go. Storytelling is a rich tradition among giff, and it's not uncommon to see a giff recounting their past exploits to an enraptured crowd. Having a friendly giff nearby when a tavern brawl erupts can also be useful, for a giff can usually more than hold their own when pleasant revelry devolves into fisticuffs. The giff are split into two camps concerning how their name is pronounced. Half of them say it with a hard g, half with a soft g. Disagreements over the correct pronunciation often blossom into hard feelings, loud arguments, and headbutting contests, but rarely escalate beyond that."
+cmd :option-pack
+"Austin's Pack"
+cmd :speed
+30
+cmd :flying-speed
+0
+cmd :darkvision
+0
+cmd :lizardfolk-ac
+false
+cmd :tortle-ac
+false
+cmd :abilities
+{
+cmd :orcpub.dnd.e5.character/str
+2
+cmd :orcpub.dnd.e5.character/con
+1
+}
+cmd :languages
+#
+{
+"Common"
+"Giant"
+}
+cmd :profs
+{
+cmd :language-options
+{
+cmd :choose
+1
+cmd :options
+{
+cmd :draconic
+true
+cmd :orc
+true
+cmd :dwarvish
+true
+cmd :gnomish
+true
+cmd :sylvan
+true
+cmd :elvish
+true
+cmd :abyssal
+true
+cmd :infernal
+true
+cmd :celestial
+true
+cmd :common
+true
+cmd :undercommon
+true
+cmd :primordial
+true
+cmd :giant
+true
+cmd :halfling
+true
+}
+}
+}
+cmd :props
+{
+cmd :armor-prof
+{
+cmd :medium
+true
+cmd :heavy
+true
+}
+}
+cmd :traits
+[
+{
+cmd :type
+cmd :action
+cmd :name
+"Headbutt"
+cmd :description
+"Your strong head is a natural melee weapon, which you can use to make unarmed strikes. If you hit with it, you deal bludgeoning damage equal to 1d4 + your Strength modifier."
+}
+{
+cmd :type
+cmd :b-action
+cmd :name
+"Headfirst Charge"
+cmd :description
+"If you move at least 20 feet straight toward a target and then hit it with a melee weapon attack on the same turn, you can immediately follow that attack with a bonus action, making one attack against the target with your headbutt."
+}
+{
+cmd :type
+cmd :other
+cmd :name
+"Giff Firearms Master"
+cmd :description
+"You gain proficiency in a firearm of your choice. At 3rd level, your mastery of firearms allows you to ignore the loading property of any firearm you are proficient in."
+}
+{
+cmd :type
+cmd :other
+cmd :name
+"Natural Armor"
+cmd :description
+"You have thick, leathery skin. When you aren't wearing armor, your AC is 12 + your Constitution modifier. You can use your natural armor to determine your AC if the armor you wear would leave you with a lower AC. A shield's benefits apply as normal while you use your natural armor."
+}
+]
+}
+cmd :vampire
+{
+cmd :key
+cmd :vampire
+cmd :name
+"Vampire"
+cmd :swimming-speed
+30
+cmd :help
+"Vampires are associated with necromancy. Their existence is predicated on draining the life from others to fuel their own existence, and on putting their own lives ahead of all other concerns. Philosophically, they do not constrain themselves with artificial rules of morality, but believe that the strong can and should take what they need from the weak."
+cmd :option-pack
+"Austin's Pack"
+cmd :speed
+30
+cmd :flying-speed
+0
+cmd :darkvision
+60
+cmd :lizardfolk-ac
+false
+cmd :tortle-ac
+false
+cmd :abilities
+{
+cmd :orcpub.dnd.e5.character/int
+1
+cmd :orcpub.dnd.e5.character/cha
+2
+}
+cmd :languages
+#
+{
+"Common"
+}
+cmd :profs
+{
+cmd :language-options
+{
+cmd :choose
+1
+cmd :options
+{
+cmd :draconic
+true
+cmd :orc
+true
+cmd :dwarvish
+true
+cmd :gnomish
+true
+cmd :sylvan
+true
+cmd :elvish
+true
+cmd :abyssal
+true
+cmd :infernal
+true
+cmd :celestial
+true
+cmd :common
+true
+cmd :undercommon
+true
+cmd :primordial
+true
+cmd :giant
+true
+cmd :halfling
+true
+}
+}
+}
+cmd :props
+{
+cmd :damage_resistance
+{
+cmd :necrotic
+true
+}
+}
+cmd :traits
+[
+{
+cmd :type
+cmd :action
+cmd :name
+"Bloodthirst"
+cmd :description
+"You can drain blood and life energy from a willing creature, or one that is grappled by you, incapacitated, or restrained. Make a melee attack against the target. If you hit, you deal 1 piercing damage and 1d6 necrotic damage. The target's hit point maximum is reduced by an amount equal to the necrotic damage taken, and you regain hit points equal to that amount. The reduction lasts until the target finishes a long rest. The target dies if this effect reduces its hit point maximum to 0."
+}
+{
+cmd :type
+cmd :other
+cmd :name
+"Feast of Blood"
+cmd :description
+"When you drain blood with your Bloodthirst ability, you experience a surge of vitality. Your speed increases by 10 feet, and you gain advantage on Strength and Dexterity checks and saving throws for 1 minute."
+}
+]
+}
+}
+}
+"Tester Pack"
+{
+cmd :orcpub.dnd.e5/races
+{
+cmd :test
+{
+cmd :key
+cmd :test
+cmd :name
+"Test"
+cmd :swimming-speed
+30
+cmd :help
+"Testing"
+cmd :option-pack
+"Tester Pack"
+cmd :speed
+30
+cmd :flying-speed
+0
+cmd :darkvision
+0
+cmd :lizardfolk-ac
+false
+cmd :tortle-ac
+false
+cmd :abilities
+{
+}
+cmd :languages
+#
+{
+}
+cmd :profs
+{
+}
+cmd :props
+{
+}
+cmd :traits
+[
+]
+}
+cmd :giff
+{
+cmd :key
+cmd :giff
+cmd :name
+"Giff"
+cmd :swimming-speed
+0
+cmd :help
+"test"
+cmd :option-pack
+"Tester Pack"
+cmd :speed
+0
+cmd :flying-speed
+0
+cmd :darkvision
+0
+cmd :lizardfolk-ac
+false
+cmd :tortle-ac
+false
+cmd :abilities
+{
+}
+cmd :languages
+#
+{
+}
+cmd :profs
+{
+}
+cmd :props
+{
+}
+cmd :traits
+[
+]
+}
+}
+}
+}

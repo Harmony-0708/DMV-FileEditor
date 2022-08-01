@@ -1,6 +1,2 @@
-﻿  DMV.cpp
-C:\Users\arhea\source\repos\DMV\DMV\DMV.cpp(783,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
-  HPack.cpp
-  Orcbrew.cpp
-  Generating Code...
+﻿  Orcbrew.cpp
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

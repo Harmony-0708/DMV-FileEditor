@@ -728,6 +728,60 @@ void Race::insert_spell(std::vector<std::vector<Spell>> spellList)
 	Spells = spellList;
 }
 
+//Race Race::merge(Race r1, Race r2)
+//{
+//	Race mergedRace{};
+//	mergedRace.set_name(r1.get_name());
+//	mergedRace.set_optionPack(r1.get_optionPack());
+//	if (r1.get_description() > r2.get_description()) {
+//		mergedRace.set_description(r1.get_description());
+//	}
+//	else {
+//		mergedRace.set_description(r2.get_description());
+//	}
+//	if (r1.get_str() > r2.get_str()) {
+//		mergedRace.set_str(r1.get_str());
+//	}
+//	else {
+//		mergedRace.set_str(r2.get_str());
+//	}
+//	if (r1.get_dex() > r2.get_dex()) {
+//		mergedRace.set_dex(r1.get_dex());
+//	}
+//	else {
+//		mergedRace.set_dex(r2.get_dex());
+//	}
+//	if (r1.get_con() > r2.get_con()) {
+//		mergedRace.set_con(r1.get_con());
+//	}
+//	else {
+//		mergedRace.set_con(r2.get_con());
+//	}
+//	if (r1.get_int() > r2.get_int()) {
+//		mergedRace.set_int(r1.get_int());
+//	}
+//	else {
+//		mergedRace.set_int(r2.get_int());
+//	}
+//	if (r1.get_wis() > r2.get_wis()) {
+//		mergedRace.set_wis(r1.get_wis());
+//	}
+//	else {
+//		mergedRace.set_wis(r2.get_wis());
+//	}
+//	if (r1.get_cha() > r2.get_cha()) {
+//		mergedRace.set_cha(r1.get_cha());
+//	}
+//	else {
+//		mergedRace.set_cha(r2.get_cha());
+//	}
+//	mergedRace.set_size(r1.get_size());
+//
+//
+//
+//	return mergedRace;
+//}
+
 
 //Display
 
@@ -787,3 +841,5 @@ void Race::display_info()
 	}
 	std::cout << std::endl;
 }
+
+

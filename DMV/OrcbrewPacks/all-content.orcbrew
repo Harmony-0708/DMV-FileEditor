@@ -1,4 +1,50 @@
 ﻿{
+	"Default Option Source" {}, 
+	"Test File" 
+	{
+		:orcpub.dnd.e5/races 
+		{
+			:giff 
+			{
+				:key :giff, 
+				:speed 30, 
+				:name "Giff", 
+				:abilities 
+				{
+					:orcpub.dnd.e5.character/str 1, 
+					:orcpub.dnd.e5.character/dex 1, 
+					:orcpub.dnd.e5.character/con 1
+				}, 
+				:size :medium, 
+				:option-pack "", 
+				:languages #{}, 
+				:props 
+				{
+					:weapon-prof {:simple true}, 
+					:armor-prof {:medium true, :heavy true, :shields true}, 
+					:skill-prof {:intimidation true}
+				}, 
+				:traits 
+				[
+					{
+						:name "Firearms Knowledge", 
+						:description " You are proficient with firearms. Additionally, you ignore the loading property of firearms."
+					} 
+					{
+						:name "Headfirst Charge", 
+						:description "If you move at least 20 feet straight toward a target on your turn, you can use your action to make a special attack with your hippo-like head. The target must be within 5 feet of you and no more than one size larger than you. It must succeed on a Strength saving throw against a DC equal to 8 + your proficiency bonus + your Strength modifier or take bludgeoning damage equal to ld6 + your Strength modifier and be knocked prone."
+					} 
+					{	:name "Natural Armor", 
+						:description "You have thick, leathery skin. When you aren't wearing armor, your AC is 12 + your Constitution modifier. You can use your natural armor to determine your AC if the armor you wear would leave you with a lower AC. A shield’s benefits apply as normal while you use your natural armor."
+					} 
+					{
+						:name "Powerful Build", 
+						:description "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift."
+					}
+				]
+			}
+		}
+	}, 
 	"TestSource" 
 	{
 		:orcpub.dnd.e5/races 
@@ -276,7 +322,64 @@
 						:medicine true, 
 						:stealth true
 					}
-				},
+				}, 
+				:spells 
+				[
+					{
+						:level 1, 
+						:value 
+						{
+							:level 1, 
+							:ability :orcpub.dnd.e5.character/str, 
+							:key :alarm
+						}
+					} 
+					{
+						:level 2,
+						:value 
+						{
+							:level 2, 
+							:ability :orcpub.dnd.e5.character/dex, 
+							:key :acid-arrow
+						}
+					} 
+					{
+						:level 3, 
+						:value 
+						{
+							:level 3, 
+							:ability :orcpub.dnd.e5.character/con, 
+							:key :animate-dead
+						}
+					} 
+					{
+						:level 4, 
+						:value 
+						{
+							:level 4, 
+							:ability :orcpub.dnd.e5.character/int, 
+							:key :arcane-eye
+						}
+					} 
+					{
+						:level 5, 
+						:value 
+						{
+							:level 5, 
+							:ability :orcpub.dnd.e5.character/wis, 
+							:key :animate-objects
+						}
+					} 
+					{
+						:level 6, 
+						:value 
+						{
+							:level 6, 
+							:ability :orcpub.dnd.e5.character/cha, 
+							:key :blade-barrier
+						}
+					}
+				],
 				:traits 
 				[
 					{
@@ -312,939 +415,6 @@
 					}
 				]
 			}
-		},
-		:giff2 
-			{
-				:key :giff2, 
-				:name "Giff2",
-				:option-pack "TestSource", 
-				:help "Test Description for Giff2", 
-				:size :medium,  
-				:speed 30,
-				:flying-speed 5, 
-				:swimming-speed 5,
-				:darkvision 60,   
-				:lizardfolk-ac true, 
-				:tortle-ac true, 
-				:languages 
-				#{
-					"Giant"
-					"Common"
-					"Celestial"
-					"Undercommon"
-					"Goblin"
-					"Dwarvish"
-					"Abyssal"
-					"Sylvan"
-					"Orc"
-					"Deep Speech"
-					"Primordial"
-					"Draconic"
-					"Gnomish"
-					"Elvish"
-					"Halfling"
-					"Infernal"
-				}, 
-				:profs 
-				{
-					:tool 
-					{
-						:cartographers-tools true, 
-						:painters-supplies true, 
-						:poisoners-kit true, 
-						:navigators-tools true, 
-						:glassblowers-tools true, 
-						:flute true, :dice-set true, 
-						:horn true, 
-						:herbalism-kit true, 
-						:dulcimer true, 
-						:disguise-kit true, 
-						:masons-tools true, 
-						:land-vehicles true, 
-						:viol true, 
-						:thieves-tools true, 
-						:jewelers-tools true, 
-						:leatherworkers-tools true, 
-						:smiths-tools true, 
-						:drum true, 
-						:cobblers-tools true, 
-						:potters-tools true, 
-						:dragonchess-set true, 
-						:playing-card-set true, 
-						:brewers-supplies true, 
-						:three-dragon-ante-set true, 
-						:forgery-kit true, 
-						:pan-flute true, 
-						:bagpipes true, 
-						:woodcarvers-tools true, 
-						:carpenters-tools true, 
-						:tinkers-tools true, 
-						:alchemists-supplies true, 
-						:water-vehicles true, 
-						:weavers-tools true, 
-						:shawm true, 
-						:cooks-utensils true, 
-						:lute true, 
-						:calligraphers-supplies true, 
-						:lyre true
-					}, 
-					:skill-options 
-					{
-						:choose 2, 
-						:options 
-						{
-							:religion true, 
-							:persuasion true, 
-							:investigation true, 
-							:acrobatics true, 
-							:performance true, 
-							:perception true, 
-							:sleight-of-hand true, 
-							:survival true, 
-							:history true, 
-							:animal-handling true, 
-							:nature true, 
-							:deception true, 
-							:intimidation true, 
-							:arcana true, 
-							:athletics true, 
-							:insight true, 
-							:medicine true, 
-							:stealth true
-						}
-					}, 
-					:language-options 
-					{
-						:choose 2,
-						:options 
-						{
-							:draconic true, 
-							:deep-speech true, 
-							:orc true, 
-							:dwarvish true, 
-							:gnomish true, 
-							:sylvan true, 
-							:elvish true, 
-							:abyssal true, 
-							:infernal true, 
-							:celestial true, 
-							:common true, 
-							:undercommon true, 
-							:primordial true, 
-							:giant true, 
-							:halfling true, 
-							:goblin true
-						}
-					}, 
-					:weapon-proficiency-options 
-					{
-						:choose 2, 
-						:options 
-						{
-							:battleaxe true, 
-							:halberd true, 
-							:longsword true, 
-							:dagger true, 
-							:blowgun true, 
-							:sickle true, 
-							:handaxe true, 
-							:war-pick true, 
-							:flail true, 
-							:greatsword true, 
-							:whip true, 
-							:rapier true, 
-							:spear true, 
-							:net true, 
-							:shortbow true, 
-							:warhammer true, 
-							:mace true, 
-							:crossbow-heavy true, 
-							:glaive true, 
-							:greataxe true, 
-							:quarterstaff true, 
-							:crossbow-light true, 
-							:sling true, 
-							:javelin true, 
-							:light-hammer true, 
-							:longbow true, 
-							:greatclub true, 
-							:club true, 
-							:morningstar true, 
-							:trident true, 
-							:maul true, 
-							:pike true, 
-							:lance true, 
-							:shortsword true, 
-							:crossbow-hand true, 
-							:scimitar true, 
-							:dart true
-						}
-					}
-				},
-				:props 
-				{
-					:weapon-prof 
-					{
-						:battleaxe true, 
-						:halberd true, 
-						:longsword true, 
-						:dagger true, 
-						:blowgun true, 
-						:sickle true, 
-						:handaxe true, 
-						:martial true, 
-						:war-pick true, 
-						:flail true, 
-						:greatsword true, 
-						:whip true, 
-						:simple true, 
-						:rapier true, 
-						:spear true, 
-						:net true, 
-						:shortbow true, 
-						:warhammer true, 
-						:mace true, 
-						:crossbow-heavy true, 
-						:glaive true, 
-						:greataxe true, 
-						:quarterstaff true, 
-						:crossbow-light true, 
-						:sling true, 
-						:javelin true, 
-						:light-hammer true, 
-						:longbow true, 
-						:greatclub true, 
-						:club true, 
-						:morningstar true, 
-						:trident true, 
-						:maul true, 
-						:pike true, 
-						:lance true, 
-						:shortsword true, 
-						:crossbow-hand true, 
-						:scimitar true, 
-						:dart true
-					}, 
-					:armor-prof 
-					{
-						:medium true, 
-						:heavy true, 
-						:shields true, 
-						:light true
-					},
-					:damage-resistance 
-					{
-						:fire true, 
-						:acid true, 
-						:psychic true, 
-						:force true, 
-						:bludgeoning true, 
-						:radiant true, 
-						:lightning true, 
-						:slashing true, 
-						:piercing true, 
-						:thunder true, 
-						:cold true, 
-						:traps true, 
-						:poison true, 
-						:necrotic true
-					}, 
-					:damage-immunity 
-					{
-						:fire true, 
-						:acid true, 
-						:psychic true, 
-						:force true, 
-						:bludgeoning true, 
-						:radiant true, 
-						:lightning true, 
-						:slashing true, 
-						:piercing true, 
-						:thunder true, 
-						:cold true, 
-						:poison true, 
-						:necrotic true
-					},
-					:skill-prof 
-					{
-						:religion true, 
-						:persuasion true, 
-						:investigation true, 
-						:acrobatics true, 
-						:performance true, 
-						:perception true, 
-						:sleight-of-hand true, 
-						:survival true, 
-						:history true, 
-						:animal-handling true, 
-						:nature true, 
-						:deception true, 
-						:intimidation true, 
-						:arcana true, 
-						:athletics true, 
-						:insight true, 
-						:medicine true, 
-						:stealth true
-					}
-				},
-				:traits 
-				[
-					{
-						:name "Firearms Knowledge", 
-						:description " You are proficient with firearms. Additionally, you ignore the loading property of firearms."
-					} 
-					{
-						:name "Headfirst Charge", 
-						:description "If you move at least 20 feet straight toward a target on your turn, you can use your action to make a special attack with your hippo-like head. The target must be within 5 feet of you and no more than one size larger than you. It must succeed on a Strength saving throw against a DC equal to 8 + your proficiency bonus + your Strength modifier or take bludgeoning damage equal to ld6 + your Strength modifier and be knocked prone."
-					} 
-					{
-						:name "Natural Armor", 
-						:description "You have thick, leathery skin. When you aren't wearing armor, your AC is 12 + your Constitution modifier. You can use your natural armor to determine your AC if the armor you wear would leave you with a lower AC. A shield’s benefits apply as normal while you use your natural armor."
-					} 
-					{
-						:name "Powerful Build", 
-						:description "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift."
-					} 
-					{
-						:type :action, 
-						:name "Test Action", 
-						:description "Test Description for Test Action"
-					} 
-					{
-						:type :b-action, 
-						:name "Test Bonus Action",
-						:description "Test Description for Test Bonus Action"
-					} 
-					{
-						:type :reaction,
-						:name "Test Reaction",					
-						:description "Test Description for Test Reaction"
-					}
-				]
-		}
-	},
-	"TestSource2" 
-	{
-		:orcpub.dnd.e5/races 
-		{
-			:giff 
-			{
-				:key :giff, 
-				:name "Giff",
-				:option-pack "TestSource2", 
-				:help "Test Description for Giff", 
-				:size :medium,  
-				:speed 30,
-				:flying-speed 5, 
-				:swimming-speed 5,
-				:darkvision 60,   
-				:lizardfolk-ac true, 
-				:tortle-ac true, 
-				:languages 
-				#{
-					"Giant"
-					"Common"
-					"Celestial"
-					"Undercommon"
-					"Goblin"
-					"Dwarvish"
-					"Abyssal"
-					"Sylvan"
-					"Orc"
-					"Deep Speech"
-					"Primordial"
-					"Draconic"
-					"Gnomish"
-					"Elvish"
-					"Halfling"
-					"Infernal"
-				}, 
-				:profs 
-				{
-					:tool 
-					{
-						:cartographers-tools true, 
-						:painters-supplies true, 
-						:poisoners-kit true, 
-						:navigators-tools true, 
-						:glassblowers-tools true, 
-						:flute true, :dice-set true, 
-						:horn true, 
-						:herbalism-kit true, 
-						:dulcimer true, 
-						:disguise-kit true, 
-						:masons-tools true, 
-						:land-vehicles true, 
-						:viol true, 
-						:thieves-tools true, 
-						:jewelers-tools true, 
-						:leatherworkers-tools true, 
-						:smiths-tools true, 
-						:drum true, 
-						:cobblers-tools true, 
-						:potters-tools true, 
-						:dragonchess-set true, 
-						:playing-card-set true, 
-						:brewers-supplies true, 
-						:three-dragon-ante-set true, 
-						:forgery-kit true, 
-						:pan-flute true, 
-						:bagpipes true, 
-						:woodcarvers-tools true, 
-						:carpenters-tools true, 
-						:tinkers-tools true, 
-						:alchemists-supplies true, 
-						:water-vehicles true, 
-						:weavers-tools true, 
-						:shawm true, 
-						:cooks-utensils true, 
-						:lute true, 
-						:calligraphers-supplies true, 
-						:lyre true
-					}, 
-					:skill-options 
-					{
-						:choose 2, 
-						:options 
-						{
-							:religion true, 
-							:persuasion true, 
-							:investigation true, 
-							:acrobatics true, 
-							:performance true, 
-							:perception true, 
-							:sleight-of-hand true, 
-							:survival true, 
-							:history true, 
-							:animal-handling true, 
-							:nature true, 
-							:deception true, 
-							:intimidation true, 
-							:arcana true, 
-							:athletics true, 
-							:insight true, 
-							:medicine true, 
-							:stealth true
-						}
-					}, 
-					:language-options 
-					{
-						:choose 2,
-						:options 
-						{
-							:draconic true, 
-							:deep-speech true, 
-							:orc true, 
-							:dwarvish true, 
-							:gnomish true, 
-							:sylvan true, 
-							:elvish true, 
-							:abyssal true, 
-							:infernal true, 
-							:celestial true, 
-							:common true, 
-							:undercommon true, 
-							:primordial true, 
-							:giant true, 
-							:halfling true, 
-							:goblin true
-						}
-					}, 
-					:weapon-proficiency-options 
-					{
-						:choose 2, 
-						:options 
-						{
-							:battleaxe true, 
-							:halberd true, 
-							:longsword true, 
-							:dagger true, 
-							:blowgun true, 
-							:sickle true, 
-							:handaxe true, 
-							:war-pick true, 
-							:flail true, 
-							:greatsword true, 
-							:whip true, 
-							:rapier true, 
-							:spear true, 
-							:net true, 
-							:shortbow true, 
-							:warhammer true, 
-							:mace true, 
-							:crossbow-heavy true, 
-							:glaive true, 
-							:greataxe true, 
-							:quarterstaff true, 
-							:crossbow-light true, 
-							:sling true, 
-							:javelin true, 
-							:light-hammer true, 
-							:longbow true, 
-							:greatclub true, 
-							:club true, 
-							:morningstar true, 
-							:trident true, 
-							:maul true, 
-							:pike true, 
-							:lance true, 
-							:shortsword true, 
-							:crossbow-hand true, 
-							:scimitar true, 
-							:dart true
-						}
-					}
-				},
-				:props 
-				{
-					:weapon-prof 
-					{
-						:battleaxe true, 
-						:halberd true, 
-						:longsword true, 
-						:dagger true, 
-						:blowgun true, 
-						:sickle true, 
-						:handaxe true, 
-						:martial true, 
-						:war-pick true, 
-						:flail true, 
-						:greatsword true, 
-						:whip true, 
-						:simple true, 
-						:rapier true, 
-						:spear true, 
-						:net true, 
-						:shortbow true, 
-						:warhammer true, 
-						:mace true, 
-						:crossbow-heavy true, 
-						:glaive true, 
-						:greataxe true, 
-						:quarterstaff true, 
-						:crossbow-light true, 
-						:sling true, 
-						:javelin true, 
-						:light-hammer true, 
-						:longbow true, 
-						:greatclub true, 
-						:club true, 
-						:morningstar true, 
-						:trident true, 
-						:maul true, 
-						:pike true, 
-						:lance true, 
-						:shortsword true, 
-						:crossbow-hand true, 
-						:scimitar true, 
-						:dart true
-					}, 
-					:armor-prof 
-					{
-						:medium true, 
-						:heavy true, 
-						:shields true, 
-						:light true
-					},
-					:damage-resistance 
-					{
-						:fire true, 
-						:acid true, 
-						:psychic true, 
-						:force true, 
-						:bludgeoning true, 
-						:radiant true, 
-						:lightning true, 
-						:slashing true, 
-						:piercing true, 
-						:thunder true, 
-						:cold true, 
-						:traps true, 
-						:poison true, 
-						:necrotic true
-					}, 
-					:damage-immunity 
-					{
-						:fire true, 
-						:acid true, 
-						:psychic true, 
-						:force true, 
-						:bludgeoning true, 
-						:radiant true, 
-						:lightning true, 
-						:slashing true, 
-						:piercing true, 
-						:thunder true, 
-						:cold true, 
-						:poison true, 
-						:necrotic true
-					},
-					:skill-prof 
-					{
-						:religion true, 
-						:persuasion true, 
-						:investigation true, 
-						:acrobatics true, 
-						:performance true, 
-						:perception true, 
-						:sleight-of-hand true, 
-						:survival true, 
-						:history true, 
-						:animal-handling true, 
-						:nature true, 
-						:deception true, 
-						:intimidation true, 
-						:arcana true, 
-						:athletics true, 
-						:insight true, 
-						:medicine true, 
-						:stealth true
-					}
-				},
-				:traits 
-				[
-					{
-						:name "Firearms Knowledge", 
-						:description " You are proficient with firearms. Additionally, you ignore the loading property of firearms."
-					} 
-					{
-						:name "Headfirst Charge", 
-						:description "If you move at least 20 feet straight toward a target on your turn, you can use your action to make a special attack with your hippo-like head. The target must be within 5 feet of you and no more than one size larger than you. It must succeed on a Strength saving throw against a DC equal to 8 + your proficiency bonus + your Strength modifier or take bludgeoning damage equal to ld6 + your Strength modifier and be knocked prone."
-					} 
-					{
-						:name "Natural Armor", 
-						:description "You have thick, leathery skin. When you aren't wearing armor, your AC is 12 + your Constitution modifier. You can use your natural armor to determine your AC if the armor you wear would leave you with a lower AC. A shield’s benefits apply as normal while you use your natural armor."
-					} 
-					{
-						:name "Powerful Build", 
-						:description "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift."
-					} 
-					{
-						:type :action, 
-						:name "Test Action", 
-						:description "Test Description for Test Action"
-					} 
-					{
-						:type :b-action, 
-						:name "Test Bonus Action",
-						:description "Test Description for Test Bonus Action"
-					} 
-					{
-						:type :reaction,
-						:name "Test Reaction",					
-						:description "Test Description for Test Reaction"
-					}
-				]
-			}
-		},
-		:giff2 
-			{
-				:key :giff2, 
-				:name "Giff2",
-				:option-pack "TestSource2", 
-				:help "Test Description for Giff2", 
-				:size :medium,  
-				:speed 30,
-				:flying-speed 5, 
-				:swimming-speed 5,
-				:darkvision 60,   
-				:lizardfolk-ac true, 
-				:tortle-ac true, 
-				:languages 
-				#{
-					"Giant"
-					"Common"
-					"Celestial"
-					"Undercommon"
-					"Goblin"
-					"Dwarvish"
-					"Abyssal"
-					"Sylvan"
-					"Orc"
-					"Deep Speech"
-					"Primordial"
-					"Draconic"
-					"Gnomish"
-					"Elvish"
-					"Halfling"
-					"Infernal"
-				}, 
-				:profs 
-				{
-					:tool 
-					{
-						:cartographers-tools true, 
-						:painters-supplies true, 
-						:poisoners-kit true, 
-						:navigators-tools true, 
-						:glassblowers-tools true, 
-						:flute true, :dice-set true, 
-						:horn true, 
-						:herbalism-kit true, 
-						:dulcimer true, 
-						:disguise-kit true, 
-						:masons-tools true, 
-						:land-vehicles true, 
-						:viol true, 
-						:thieves-tools true, 
-						:jewelers-tools true, 
-						:leatherworkers-tools true, 
-						:smiths-tools true, 
-						:drum true, 
-						:cobblers-tools true, 
-						:potters-tools true, 
-						:dragonchess-set true, 
-						:playing-card-set true, 
-						:brewers-supplies true, 
-						:three-dragon-ante-set true, 
-						:forgery-kit true, 
-						:pan-flute true, 
-						:bagpipes true, 
-						:woodcarvers-tools true, 
-						:carpenters-tools true, 
-						:tinkers-tools true, 
-						:alchemists-supplies true, 
-						:water-vehicles true, 
-						:weavers-tools true, 
-						:shawm true, 
-						:cooks-utensils true, 
-						:lute true, 
-						:calligraphers-supplies true, 
-						:lyre true
-					}, 
-					:skill-options 
-					{
-						:choose 2, 
-						:options 
-						{
-							:religion true, 
-							:persuasion true, 
-							:investigation true, 
-							:acrobatics true, 
-							:performance true, 
-							:perception true, 
-							:sleight-of-hand true, 
-							:survival true, 
-							:history true, 
-							:animal-handling true, 
-							:nature true, 
-							:deception true, 
-							:intimidation true, 
-							:arcana true, 
-							:athletics true, 
-							:insight true, 
-							:medicine true, 
-							:stealth true
-						}
-					}, 
-					:language-options 
-					{
-						:choose 2,
-						:options 
-						{
-							:draconic true, 
-							:deep-speech true, 
-							:orc true, 
-							:dwarvish true, 
-							:gnomish true, 
-							:sylvan true, 
-							:elvish true, 
-							:abyssal true, 
-							:infernal true, 
-							:celestial true, 
-							:common true, 
-							:undercommon true, 
-							:primordial true, 
-							:giant true, 
-							:halfling true, 
-							:goblin true
-						}
-					}, 
-					:weapon-proficiency-options 
-					{
-						:choose 2, 
-						:options 
-						{
-							:battleaxe true, 
-							:halberd true, 
-							:longsword true, 
-							:dagger true, 
-							:blowgun true, 
-							:sickle true, 
-							:handaxe true, 
-							:war-pick true, 
-							:flail true, 
-							:greatsword true, 
-							:whip true, 
-							:rapier true, 
-							:spear true, 
-							:net true, 
-							:shortbow true, 
-							:warhammer true, 
-							:mace true, 
-							:crossbow-heavy true, 
-							:glaive true, 
-							:greataxe true, 
-							:quarterstaff true, 
-							:crossbow-light true, 
-							:sling true, 
-							:javelin true, 
-							:light-hammer true, 
-							:longbow true, 
-							:greatclub true, 
-							:club true, 
-							:morningstar true, 
-							:trident true, 
-							:maul true, 
-							:pike true, 
-							:lance true, 
-							:shortsword true, 
-							:crossbow-hand true, 
-							:scimitar true, 
-							:dart true
-						}
-					}
-				},
-				:props 
-				{
-					:weapon-prof 
-					{
-						:battleaxe true, 
-						:halberd true, 
-						:longsword true, 
-						:dagger true, 
-						:blowgun true, 
-						:sickle true, 
-						:handaxe true, 
-						:martial true, 
-						:war-pick true, 
-						:flail true, 
-						:greatsword true, 
-						:whip true, 
-						:simple true, 
-						:rapier true, 
-						:spear true, 
-						:net true, 
-						:shortbow true, 
-						:warhammer true, 
-						:mace true, 
-						:crossbow-heavy true, 
-						:glaive true, 
-						:greataxe true, 
-						:quarterstaff true, 
-						:crossbow-light true, 
-						:sling true, 
-						:javelin true, 
-						:light-hammer true, 
-						:longbow true, 
-						:greatclub true, 
-						:club true, 
-						:morningstar true, 
-						:trident true, 
-						:maul true, 
-						:pike true, 
-						:lance true, 
-						:shortsword true, 
-						:crossbow-hand true, 
-						:scimitar true, 
-						:dart true
-					}, 
-					:armor-prof 
-					{
-						:medium true, 
-						:heavy true, 
-						:shields true, 
-						:light true
-					},
-					:damage-resistance 
-					{
-						:fire true, 
-						:acid true, 
-						:psychic true, 
-						:force true, 
-						:bludgeoning true, 
-						:radiant true, 
-						:lightning true, 
-						:slashing true, 
-						:piercing true, 
-						:thunder true, 
-						:cold true, 
-						:traps true, 
-						:poison true, 
-						:necrotic true
-					}, 
-					:damage-immunity 
-					{
-						:fire true, 
-						:acid true, 
-						:psychic true, 
-						:force true, 
-						:bludgeoning true, 
-						:radiant true, 
-						:lightning true, 
-						:slashing true, 
-						:piercing true, 
-						:thunder true, 
-						:cold true, 
-						:poison true, 
-						:necrotic true
-					},
-					:skill-prof 
-					{
-						:religion true, 
-						:persuasion true, 
-						:investigation true, 
-						:acrobatics true, 
-						:performance true, 
-						:perception true, 
-						:sleight-of-hand true, 
-						:survival true, 
-						:history true, 
-						:animal-handling true, 
-						:nature true, 
-						:deception true, 
-						:intimidation true, 
-						:arcana true, 
-						:athletics true, 
-						:insight true, 
-						:medicine true, 
-						:stealth true
-					}
-				},
-				:traits 
-				[
-					{
-						:name "Firearms Knowledge", 
-						:description " You are proficient with firearms. Additionally, you ignore the loading property of firearms."
-					} 
-					{
-						:name "Headfirst Charge", 
-						:description "If you move at least 20 feet straight toward a target on your turn, you can use your action to make a special attack with your hippo-like head. The target must be within 5 feet of you and no more than one size larger than you. It must succeed on a Strength saving throw against a DC equal to 8 + your proficiency bonus + your Strength modifier or take bludgeoning damage equal to ld6 + your Strength modifier and be knocked prone."
-					} 
-					{
-						:name "Natural Armor", 
-						:description "You have thick, leathery skin. When you aren't wearing armor, your AC is 12 + your Constitution modifier. You can use your natural armor to determine your AC if the armor you wear would leave you with a lower AC. A shield’s benefits apply as normal while you use your natural armor."
-					} 
-					{
-						:name "Powerful Build", 
-						:description "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift."
-					} 
-					{
-						:type :action, 
-						:name "Test Action", 
-						:description "Test Description for Test Action"
-					} 
-					{
-						:type :b-action, 
-						:name "Test Bonus Action",
-						:description "Test Description for Test Bonus Action"
-					} 
-					{
-						:type :reaction,
-						:name "Test Reaction",					
-						:description "Test Description for Test Reaction"
-					}
-				]
 		}
 	}
 }		

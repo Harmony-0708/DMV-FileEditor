@@ -12,7 +12,6 @@
 #include "SizeEnum.h"
 #include "Spell.h"
 #include "Trait.h"
-#include "Race.h"
 #include "GUI.h"
 #include "harmonylib.h"
 #include "Pack.h"
@@ -28,6 +27,7 @@ public:
 	HPack(std::string name);
 
 	std::vector<Pack> get_packs();
+	std::string get_name();
 
 	void set_name(std::string name);
 	void set_packs(std::vector<Pack> packs);

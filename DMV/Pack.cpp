@@ -1046,6 +1046,23 @@ void Pack::save_pack(std::ofstream& myfile)
 
 }
 
+Pack Pack::merge(std::vector<Pack> Packs)
+{
+	Pack MergedPack{};
+	MergedPack.set_name(get_name());
+	std::vector<std::string> allRaces{};
+	int index{};
+	for (Pack i : Packs) {
+		for (Race j : i.get_races()) {
+			if (std::find(allRaces.begin(), allRaces.end(), j.get_name()) == allRaces.end()) {
+				allRaces.push_back(j.get_name());
+				MergedPack.set_races(j);
+			}
+		}
+	}
+	return MergedPack;
+}
+
 void Pack::print_pack(bool multi, std::ofstream& outputfile) {
 	std::vector<Race> myRaces{ Races };
 

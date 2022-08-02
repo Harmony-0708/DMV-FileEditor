@@ -159,6 +159,8 @@ public:
 	void insert_spell(int index, Spell spell);
 	void insert_spell(std::vector<std::vector<Spell>> spellList);
 
+	//Race merge(Race r1, Race r2);
+
 	//Gets all info on race, for display reasons
 	void display_info();
 

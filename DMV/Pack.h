@@ -53,6 +53,8 @@ public:
 	void set_items(Item inputItem);
 	void set_items(std::vector<Item> inputItems);
 
+	Pack merge(std::vector<Pack> Packs);
+
 	int load_pack(std::string packName);
 	Pack load_pack(std::fstream& myfile);
 	Pack load_orcbrew(std::fstream& myfile);
@@ -60,6 +62,7 @@ public:
 	void save_pack(std::ofstream& myfile);
 	void print_pack();
 	void print_pack(bool multi, std::ofstream& outputfile);
+
 
 };
 

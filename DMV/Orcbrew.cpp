@@ -88,6 +88,8 @@ void Orcbrew::load(std::string fileName)
         }
 
     }
+    std::string command{};
+    std::string newString{};
     for (std::string i : brokenUpLine) {
         if (didItterate) {
             didItterate = false;
@@ -104,18 +106,8 @@ void Orcbrew::load(std::string fileName)
             listmode.pop_back();
             continue;
         }
-        std::string command{};
-        if (i.size() > 3) {
-            if (i[0] == 'c' && i[1] == 'm' && i[2] == 'd') {
-                for (int k{ 0 }; k < i.size(); k++) {
-                    if (k >= 5) {
-                        command.push_back(i[k]);
-                    }
-                }
-            }
-        }
 
-        std::string newString{};
+        
         if (i[0] == '\"') {
             for (char k : i) {
                 if (k != '\"') {
@@ -126,9 +118,27 @@ void Orcbrew::load(std::string fileName)
                 }
             }
         }
+
+
+        if (i.size() > 3) {
+            if (i[0] == 'c' && i[1] == 'm' && i[2] == 'd') {
+                for (int k{ 0 }; k < i.size(); k++) {
+                    if (k >= 5) {
+                        command.push_back(i[k]);
+                    }
+                }
+            }
+        }
+
+        
+
+
+
         if (counter == 0) {
             newPack.set_name(newString);
         }
+
+        counter++;
 
     }
 

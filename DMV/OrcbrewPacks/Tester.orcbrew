@@ -126,7 +126,9 @@
  :undercommon true,
  :primordial true,
  :giant true,
- :halfling true,}},
+ :halfling true,
+ }
+ },
 },
  :props 
 {

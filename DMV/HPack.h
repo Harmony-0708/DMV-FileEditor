@@ -16,7 +16,6 @@
 #include "GUI.h"
 #include "harmonylib.h"
 #include "Pack.h"
-#include "Orcbrew.h"
 
 class HPack
 {

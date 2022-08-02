@@ -40,6 +40,10 @@ public:
 
 	void set_name(std::string name);
 
+	void update_race(Race inputRace);
+	void update_trait(Trait inputTrait);
+	void update_spell(Spell inputSpell);
+	void update_item(Item inputItem);
 	void set_races(Race inputRace);
 	void set_races(std::vector<Race> inputRaces);
 	void set_traits(Trait inputTrait);

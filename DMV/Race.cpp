@@ -19,11 +19,13 @@ Race::Race()
 Race::Race(std::string name)
 {
 	//Key = "";
+	std::string newKey{};
 	for (char i : name){
 		if (isalpha(i)) {
-			Key += tolower(i);
+			newKey += tolower(i);
 		}
 	}
+	Key = newKey;
 	Name = name;
 	OptionPack = "";
 	Description = "";
@@ -363,11 +365,13 @@ void Race::set_key(std::string key)
 void Race::set_name(std::string name)
 {
 	Name = name;
+	std::string newKey{};
 	for (char i : name) {
 		if (isalpha(i)) {
-			Key += tolower(i);
+			newKey += tolower(i);
 		}
 	}
+	Key = newKey;
 }
 /// <summary>
 /// Sets new Options Pack for race

@@ -25,6 +25,23 @@ void Pack::set_name(std::string name)
 	Name = name;
 }
 
+void Pack::update_race(Race inputRace)
+{
+	int index{-1};
+	bool found{ false };
+	for (Race i : get_races()) {
+		index++;
+		if (i.get_key() == inputRace.get_key()) {
+			Races[index] = inputRace;
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		set_races(inputRace);
+	}
+}
+
 void Pack::set_races(Race inputRace)
 {
 	Races.push_back(inputRace);

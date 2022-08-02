@@ -1,2 +1,4 @@
 ﻿  Orcbrew.cpp
+C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(210,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(340,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

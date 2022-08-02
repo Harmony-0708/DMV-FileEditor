@@ -16,6 +16,7 @@
 #include "harmonylib.h"
 #include "Pack.h"
 #include "HPack.h"
+#include "Orcbrew.h"
 
 
 void GenerateMenu();
@@ -67,10 +68,10 @@ void GenerateMenu() {
     std::vector<std::string> namesOfRaces{};
     do {
         system("cls");
-
+        savedPacks = SaveFile.get_packs();
         namesOfPacks.clear();
         namesOfRaces.clear();
-
+        
         for (Pack i : savedPacks) {
             for (Race k : i.get_races()) {
                 if (std::find(namesOfRaces.begin(), namesOfRaces.end(), k.get_name()) == namesOfRaces.end()) {
@@ -430,11 +431,11 @@ void GenerateMenu() {
         {
             std::string choice{};
             Pack newPack{};
-            std::cout << "Is this pack saved as a pack file (pck) or as a DMV pack (orcbrew)? " << std::endl;
+            std::cout << "Is this pack saved as a pack file (pck), a pack set (hpck), or as a DMV pack (orcbrew)? " << std::endl;
             std::cin.clear();
             std::cin.sync();
             std::getline(std::cin, choice);
-            choice = HLib::InputCheck(choice, "Is this pack saved as a pack file (pck) or as a DMV pack (orcbrew)?\n", true, false, std::vector<std::string>{"pck", "orcbrew"});
+            choice = HLib::InputCheck(choice, "Is this pack saved as a pack file (pck), a pack set (hpck), or as a DMV pack (orcbrew)?\n", true, false, std::vector<std::string>{"pck", "orcbrew"});
             if (choice == "pck") {
                 std::string name{};
                 std::cout << "Enter name of pack" << std::endl;
@@ -453,8 +454,29 @@ void GenerateMenu() {
                     std::cout << "Pack is already loaded" << std::endl;
                 }
             }
+            else if (choice == "hpck") {
+                std::string name{};
+                std::cout << "Enter name of pack" << std::endl;
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, name);
+                HPack newSaveFile{};
+                newSaveFile.load(name);
+                SaveFile = newSaveFile;
+                savedPacks = SaveFile.get_packs();
+            }
+            else if (choice == "orcbrew") {
+                std::string name{};
+                std::cout << "Enter name of pack" << std::endl;
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, name);
+                Orcbrew newOrcbrew{};
+                SaveFile = newOrcbrew.load(name);
+                savedPacks = SaveFile.get_packs();
+            }
             else {
-                std::cout << "Only pck files are supported at this time.\n";
+                std::cout << "Only pck, hpck, and orcbrew files are supported at this time.\n";
             }
             system("pause");
             break;
@@ -495,7 +517,8 @@ void GenerateMenu() {
         case 't':
         {
             std::cout << "Test function: File Loading" << std::endl << std::endl;
-            SaveOrcbrew.load("Tester");
+            SaveFile = SaveOrcbrew.load("Tester");
+            savedPacks = SaveFile.get_packs();
             system("pause");
             break;
         }
@@ -503,7 +526,7 @@ void GenerateMenu() {
             break;
         }
 
-        
+        SaveFile.set_packs(savedPacks);
     } while (selection[0] != 'Q' && selection[0] != 'q');
     system("cls");
 }

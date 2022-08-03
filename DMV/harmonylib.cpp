@@ -8,21 +8,32 @@ using namespace HLib;
 /// <param name="inputString">String to be displayed</param>
 void HLib::WordWrap(int wrapLimit, std::string inputString)
 {
-	int counter{};
-	for (char i : inputString) {
-		if (counter < wrapLimit + 1) {
-			std::cout << i;
-			counter++;
-		}
-		else if (inputString[i+1] == ' ' || inputString[i+1] == ',' || inputString[i+1] == '.' || inputString[i+1] == '!' || inputString[i+1] == '?' || inputString[i+1] == ':' || isalnum(i+1) || isalnum(i)) {
+    int counter{};
+    for (char i : inputString) {
+        if (counter < wrapLimit + 1) {
             std::cout << i;
-			counter -= 1;
-		}
-		else {
-			std::cout << std::endl;
-			counter = 0;
-		}
-	}
+            counter++;
+        }
+        if (i == ' ' || i == ',' || i == '.' || i == '!' || i == '?' || i == ':') {
+            bool check{ false };
+            std::string tempString{};
+            for (int k{ 0 }; k < 10; k++) {
+                if (inputString[i + k] == ' ') {
+                    check = true;
+                    break;
+                }
+                tempString += inputString[i + k];
+            }
+            if (!check) {
+                std::cout << std::string(wrapLimit - counter, ' ') << std::endl;
+                counter = 0;
+            }
+            else if (tempString.length() >= (wrapLimit - counter)) {
+                std::cout << std::string(wrapLimit - counter, ' ') << std::endl;
+                counter = 0;
+            }
+        }
+    }
 }
 
 /// <summary>
@@ -78,7 +89,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                 }
                 if (!alphacheck || input == "") {
                     std::cout << "Only use alphabet characters\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -99,7 +112,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                 }
                 if (alphacheck || input == "") {
                     std::cout << "Only use numbers\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -129,7 +144,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                 }
                 if (!(alphacheck) || (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -150,7 +167,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                 }
                 if (alphacheck || (std::find(parameters.begin(), parameters.end(), input) == parameters.end()) || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -162,7 +181,9 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
             do {
                 if (std::find(parameters.begin(), parameters.end(), input) == parameters.end() || input == "") {
                     std::cout << "Invalid input\n" << repeatString;
-                    std::cin >> input;
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, input);
                 }
                 else {
                     check = true;
@@ -171,5 +192,21 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
             return input;
         }
     }
+}
+
+/// <summary>
+/// Finds the length of the longest string and returns the length, also allows for a basevalue to check from
+/// </summary>
+/// <param name="input">- Vector of strings to check</param>
+/// <param name="longestLen">- Optional length to check from</param>
+/// <returns></returns>
+int HLib::FindLongest(std::vector<std::string> input, int longestLen)
+{
+    for (std::string i : input) {
+        if (i.length() > longestLen) {
+            longestLen = i.length();
+        }
+    }
+    return longestLen;
 }
 

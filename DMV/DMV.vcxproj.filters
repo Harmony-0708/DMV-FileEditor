@@ -33,6 +33,21 @@
     <ClCompile Include="harmonylib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Orcbrew.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="emptytest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Item.h">
@@ -50,16 +65,31 @@
     <ClInclude Include="harmonylib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AbilityScore.h">
+    <ClInclude Include="GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TraitType.h">
+    <ClInclude Include="Includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AbilityScore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SizeEnum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Includes.h">
+    <ClInclude Include="TraitType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Orcbrew.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HPack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="emptytest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

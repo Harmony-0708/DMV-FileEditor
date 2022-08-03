@@ -10,6 +10,7 @@
 #include "SizeEnum.h"
 #include "Spell.h"
 #include "Trait.h"
+#include "GUI.h"
 #include "harmonylib.h"
 class Race
 {
@@ -53,6 +54,9 @@ public:
 	//Constructors
 	Race();
 	Race(std::string);
+
+	//Clear
+	void clear();
 
 	//DisplayVector overrides
 	void DisplayVector(int wrapLimit, std::vector<Spell> inputVector);
@@ -154,6 +158,8 @@ public:
 	//Spells allow for indexing to match levels. 0 is level 1, 2 is level 1, 3 is level 2, etc etc
 	void insert_spell(int index, Spell spell);
 	void insert_spell(std::vector<std::vector<Spell>> spellList);
+
+	//Race merge(Race r1, Race r2);
 
 	//Gets all info on race, for display reasons
 	void display_info();

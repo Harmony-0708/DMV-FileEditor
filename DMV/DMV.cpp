@@ -1,7 +1,9 @@
-#include <iostream>
+﻿#include <iostream>
+#include <iomanip>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdlib>
+#include <cmath>
 #include <map>
 #include <vector>
 #include <string>
@@ -10,17 +12,24 @@
 #include "Spell.h"
 #include "Trait.h"
 #include "Race.h"
+#include "GUI.h"
 #include "harmonylib.h"
+#include "Pack.h"
+#include "HPack.h"
+#include "Orcbrew.h"
 
 
 void GenerateMenu();
-Race EditRaceInfo(std::string Name = "", std::string OptionPack = "", std::string Description = "", SizeEnum::Size Size = SizeEnum::small, std::string Str = "", std::string Dex = "", std::string Con = "", std::string Int = "", std::string Wis = "", std::string Cha = "", std::string SizeChoice = "", std::string Speed = "", std::string FlyingSpd = "", std::string SwimmingSpd = "", std::string DarkVision = "", std::string SkillOptionsCount = "", std::string LanguageOptionsCount = "", std::string WeaponOptionsCount = "", bool LizFolkAC = false, bool TortAC = false, std::string selection = {}, std::vector<std::string> Languages = {}, std::vector<std::string> Tools = {}, std::vector<std::string> SkillOptions = {}, std::vector<std::string> SkillProf = {}, std::vector<std::string> LanguageOptions = {}, std::vector<std::string> WeaponOptions = {}, std::vector<std::string> WeaponProf = {}, std::vector<std::string> ArmorProf = {}, std::vector<std::string> DamageRes = {}, std::vector<std::string> DamageImmun = {});
+Race EditRaceInfo(std::string Name = "", std::string OptionPack = "", std::string Description = "", std::string Str = "", std::string Dex = "", std::string Con = "", std::string Int = "", std::string Wis = "", std::string Cha = "", std::string SizeChoice = "", std::string Speed = "", std::string FlyingSpd = "", std::string SwimmingSpd = "", std::string DarkVision = "", std::string SkillOptionsCount = "", std::string LanguageOptionsCount = "", std::string WeaponOptionsCount = "", std::string LizFolkAC = "", std::string TortAC = "", std::vector<std::string> Languages = {"empty"}, std::vector<std::string> Tools = {"empty"}, std::vector<std::string> SkillOptions = {"empty"}, std::vector<std::string> SkillProf = {"empty"}, std::vector<std::string> LanguageOptions = {"empty"}, std::vector<std::string> WeaponOptions = {"empty"}, std::vector<std::string> WeaponProf = {"empty"}, std::vector<std::string> ArmorProf = {"empty"}, std::vector<std::string> DamageRes = {"empty"}, std::vector<std::string> DamageImmun = {"empty"}, std::vector<Trait> Traits = {});
 std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno = false);
 std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::string> globalVector, std::vector<std::string> inputVar = {});
 std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector = {});
+std::vector<std::string> RaceOptions{ "Name", "OptionPack", "Description", "Str", "Dex", "Con", "Int", "Wis", "Cha", "SizeChoice", "Speed", "FlyingSpd", "SwimmingSpd", "DarkVision", "SkillOptionsCount", "LanguageOptionsCount", "WeaponOptionsCount", "LizFolkAC", "TortAC", "Languages", "Tools", "SkillOptions", "SkillProf", "LanguageOptions", "WeaponOptions", "WeaponProf", "ArmorProf", "DamageRes", "DamageImmun", "Traits"};
+Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packName = "");
 std::vector<Spell> remove(std::vector<Spell> input, int index);
 std::vector<Trait> remove(std::vector<Trait> input, int index);
 int index(std::string input, std::vector<std::string> inputVector);
+
 
 //Globals
 std::vector<std::string> GlobalLanguages{"Giant", "Common", "Celestial", "Undercommon", "Goblin", "Dwarvish", "Abyssal", "Sylvan", "Orc", "Deep Speech", "Primordial", "Draconic", "Gnomish", "Elvish", "Halfling", "Infernal" };
@@ -31,51 +40,492 @@ std::vector<std::string> GlobalArmorType{"light","medium", "heavy", "shield"};
 std::vector<std::string> GlobalDamageType{"fire", "acid", "psychic", "force", "bludgeoning", "radiant", "lightning", "slashing", "piercing", "thunder", "cold", "traps", "poison", "necrotic"};
 
 
+void UnicodeTest() {
+    int val{ 175 };
+    for (int i{ 175 }; i < 224; i++) {
+        std::cout << " " << (char)val << " - " << val << std::endl;
+        val = i;
+    }
+}
+
 int main()
 {
+    //UnicodeTest();
     GenerateMenu();
     return 0;
 }
 
+
 void GenerateMenu() {
-    
-    char selection{};
-    Race TestRace{ "" };
+    GUI menuGUI{};
+    std::string selection{};
+    std::vector<Race> savedRaces{};
+    std::vector<Pack> savedPacks{};
+    HPack SaveFile{"Test"};
+    Orcbrew SaveOrcbrew{};
+
+    std::vector<std::string> namesOfPacks{};
+    std::vector<std::string> namesOfRaces{};
     do {
         system("cls");
+        savedPacks = SaveFile.get_packs();
+        namesOfPacks.clear();
+        namesOfRaces.clear();
+        
+        for (Pack i : savedPacks) {
+            for (Race k : i.get_races()) {
+                if (std::find(namesOfRaces.begin(), namesOfRaces.end(), k.get_name()) == namesOfRaces.end()) {
+                    savedRaces.push_back(k);
+                    namesOfRaces.push_back(k.get_name() + " (" + i.get_name() + ")");
+                }
+            }
+            namesOfPacks.push_back(i.get_name());
+        }
 
+        menuGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
+        std::cout << std::endl;
+        menuGUI.GenerateMenu("Menu Options", std::vector<std::string>{"D - Display", "A - Add Race", "E - Edit Race", "L - Load Pack", "S - Save Pack", "T - Testing", "Q - Quit"});
+        std::cout << "Enter choice: ";
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, selection);
+        if (selection == "") {
+            std::getline(std::cin, selection);
+        }
+        selection = HLib::InputCheck(selection,"Enter choice: ", true, false, std::vector<std::string>{ "D", "d", "A", "a", "E", "e", "T", "t", "S", "s", "L", "l", "Q", "q"});
 
-        std::cout << "A - Display" << std::endl
-                  << "B - Edit Info" << std::endl
-                  << "C - Option C" << std::endl
-                  << "Q - Quit"     << std::endl;
-        std::cout << "==========================" << std::endl << std::endl;
-        std::cin >> selection;
-
-        switch (selection)
+        switch (selection[0])
         {
-        case 'A':
-        case 'a':
+        case 'D':
+        case 'd':
         {
-            std::cout << std::endl << std::endl;
-            TestRace.display_info();
+            if (savedRaces.size() != 0) {
+                std::string choice{};
+                menuGUI.GenerateMenu("Select race", namesOfRaces);
+                namesOfRaces.push_back("filter");
+                std::cout << "To filter by pack use 'filter'\n";
+                std::cout << "Enter choice: ";
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, choice);
+                choice = HLib::InputCheck(choice, "Enter choice: ", false, false, namesOfRaces);
+                if (choice == "filter") {
+                    std::string filterChoice{};
+                    std::vector<std::string> filteredNamesOfRaces{};
+                    Pack filterPack{};
+                    std::cout << "Enter Filter: ";
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, filterChoice);
+                    filterChoice = HLib::InputCheck(filterChoice, "Enter Filter: ", false, false, namesOfPacks);
+                    for (Pack i : savedPacks) {
+                        if (i.get_name() == filterChoice) {
+                            filterPack = i;
+                            break;
+                        }
+                    }
+                    for (Race i : filterPack.get_races()) {
+                        filteredNamesOfRaces.push_back(i.get_name());
+                    }
+                    menuGUI.GenerateMenu("Select race", filteredNamesOfRaces);
+                    std::cout << "Enter choice: ";
+                    choice.clear();
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, choice);
+                    choice = HLib::InputCheck(choice, "Enter choice: ", false, false, filteredNamesOfRaces);
+                    savedRaces.at(index(choice, filteredNamesOfRaces)).display_info();
+                    system("cls");
+                    system("pause");
+                    break;
+                }
+                system("cls");
+                savedRaces.at(index(choice, namesOfRaces)).display_info();
+            }
+            else {
+                std::cout << "You have no saved races currently" << std::endl;
+            }
             std::cout << std::endl;
             system("pause");
             break;
         }
-        case 'B':
-        case 'b':
+        case 'A':
+        case 'a':
         {
-            std::cout << std::endl << std::endl;
-            TestRace = EditRaceInfo();
+            system("cls");
+            Race newRace{};
+            newRace = EditRaceInfo();
+            bool found{};
+            int pcounter{ 0 };
+            for (Pack i : savedPacks) {
+                if (newRace.get_optionPack() == i.get_name()) {
+                    found = true;
+                    std::vector<Race> races{ i.get_races() };
+                    for (Race k : races) {
+                        if (k.get_name() == newRace.get_name()) {
+                            if (isalpha(k.get_name()[-1])) {
+                                newRace.set_name(newRace.get_name() + '1');
+                            }
+                            else {
+                                int num{ (k.get_name()[-1] -'0' ) + 1};
+                                newRace.set_name(newRace.get_name() + std::to_string(num));
+                            }
+                        }
+                    }
+                    races.push_back(newRace);
+                    savedPacks.at(pcounter).set_races(races);
+                }
+                pcounter++;
+            }
+            if (!found) {
+                std::vector<Race> races{};
+                races.push_back(newRace);
+                Pack newPack{};
+                newPack.set_name(newRace.get_optionPack());
+                newPack.set_races(races);
+                savedPacks.push_back(newPack);
+            }
             break;
         }
-        case 'C':
-        case 'c':
+        case 'E':
+        case 'e':
         {
-            std::vector<Trait> input{};
-            std::cout << "Test function: Trait adding" << std::endl << std::endl;
-            input = InsertTraitsPrompt();
+            if (!savedRaces.empty()){
+                
+                std::string choice{};
+                std::vector<std::string> editChoices{"empty"};
+                Race editedRace{};
+                menuGUI.GenerateMenu("Select race", namesOfRaces);
+                namesOfRaces.push_back("filter");
+                std::cout << "To filter by pack use 'filter'\n";
+                std::cout << "Enter choice: ";
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, choice);
+                choice = HLib::InputCheck(choice, "Enter choice: ", false, false, namesOfRaces);
+                if (choice == "filter") {
+                    std::string filterChoice{};
+                    std::vector<std::string> filteredNamesOfRaces{};
+                    Pack filterPack{};
+                    std::cout << "Enter Filter: ";
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, filterChoice);
+                    filterChoice = HLib::InputCheck(filterChoice, "Enter Filter: ", false, false, namesOfPacks);
+                    for (Pack i : savedPacks) {
+                        if (i.get_name() == filterChoice) {
+                            filterPack = i;
+                            break;
+                        }
+                    }
+                    for (Race i : filterPack.get_races()) {
+                        filteredNamesOfRaces.push_back(i.get_name());
+                    }
+                    menuGUI.GenerateMenu("Select race", filteredNamesOfRaces);
+                    std::cout << "Enter choice: ";
+                    choice.clear();
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, choice);
+                    choice = HLib::InputCheck(choice, "Enter choice: ", false, false, filteredNamesOfRaces);
+                    editedRace = savedRaces.at(index(choice, filteredNamesOfRaces));
+                }
+                else {
+                    editedRace = savedRaces.at(index(choice, namesOfRaces));
+                }
+                system("cls");
+                editChoices = GetInputVector("edit option", RaceOptions,editChoices);
+                if (!editChoices.empty()) {
+                    //Race attributes
+                    std::string Name = editedRace.get_name();
+                    std::string OptionPack = editedRace.get_optionPack();
+                    std::string Description = editedRace.get_description();
+                    std::string Str = std::to_string(editedRace.get_str());
+                    std::string Dex = std::to_string(editedRace.get_dex());
+                    std::string Con = std::to_string(editedRace.get_con());
+                    std::string Int = std::to_string(editedRace.get_int());
+                    std::string Wis = std::to_string(editedRace.get_wis());
+                    std::string Cha = std::to_string(editedRace.get_cha());
+                    std::string SizeChoice{};
+                    switch (editedRace.get_size()) {
+                    case SizeEnum::small:
+                        SizeChoice = "0";
+                        break;
+                    case SizeEnum::medium:
+                        SizeChoice = "1";
+                        break;
+                    case SizeEnum::large:
+                        SizeChoice = "2";
+                        break;
+                    }
+                    std::string Speed = std::to_string(editedRace.get_speed());
+                    std::string FlyingSpd = std::to_string(editedRace.get_flySpeed());
+                    std::string SwimmingSpd = std::to_string(editedRace.get_swimSpeed());
+                    std::string DarkVision = std::to_string(editedRace.get_darkVision());
+                    std::string SkillOptionsCount = std::to_string(editedRace.get_skillOptionsCount());
+                    std::string LanguageOptionsCount = std::to_string(editedRace.get_languageOptionsCount());
+                    std::string WeaponOptionsCount = std::to_string(editedRace.get_weaponOptionsCount());
+                    std::string LizFolkAC{};
+                    if (editedRace.get_lizFolkAC()) { LizFolkAC = "true"; }
+                    else { LizFolkAC = "false"; }
+                    std::string TortAC{};
+                    if (editedRace.get_lizFolkAC()) { TortAC = "true"; }
+                    else { TortAC = "false"; }
+                    std::vector<std::string> Languages = editedRace.get_language();
+                    std::vector<std::string> Tools = editedRace.get_tool();
+                    std::vector<std::string> SkillOptions = editedRace.get_skillOption();
+                    std::vector<std::string> SkillProf = editedRace.get_skillProf();
+                    std::vector<std::string> LanguageOptions = editedRace.get_languageOption();
+                    std::vector<std::string> WeaponOptions = editedRace.get_weaponOption();
+                    std::vector<std::string> WeaponProf = editedRace.get_weaponProf();
+                    std::vector<std::string> ArmorProf = editedRace.get_armorProf();
+                    std::vector<std::string> DamageRes = editedRace.get_damageRes();
+                    std::vector<std::string> DamageImmun = editedRace.get_damageImmun();
+                    std::vector<Trait> Traits = editedRace.get_trait();
+
+                    for (std::string i : editChoices) {
+                        if (i == "Name") {
+                            Name.clear();
+                        }
+                        else if (i == "OptionPack") {
+                            OptionPack.clear();
+                        }
+                        else if (i == "Description") {
+                            Description.clear();
+                        }
+                        else if (i == "Str") {
+                            Str.clear();
+                        }
+                        else if (i == "Dex") {
+                            Dex.clear();
+                        }
+                        else if (i == "Con") {
+                            Con.clear();
+                        }
+                        else if (i == "Int") {
+                            Int.clear();
+                        }
+                        else if (i == "Wis") {
+                            Wis.clear();
+                        }
+                        else if (i == "Cha") {
+                            Cha.clear();
+                        }
+                        else if (i == "SizeChoice") {
+                            SizeChoice.clear();
+                        }
+                        else if (i == "Speed") {
+                            Speed.clear();
+                        }
+                        else if (i == "FlyingSpd") {
+                            FlyingSpd.clear();
+                        }
+                        else if (i == "SwimmingSpd") {
+                            SwimmingSpd.clear();
+                        }
+                        else if (i == "DarkVision") {
+                            DarkVision.clear();
+                        }
+                        else if (i == "SkillOptionsCount") {
+                            SkillOptionsCount.clear();
+                        }
+                        else if (i == "LanguageOptionsCount") {
+                            LanguageOptionsCount.clear();
+                        }
+                        else if (i == "WeaponOptionsCount") {
+                            WeaponOptionsCount.clear();
+                        }
+                        else if (i == "LizFolkAC") {
+                            LizFolkAC.clear();
+                        }
+                        else if (i == "TortAC") {
+                            TortAC.clear();
+                        }
+                        else if (i == "Languages") {
+                            Languages.clear();
+                            Languages.push_back("empty");
+                        }
+                        else if (i == "Tools") {
+                            Tools.clear();
+                            Tools.push_back("empty");
+                        }
+                        else if (i == "SkillOptions") {
+                            SkillOptions.clear();
+                            SkillOptions.push_back("empty");
+                        }
+                        else if (i == "SkillProf") {
+                            SkillProf.clear();
+                            SkillProf.push_back("empty");
+                        }
+                        else if (i == "LanguageOptions") {
+                            LanguageOptions.clear();
+                            LanguageOptions.push_back("empty");
+                        }
+                        else if (i == "WeaponOptions") {
+                            WeaponOptions.clear();
+                            WeaponOptions.push_back("empty");
+                        }
+                        else if (i == "WeaponProf") {
+                            WeaponProf.clear();
+                            WeaponProf.push_back("empty");
+                        }
+                        else if (i == "ArmorProf") {
+                            ArmorProf.clear();
+                            ArmorProf.push_back("empty");
+                        }
+                        else if (i == "DamageRes") {
+                            DamageRes.clear();
+                            DamageRes.push_back("empty");
+                        }
+                        else if (i == "DamageImmun") {
+                            DamageImmun.clear();
+                            DamageImmun.push_back("empty");
+                        }
+                        else if (i == "Traits") {
+                            Traits.clear();
+                        }
+
+
+                    }
+                    system("cls");
+                    editedRace = (EditRaceInfo(Name, OptionPack, Description, Str, Dex, Con, Int, Wis, Cha, SizeChoice, Speed, FlyingSpd, SwimmingSpd, DarkVision, SkillOptionsCount, LanguageOptionsCount, WeaponOptionsCount, LizFolkAC, TortAC, Languages, Tools, SkillOptions, SkillProf, LanguageOptions, WeaponOptions, WeaponProf, ArmorProf, DamageRes, DamageImmun, Traits));
+                    bool found{};
+                    int pcounter{0};
+                    for (Pack i : savedPacks) {
+                        int counter{ 0 };
+                        if (i.get_name() == editedRace.get_optionPack()) {
+                            for (Race k : i.get_races()) {
+                                if (k.get_name() == editedRace.get_name()) {
+                                    std::vector<Race> races{ i.get_races() };
+                                    races.at(counter) = editedRace;
+                                    savedPacks.at(pcounter).set_races(races);
+                                    found = true;
+
+                                    int rcounter{ 0 };
+                                    for (Race j : savedRaces) {
+                                        if (editedRace.get_name() == j.get_name() && editedRace.get_optionPack() == j.get_optionPack()) {
+                                            savedRaces.at(rcounter) = editedRace;
+                                        }
+                                        rcounter++;
+                                    }
+                                    break;
+                                }
+                                counter++;
+                            }
+                        }
+                        if (found) {
+                            break;
+                        }
+                        counter++;
+                    }
+                }
+            }
+            else {
+                std::cout << "You have no saved races currently" << std::endl;
+            }
+            system("pause");
+            break;
+        }
+        case 'L':
+        case 'l':
+        {
+            std::string choice{};
+            Pack newPack{};
+            std::cout << "Is this pack saved as a pack file (pck), a pack set (hpck), or as a DMV pack (orcbrew)? " << std::endl;
+            std::cin.clear();
+            std::cin.sync();
+            std::getline(std::cin, choice);
+            choice = HLib::InputCheck(choice, "Is this pack saved as a pack file (pck), a pack set (hpck), or as a DMV pack (orcbrew)?\n", true, false, std::vector<std::string>{"pck", "orcbrew"});
+            if (choice == "pck") {
+                std::string name{};
+                std::cout << "Enter name of pack" << std::endl;
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, name);
+                if (std::find(namesOfPacks.begin(), namesOfPacks.end(), name) == namesOfPacks.end()) {
+                    if (newPack.load_pack(name) == 0) {
+                        savedPacks.push_back(newPack);
+                    }
+                    else {
+                        std::cout << "Couldn't find pack. Make sure you spell it exactly as it's titled\n";
+                    }
+                }
+                else {
+                    std::cout << "Pack is already loaded" << std::endl;
+                }
+            }
+            else if (choice == "hpck") {
+                std::string name{};
+                std::cout << "Enter name of pack" << std::endl;
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, name);
+                HPack newSaveFile{};
+                newSaveFile.load(name);
+                SaveFile = newSaveFile;
+                savedPacks = SaveFile.get_packs();
+            }
+            else if (choice == "orcbrew") {
+                std::string name{};
+                std::cout << "Enter name of pack" << std::endl;
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, name);
+                Orcbrew newOrcbrew{};
+                SaveFile = newOrcbrew.load(name);
+                savedPacks = SaveFile.get_packs();
+            }
+            else {
+                std::cout << "Only pck, hpck, and orcbrew files are supported at this time.\n";
+            }
+            system("pause");
+            break;
+        }
+        case 'S':
+        case 's':
+        {
+            std::cout << std::endl << std::endl;
+            if (savedPacks.size() != 0) {
+                std::string choice{};
+                std::string packchoice{};
+                std::cout << "Would you like to save this to a pack file (pck) or as a DMV pack (orcbrew)? NOTE: pck files DO NOT work on DMV" << std::endl;
+                std::cout << "Enter choice: ";
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, packchoice);
+                packchoice = HLib::InputCheck(packchoice, "Would you like to save this to a pack file (pck) or as a DMV pack (orcbrew)? NOTE: pck files DO NOT work on DMV\n", true, false, std::vector<std::string>{"pck", "orcbrew"});
+                menuGUI.GenerateMenu("Select pack", namesOfPacks);
+                std::cout << "Enter choice: ";
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, choice);
+                choice = HLib::InputCheck(choice, "Enter choice: ", false, false, namesOfPacks);
+                if (packchoice == "orcbrew") {
+                    savedPacks.at(index(choice, namesOfPacks)).print_pack();
+                }
+                else {
+                    savedPacks.at(index(choice, namesOfPacks)).save_pack();
+                }
+            }
+            else {
+                std::cout << "You have no saved packs currently" << std::endl;
+            }
+            system("pause");
+            break;
+        }
+        case 'T':
+        case 't':
+        {
+            std::cout << "Test function: HPack Merging" << std::endl << std::endl;
+            HPack newSaveFile{"Austin's Pack"};
+            HPack mergedSaveFiles{"Test Pack"};
+            Orcbrew newOrcbrew{};
+            newSaveFile = newOrcbrew.load("all-content");
+            SaveFile = SaveOrcbrew.load("Tester");
+            newSaveFile.set_name("Austin's Pack");
+            SaveFile.set_name("Test Pack");
+            mergedSaveFiles = SaveFile.merge(std::vector<HPack>{SaveFile, newSaveFile});
+            savedPacks = mergedSaveFiles.get_packs();
             system("pause");
             break;
         }
@@ -83,44 +533,56 @@ void GenerateMenu() {
             break;
         }
 
-        
-    } while (selection != 'Q' && selection != 'q');
+        SaveFile.set_packs(savedPacks);
+    } while (selection[0] != 'Q' && selection[0] != 'q');
     system("cls");
 }
 
-Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Description, SizeEnum::Size Size, std::string Str, std::string Dex, std::string Con, std::string Int, std::string Wis, std::string Cha, std::string SizeChoice, std::string Speed, std::string FlyingSpd, std::string SwimmingSpd, std::string DarkVision, std::string SkillOptionsCount, std::string LanguageOptionsCount, std::string WeaponOptionsCount, bool LizFolkAC, bool TortAC, std::string selection, std::vector<std::string> Languages, std::vector<std::string> Tools, std::vector<std::string> SkillOptions, std::vector<std::string> SkillProf, std::vector<std::string> LanguageOptions, std::vector<std::string> WeaponOptions, std::vector<std::string> WeaponProf, std::vector<std::string> ArmorProf, std::vector<std::string> DamageRes, std::vector<std::string> DamageImmun) {
+Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Description, std::string Str, std::string Dex, std::string Con, std::string Int, std::string Wis, std::string Cha, std::string SizeChoice, std::string Speed, std::string FlyingSpd, std::string SwimmingSpd, std::string DarkVision, std::string SkillOptionsCount, std::string LanguageOptionsCount, std::string WeaponOptionsCount, std::string LizFolkAC, std::string TortAC, std::vector<std::string> Languages, std::vector<std::string> Tools, std::vector<std::string> SkillOptions, std::vector<std::string> SkillProf, std::vector<std::string> LanguageOptions, std::vector<std::string> WeaponOptions, std::vector<std::string> WeaponProf, std::vector<std::string> ArmorProf, std::vector<std::string> DamageRes, std::vector<std::string> DamageImmun, std::vector<Trait> Traits) {
     Race NewRace{};
     bool check{};
+    std::string selection{};
 
-    std::cout << "Enter name for race: ";
-    std::cin.clear();
-    std::cin.sync();
-    std::getline(std::cin, Name);
     if (Name == "") {
+        std::cout << "Enter name for race: ";
+        std::cin.clear();
+        std::cin.sync();
         std::getline(std::cin, Name);
+        if (Name == "") {
+            std::getline(std::cin, Name);
+        }
+        Name = HLib::InputCheck(Name, "Enter name for race: ");
     }
-    Name = HLib::InputCheck(Name,"Enter name for race: ");
     NewRace.set_name(Name);
 
-    std::cout << "\nDo you want to save it to a custon pack? (y/n) ";
-    std::getline(std::cin, selection);
-    selection = HLib::InputCheck(selection, "\nDo you want to save it to a custon pack? (y/n) ", true,  false, std::vector<std::string>{"y", "n"});
-    if (selection[0] == 'y') {
-        std::string pack{};
-        std::cout << "Please enter Pack name: ";
-        std::getline(std::cin,pack);
-        NewRace.set_optionPack(pack);
+    if (OptionPack == "") {
+        std::cout << "\nDo you want to save it to a custon pack? (y/n) ";
+        std::getline(std::cin, selection);
+        selection = HLib::InputCheck(selection, "\nDo you want to save it to a custon pack? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
+        if (selection[0] == 'y') {
+            std::string pack{};
+            std::cout << "Please enter Pack name: ";
+            std::getline(std::cin, pack);
+            NewRace.set_optionPack(pack);
+        }
+        else {
+            NewRace.set_optionPack("Default");
+        }
     }
     else {
-        NewRace.set_optionPack("Default");
+        NewRace.set_optionPack(OptionPack);
     }
 
-    std::cout << "\nEnter description: ";
-    std::getline(std::cin,Description);
+    if (Description == "") {
+        std::cout << "\nEnter description: ";
+        std::getline(std::cin, Description);
+    }
     NewRace.set_description(Description);
 
-    std::cout << "\nWhat size is the race: Small (0), Medium (1), Large (2)\n";
-    std::getline(std::cin, SizeChoice);
+    if (SizeChoice == "") {
+        std::cout << "\nWhat size is the race: Small (0), Medium (1), Large (2)\n";
+        std::getline(std::cin, SizeChoice);
+    }
     int SizeChoiceSelection{ std::stoi(HLib::InputCheck(SizeChoice,"\nWhat size is the race: Small (0), Medium (1), Large (2)\n",false, true, std::vector<std::string>{"0","1","2"}))};
     switch (SizeChoiceSelection)
     {
@@ -162,34 +624,46 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
     NewRace.set_weaponOptionsCount(std::stoi(GetInputSingle("\nEnter amount of Weapon proficencies: ", WeaponOptionsCount)));
 
     selection.clear();
+    if (LizFolkAC == "true") {
+        selection = "y";
+    }
+    else if (LizFolkAC == "false") {
+        selection = "n";
+    }
     NewRace.set_lizFolkAC(std::stoi(GetInputSingle("\nDo they have Lizard folk AC? (y/n) ", selection, true)));
 
     selection.clear();
+    if (TortAC == "true") {
+        selection = "y";
+    }
+    else if (TortAC == "false") {
+        selection = "n";
+    }
     NewRace.set_tortAC(std::stoi(GetInputSingle("\nDo they have Tortle AC? (y/n) ", selection, true)));
     
     system("pause");
 
-    NewRace.insert_tool(GetInputVector("tool profs", GlobalTools));
+    NewRace.insert_tool(GetInputVector("tool profs", GlobalTools, Tools));
 
-    NewRace.insert_languageOption(GetInputVector("language options", GlobalLanguages));
+    NewRace.insert_languageOption(GetInputVector("language options", GlobalLanguages, LanguageOptions));
 
-    NewRace.insert_language(GetInputVector("languages", GlobalLanguages));
+    NewRace.insert_language(GetInputVector("languages", GlobalLanguages, Languages));
 
-    NewRace.insert_skillOption(GetInputVector("skills", GlobalSkills));
+    NewRace.insert_skillOption(GetInputVector("skills", GlobalSkills, SkillOptions));
 
-    NewRace.insert_skillProf(GetInputVector("skill profs", GlobalSkills));
+    NewRace.insert_skillProf(GetInputVector("skill profs", GlobalSkills, SkillProf));
 
-    NewRace.insert_weaponOption(GetInputVector("weapon options", GlobalWeapons));
+    NewRace.insert_weaponOption(GetInputVector("weapon options", GlobalWeapons, WeaponOptions));
 
-    NewRace.insert_weaponProf(GetInputVector("weapon profs", GlobalWeapons));
+    NewRace.insert_weaponProf(GetInputVector("weapon profs", GlobalWeapons, WeaponProf));
 
-    NewRace.insert_armorProf(GetInputVector("armor profs", GlobalArmorType));
+    NewRace.insert_armorProf(GetInputVector("armor profs", GlobalArmorType, ArmorProf));
 
-    NewRace.insert_damageRes(GetInputVector("damage resistance", GlobalDamageType));
+    NewRace.insert_damageRes(GetInputVector("damage resistance", GlobalDamageType, DamageRes));
 
-    NewRace.insert_damageImmun(GetInputVector("damage immunities", GlobalDamageType));
+    NewRace.insert_damageImmun(GetInputVector("damage immunities", GlobalDamageType, DamageImmun));
 
-    NewRace.insert_trait(InsertTraitsPrompt());
+    NewRace.insert_trait(InsertTraitsPrompt(Traits));
 
     std::cout << "\n\nRace has been finished\n";
 
@@ -199,13 +673,26 @@ Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Descript
 
 std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno) {
     if (!yesno) {
+        if (inputVar != "") {
+            return inputVar;
+        }
         std::cout << prompt;
+        std::cin.clear();
+        std::cin.sync();
         std::getline(std::cin, inputVar);
         inputVar = HLib::InputCheck(inputVar, prompt, false, true);
         return inputVar;
     }
     else {
+        if (inputVar == "true" || inputVar == "1" || inputVar == "y") {
+            return "1";
+        }
+        else if (inputVar == "false" || inputVar == "0" || inputVar == "n") {
+            return "0";
+        }
         std::cout << prompt;
+        std::cin.clear();
+        std::cin.sync();
         std::getline(std::cin, inputVar);
         inputVar = HLib::InputCheck(inputVar, prompt,true, false, std::vector<std::string>{"y", "n"});
         if (inputVar[0] == 'y') {
@@ -218,22 +705,30 @@ std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno)
 }
 std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::string> globalVector, std::vector<std::string> inputVar) {
 	std::string selection{};
+    GUI gui{};
+    if (inputVar.empty() || ((!inputVar.empty()) && inputVar.at(0) != "empty")) {
+        return inputVar;
+    }
+    if (inputVar.at(0) == "empty") {
+        inputVar.clear();
+    }
 	do {
 		system("CLS");
-		std::cout << "Please choose " << prompt << ": ";
-		HLib::DisplayVector(100, globalVector);
+        gui.GenerateMenu("Please choose " + prompt,globalVector,"",true,4);
+        if (inputVar.size() == 1 && inputVar.at(0) == "") {
+            inputVar.clear();
+        }
 		if (inputVar.empty() != true) {
-			std::cout << "\nAlready chosen " << prompt << ": ";
-			HLib::DisplayVector(100, inputVar);
+            gui.GenerateMenu("Already chosen " + prompt, inputVar, "", true, 4);
 		}
-		std::cout << "\nType command then the tool you want to add. Commands: add, remove, clear, done\n";
+		std::cout << "\nType command then the tool you want to add. Commands: add, all, remove, clear, done\n";
 		std::cin.clear();
 		std::cin.sync();
 		std::getline(std::cin, selection);
 		if (selection == "") {
 			std::getline(std::cin, selection);
 		}
-		selection = HLib::InputCheck(selection, "\nType command then the tool you want to add. Commands: add, remove, clear, done\n");
+		selection = HLib::InputCheck(selection, "\nType command then the tool you want to add. Commands: add, all, remove, clear, done\n");
 
 		std::string safeSelection{ selection };
 		std::string cmd{};
@@ -274,6 +769,9 @@ std::vector<std::string> GetInputVector(std::string prompt, std::vector<std::str
 		else if (cmd == "clear") {
             inputVar.clear();
 		}
+        else if (cmd == "all") {
+            inputVar = globalVector;
+        }
 		else if (cmd == "done") {
             selection = "done";
 			std::cout << "Items inserted\n";
@@ -317,17 +815,17 @@ int index(std::string input, std::vector<std::string> inputVector) {
 
 std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector) {
     if (defaultVector.empty()){
+        GUI gui{};
         std::string selection{};
         do {
             system("CLS");
             std::cout << "Enter traits/feats for race\n\n";
             std::vector<std::string> displayVector{};
             if (!defaultVector.empty()) {
-                std::cout << "Current Traits: ";
                 for (Trait i : defaultVector) {
+                    gui.GenerateMenu(i.get_name(), std::vector<std::string>{i.get_description()}, i.get_typename());
                     displayVector.push_back(i.get_name());
                 }
-                HLib::DisplayVector(100, displayVector);
             }
             std::cout << "\nType command then the tool you want to add. Commands: add, edit, remove, clear, done\n";
             std::cin.clear();
@@ -366,19 +864,19 @@ std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector) {
 					}
 					else if (cmd == "edit") {
                         if (std::find(displayVector.begin(), displayVector.end(), selection) != displayVector.end()) {
-                            Trait newTrait{ defaultVector[index(selection,displayVector)] };
+                            Trait newTrait{ defaultVector.at(index(selection,displayVector)) };
                             std::string choice{};
                             std::cout << "\nWhat would you like to edit (name, description, type): ";
                             std::getline(std::cin, choice);
                             HLib::InputCheck(choice, "\nWhat would you like to edit (name, description, type): ", true, false, std::vector<std::string>{"name", "description", "type"});
                             if (choice == "name") {
-                                defaultVector[index(selection, displayVector)] = newTrait.create_trait("", newTrait.get_description(), newTrait.get_typename());
+                                defaultVector.at(index(selection,displayVector)) = newTrait.create_trait("", newTrait.get_description(), newTrait.get_typename());
                             }
                             else if (choice == "description") {
-                                defaultVector[index(selection, displayVector)] = newTrait.create_trait(newTrait.get_name(), "", newTrait.get_typename());
+                                defaultVector.at(index(selection,displayVector)) = newTrait.create_trait(newTrait.get_name(), "", newTrait.get_typename());
                             }
                             else {
-                                defaultVector[index(selection, displayVector)] = newTrait.create_trait(newTrait.get_name(), newTrait.get_description(), "");
+                                defaultVector.at(index(selection,displayVector)) = newTrait.create_trait(newTrait.get_name(), newTrait.get_description(), "");
                             }
                         }
                         else {
@@ -423,5 +921,28 @@ std::vector<Trait> InsertTraitsPrompt(std::vector<Trait> defaultVector) {
     else {
         return defaultVector;
     }
+}
+
+Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packName) {
+    Race foundRace{};
+    for (Pack i : packSet) {
+        if (packName != "") {
+            if (i.get_name() == packName) {
+                for (Race k : i.get_races()) {
+                    if (k.get_name() == raceName) {
+                        foundRace = k;
+                    }
+                }
+            }
+        }
+        else {
+            for (Race k : i.get_races()) {
+                if (k.get_name() == raceName) {
+                    foundRace = k;
+                }
+            }
+        }
+    }
+    return foundRace;
 }
 

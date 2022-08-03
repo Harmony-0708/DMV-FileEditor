@@ -1,7 +1,7 @@
 #include "Race.h"
 Race::Race()
 {
-	Key = "key";
+	Key = "";
 	Name = "";
 	OptionPack = "";
 	Description = "";
@@ -19,11 +19,13 @@ Race::Race()
 Race::Race(std::string name)
 {
 	//Key = "";
+	std::string newKey{};
 	for (char i : name){
 		if (isalpha(i)) {
-			Key += tolower(i);
+			newKey += tolower(i);
 		}
 	}
+	Key = newKey;
 	Name = name;
 	OptionPack = "";
 	Description = "";
@@ -37,6 +39,35 @@ Race::Race(std::string name)
 	WeaponOptionsCount = 1;
 	LizFolkAC = false;
 	TortAC = false;
+}
+
+void Race::clear()
+{
+	Key = "";
+	Name = "";
+	OptionPack = "";
+	Description = "";
+	Size = SizeEnum::small;
+	Speed = 30;
+	FlyingSpd = 0;
+	SwimmingSpd = 0;
+	DarkVision = 0;
+	SkillOptionsCount = 1;
+	LanguageOptionsCount = 1;
+	WeaponOptionsCount = 1;
+	LizFolkAC = false;
+	TortAC = false;
+	Languages.clear();
+	Tools.clear();
+	SkillOptions.clear();
+	SkillProf.clear();
+	LanguageOptions.clear();
+	WeaponOptions.clear();
+	WeaponProf.clear();
+	ArmorProf.clear();
+	DamageRes.clear();
+	DamageImmun.clear();
+	Traits.clear();
 }
 
 void Race::DisplayVector(int wrapLimit, std::vector<Spell> inputVector)
@@ -334,11 +365,13 @@ void Race::set_key(std::string key)
 void Race::set_name(std::string name)
 {
 	Name = name;
+	std::string newKey{};
 	for (char i : name) {
 		if (isalpha(i)) {
-			Key += tolower(i);
+			newKey += tolower(i);
 		}
 	}
+	Key = newKey;
 }
 /// <summary>
 /// Sets new Options Pack for race
@@ -695,6 +728,60 @@ void Race::insert_spell(std::vector<std::vector<Spell>> spellList)
 	Spells = spellList;
 }
 
+//Race Race::merge(Race r1, Race r2)
+//{
+//	Race mergedRace{};
+//	mergedRace.set_name(r1.get_name());
+//	mergedRace.set_optionPack(r1.get_optionPack());
+//	if (r1.get_description() > r2.get_description()) {
+//		mergedRace.set_description(r1.get_description());
+//	}
+//	else {
+//		mergedRace.set_description(r2.get_description());
+//	}
+//	if (r1.get_str() > r2.get_str()) {
+//		mergedRace.set_str(r1.get_str());
+//	}
+//	else {
+//		mergedRace.set_str(r2.get_str());
+//	}
+//	if (r1.get_dex() > r2.get_dex()) {
+//		mergedRace.set_dex(r1.get_dex());
+//	}
+//	else {
+//		mergedRace.set_dex(r2.get_dex());
+//	}
+//	if (r1.get_con() > r2.get_con()) {
+//		mergedRace.set_con(r1.get_con());
+//	}
+//	else {
+//		mergedRace.set_con(r2.get_con());
+//	}
+//	if (r1.get_int() > r2.get_int()) {
+//		mergedRace.set_int(r1.get_int());
+//	}
+//	else {
+//		mergedRace.set_int(r2.get_int());
+//	}
+//	if (r1.get_wis() > r2.get_wis()) {
+//		mergedRace.set_wis(r1.get_wis());
+//	}
+//	else {
+//		mergedRace.set_wis(r2.get_wis());
+//	}
+//	if (r1.get_cha() > r2.get_cha()) {
+//		mergedRace.set_cha(r1.get_cha());
+//	}
+//	else {
+//		mergedRace.set_cha(r2.get_cha());
+//	}
+//	mergedRace.set_size(r1.get_size());
+//
+//
+//
+//	return mergedRace;
+//}
+
 
 //Display
 
@@ -703,63 +790,56 @@ void Race::insert_spell(std::vector<std::vector<Spell>> spellList)
 /// </summary>
 void Race::display_info()
 {
-	int counter{};
-	
+	GUI displayGUI{};
+
 	std::cout << std::endl << std::endl;
-	std::cout << "Race: " << get_name() << std::endl;
-	std::cout << "Pack: " << get_optionPack() << std::endl;
-	std::cout << "Description: ";
-	HLib::WordWrap(100, get_description());
+	displayGUI.MakeBox(get_name(), 2);
 	std::cout << std::endl;
-	std::cout << "Size: " << get_sizename() << std::endl;
-	std::cout << "Str Mod: " << get_str() << std::endl;
-	std::cout << "Dex Mod: " << get_dex() << std::endl;
-	std::cout << "Con Mod: " << get_con() << std::endl;
-	std::cout << "Int Mod: " << get_int() << std::endl;
-	std::cout << "Wis Mod: " << get_wis() << std::endl;
-	std::cout << "Cha Mod: " << get_cha() << std::endl;
-	std::cout << "Speed: " << get_speed() << std::endl;
-	std::cout << "Fly Speed: " << get_flySpeed() << std::endl;
-	std::cout << "Swimming Speed: " << get_swimSpeed() << std::endl;
-	std::cout << "Dark Vision: " << get_darkVision() << std::endl;
-	std::cout << "Skill options count: " << get_skillOptionsCount() << std::endl;
-	std::cout << "Language options count: " << get_languageOptionsCount() << std::endl;
-	std::cout << "Weapon options count: " << get_weaponOptionsCount() << std::endl;
-	std::cout << std::boolalpha;
-	std::cout << "Do they have Lizard Folk AC: " << get_lizFolkAC() << std::endl;
-	std::cout << "Do they have Tortle AC: " << get_tortAC() << std::endl;
-	std::cout << std::boolalpha;
-	std::cout << "Languages: ";
-	HLib::DisplayVector(100, get_language());
+	displayGUI.GenerateGrid(std::vector<std::string>{
+		"Race: " + get_name(),
+		"Pack: " + get_optionPack(),
+		"Size: " + get_sizename()
+	});
 	std::cout << std::endl;
-	std::cout << "Tools: ";
-	HLib::DisplayVector(100, get_tool());
+	displayGUI.GenerateMenu("Description", std::vector<std::string>{get_description()});
 	std::cout << std::endl;
-	std::cout << "Skill Options: ";
-	HLib::DisplayVector(100, get_skillOption());
+	displayGUI.GenerateGrid(std::vector<std::string>{
+		"Str Mod: " + std::to_string(get_str()),
+		"Dex Mod: " + std::to_string(get_dex()),
+		"Con Mod: " + std::to_string(get_con()),
+		"Int Mod: " + std::to_string(get_int()),
+		"Wis Mod: " + std::to_string(get_wis()), 
+		"Cha Mod: " + std::to_string(get_cha()),
+		"Speed: " + std::to_string(get_speed()),
+		"Fly Speed: " + std::to_string(get_flySpeed()),
+		"Swimming Speed: " + std::to_string(get_swimSpeed()),
+		"Dark Vision: " + std::to_string(get_darkVision()),
+		"",
+		"",
+		"Skill options: " + std::to_string(get_skillOptionsCount()),
+		"Language options: " + std::to_string(get_languageOptionsCount()),
+		"Weapon options: " + std::to_string(get_weaponOptionsCount()),
+		"",
+		"",
+		"",
+		"Lizard Folk AC: " + std::to_string(get_lizFolkAC()),
+		"Tortle AC: " + std::to_string(get_tortAC()),
+	},4,6);
+	displayGUI.GenerateMenu("Languages", get_language(), "", true, 4);
+	displayGUI.GenerateMenu("Tools", get_tool(), "", true, 4);
+	displayGUI.GenerateMenu("Skill Options", get_skillOption(), "", true, 4);
+	displayGUI.GenerateMenu("Language Options", get_languageOption(), "", true, 4);
+	displayGUI.GenerateMenu("Weapon Options", get_weaponOption(), "", true, 4);
+	displayGUI.GenerateMenu("Skill Proficencies", get_skillProf(), "", true, 4);
+	displayGUI.GenerateMenu("Weapon Proficencies", get_weaponProf(), "", true, 4);
+	displayGUI.GenerateMenu("Armor Proficencies", get_armorProf(), "", true, 4);
+	displayGUI.GenerateMenu("Damage Resistance", get_damageRes(), "", true, 4);
+	displayGUI.GenerateMenu("Damage Immunites", get_damageImmun(), "", true, 4);
 	std::cout << std::endl;
-	std::cout << "Skill Proficencies: ";
-	HLib::DisplayVector(100, get_skillProf());
-	std::cout << std::endl;
-	std::cout << "Language Options: ";
-	HLib::DisplayVector(100, get_languageOption());
-	std::cout << std::endl;
-	std::cout << "Weapon Options: ";
-	HLib::DisplayVector(100, get_weaponOption());
-	std::cout << std::endl;
-	std::cout << "Weapon Proficencies: ";
-	HLib::DisplayVector(100, get_weaponProf());
-	std::cout << std::endl;
-	std::cout << "Armor Proficencies: ";
-	HLib::DisplayVector(100, get_armorProf());
-	std::cout << std::endl;
-	std::cout << "Damage Resistance: ";
-	HLib::DisplayVector(100, get_damageRes());
-	std::cout << std::endl;
-	std::cout << "Damage Immunites: ";
-	HLib::DisplayVector(100, get_damageImmun());
-	std::cout << std::endl;
-	std::cout << "Traits: ";
-	DisplayVector(100, get_trait());
+	for (Trait i : get_trait()) {
+		displayGUI.GenerateMenu(i.get_name(), std::vector<std::string>{i.get_description()}, i.get_typename());
+	}
 	std::cout << std::endl;
 }
+
+

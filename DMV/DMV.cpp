@@ -517,11 +517,13 @@ void GenerateMenu() {
         case 't':
         {
             std::cout << "Test function: HPack Merging" << std::endl << std::endl;
-            HPack newSaveFile{};
-            HPack mergedSaveFiles{};
+            HPack newSaveFile{"Austin's Pack"};
+            HPack mergedSaveFiles{"Test Pack"};
             Orcbrew newOrcbrew{};
             newSaveFile = newOrcbrew.load("all-content");
             SaveFile = SaveOrcbrew.load("Tester");
+            newSaveFile.set_name("Austin's Pack");
+            SaveFile.set_name("Test Pack");
             mergedSaveFiles = SaveFile.merge(std::vector<HPack>{SaveFile, newSaveFile});
             savedPacks = mergedSaveFiles.get_packs();
             system("pause");

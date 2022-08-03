@@ -1056,6 +1056,7 @@ Pack Pack::merge(std::vector<Pack> Packs)
 		for (Race j : i.get_races()) {
 			if (std::find(allRaces.begin(), allRaces.end(), j.get_name()) == allRaces.end()) {
 				allRaces.push_back(j.get_name());
+				j.set_optionPack(MergedPack.get_name());
 				MergedPack.set_races(j);
 			}
 		}

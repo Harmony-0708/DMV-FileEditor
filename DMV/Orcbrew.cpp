@@ -509,6 +509,7 @@ HPack Orcbrew::load(std::string fileName)
     HPack convertedPack{};
     Pack newPack{};
 
+
     std::string line{};
     std::string combinedlines{};
     std::vector<std::string> brokenUpLine{};
@@ -696,6 +697,7 @@ HPack Orcbrew::load(std::string fileName)
 
     }
 
+    convertedPack.set_name(Name);
     return convertedPack;
 }
 

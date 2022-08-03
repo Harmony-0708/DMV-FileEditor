@@ -1,5 +1,4 @@
 #include "HPack.h"
-#include "Race.cpp"
 
 HPack::HPack()
 {
@@ -49,11 +48,11 @@ HPack HPack::merge(std::vector<HPack> HPackPack)
 	MergedHPack.set_name(get_name());
 	for (HPack i : HPackPack) {
 		Pack newPack{};
-		newPack.set_name(MergedHPack.get_name());
+		newPack.set_name(i.get_name());
 		MergedHPack.add_pack(newPack.merge(i.get_packs()));
 	}
 	
-	return HPack();
+	return MergedHPack;
 }
 
 void HPack::load(std::string fileName)

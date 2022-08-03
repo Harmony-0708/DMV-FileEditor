@@ -32,6 +32,7 @@ public:
 	Orcbrew merge(std::vector<Orcbrew> OrcbrewPack);
 
 	void set_packs(std::vector<Pack> packs);
+	void set_name(std::string name);
 
 	Pack add_to_pack(Pack inPack, std::string command, std::string input, std::string packPart, std::string objectName);
 	Pack add_to_pack(Pack inPack, std::string command, std::vector<std::string> input, std::string packPart, std::string objectName);

@@ -29,29 +29,32 @@ Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packN
 std::vector<Spell> remove(std::vector<Spell> input, int index);
 std::vector<Trait> remove(std::vector<Trait> input, int index);
 int index(std::string input, std::vector<std::string> inputVector);
-
+int CommandCode(std::string command);
+HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> parameters = {}, std::string context = {});
+void Console(std::vector<std::string> currentCommands = {}, std::vector<std::string> currentCmdDef = {}, HPack currentHPack = {});
+std::vector<std::string> split(std::string input);
+std::vector<std::string> merge_ordered(std::vector<std::string> command, std::vector<std::string> description);
+bool includes_string(std::string input, std::vector<std::string> vInput);
+std::vector<std::string> selection(std::vector<std::string>);
 
 //Globals
+HPack GlobalPack{};
 std::vector<std::string> GlobalLanguages{"Giant", "Common", "Celestial", "Undercommon", "Goblin", "Dwarvish", "Abyssal", "Sylvan", "Orc", "Deep Speech", "Primordial", "Draconic", "Gnomish", "Elvish", "Halfling", "Infernal" };
 std::vector<std::string> GlobalWeapons{"battleaxe", "halberd", "longsword", "dagger", "blowgun", "sickle", "handaxe", "war-pick", "flail", "greatsword", "whip", "rapier", "spear", "net", "shortbow", "warhammer", "mace", "crossbow-heavy", "glaive", "greataxe", "quarterstaff", "crossbow-light", "sling", "javelin", "light-hammer", "longbow", "greatclub", "club", "morningstar", "trident", "maul", "pike", "lance", "shortsword", "crossbow-hand", "scimitar", "dart"};
 std::vector<std::string> GlobalSkills{"religion", "persuasion", "investigation", "acrobatics", "performance", "perception", "sleight-of-hand", "survival", "history", "animal-handling", "nature", "deception", "intimidation", "arcana", "athletics", "insight", "medicine", "stealth"};
 std::vector<std::string> GlobalTools{"cartographers-tools", "painters-supplies", "poisoners-kit", "navigators-tools", "glassblowers-tools", "flute", "dice-set", "horn", "herbalism-kit", "dulcimer", "disguise-kit", "masons-tools", "land-vehicles", "viol", "thieves-tools", "jewelers-tools", "leatherworkers-tools", "smiths-tools", "drum", "cobblers-tools", "potters-tools", "dragonchess-set", "playing-card-set", "brewers-supplies", "three-dragon-ante-set", "forgery-kit", "pan-flute", "bagpipes", "woodcarvers-tools", "carpenters-tools", "tinkers-tools", "alchemists-supplies", "water-vehicles", "weavers-tools", "shawm", "cooks-utensils", "lute", "calligraphers-supplies", "lyre"};
 std::vector<std::string> GlobalArmorType{"light","medium", "heavy", "shield"};
 std::vector<std::string> GlobalDamageType{"fire", "acid", "psychic", "force", "bludgeoning", "radiant", "lightning", "slashing", "piercing", "thunder", "cold", "traps", "poison", "necrotic"};
-
-
-void UnicodeTest() {
-    int val{ 175 };
-    for (int i{ 175 }; i < 224; i++) {
-        std::cout << " " << (char)val << " - " << val << std::endl;
-        val = i;
-    }
-}
+std::vector<std::string> GlobalCommands{"exit","help"};
+std::vector<std::string> GlobalCommandDefs{"Closes the program", "Displays Commands"};
+bool displayCoolGUI{true};
 
 int main()
 {
-    //UnicodeTest();
-    GenerateMenu();
+    HPack SessionPack{};
+
+    Console(std::vector<std::string>{"display", "add", "load", "save", "export"}, std::vector<std::string>{"Displays stuff", "Add to pack", "Load from a file", "Save to a file", "Export to Orcbrew"}, SessionPack);
+    //GenerateMenu();
     return 0;
 }
 
@@ -135,7 +138,6 @@ void GenerateMenu() {
                     std::getline(std::cin, choice);
                     choice = HLib::InputCheck(choice, "Enter choice: ", false, false, filteredNamesOfRaces);
                     savedRaces.at(index(choice, filteredNamesOfRaces)).display_info();
-                    system("cls");
                     system("pause");
                     break;
                 }
@@ -946,3 +948,633 @@ Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packN
     return foundRace;
 }
 
+void ExitProgram() {
+    std::string input{};
+    std::cout << "\nAre you sure you want to exit?\n";
+    std::getline(std::cin, input);
+    input = HLib::InputCheck(input, "\nInput incorrect format\nAre you sure you want to exit?\n", true, false, std::vector<std::string>{"yes", "no", "y", "n"});
+    if (input == "yes" || input == "y") {
+        std::cout << "\n\nGoodbye!\n";
+        system("pause");
+        exit(0);
+    }
+    else {
+        std::cout << "\n\nReturning to console...\n";
+        system("pause");
+        system("cls");
+        main();
+    }
+}
+
+int CommandCode(std::string command) {
+    if (command == "exit") {
+        return 0;
+    }
+    else if (command == "help") {
+        return 1;
+    }
+    else if (command == "display") {
+        return 2;
+    }
+    else if (command == "add") {
+        return 3;
+    }
+    else if (command == "load") {
+        return 4;
+    }
+    else if (command == "save") {
+        return 5;
+    }
+    else if (command == "export") {
+        return 6;
+    }
+    else {
+        return -1;
+    }
+}
+
+bool includes_string(std::string input, std::vector<std::string> vInput) {
+    for (std::string i : vInput) {
+        if (i == input) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::vector<std::string> merge_ordered(std::vector<std::string> command, std::vector<std::string> description) {
+    int index{};
+    std::vector<std::string> combined{};
+    for (std::string i : command) {
+        combined.push_back(i);
+        combined.push_back(description.at(index));
+        index++;
+    }
+    return combined;
+}
+
+HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> parameters, std::string context) {
+    switch (cmdCode)
+    {
+    //Exit
+    case 0: {
+        ExitProgram();
+        break;
+    }
+    
+    //Help
+    case 1: {
+		GUI HelpGui{};
+		int index{};
+		std::vector<std::string> commandsToDisplay{};
+		for (std::string i : GlobalCommands) {
+			commandsToDisplay.push_back(i);
+			commandsToDisplay.push_back(GlobalCommandDefs.at(index));
+			index++;
+		}
+        if (!parameters.empty()) { commandsToDisplay.insert(std::end(commandsToDisplay), std::begin(parameters), std::end(parameters)); }
+        HelpGui.GenerateMenu("Command - Definition", commandsToDisplay, "", true, 2);
+		break;
+    }
+
+    //Display
+    case 2: {
+        GUI menuGUI{};
+        std::vector<std::string> options{"all", "options", "enable", "disable","races"};
+        std::vector<std::string> option_desc{ "Displays everything", "Shows Parameters", "Enables fancy GUI", "Disables fancy GUI" };
+        std::vector<Race> savedRaces{};
+        std::vector<Pack> savedPacks{};
+        Orcbrew SaveOrcbrew{};
+
+        std::vector<std::string> namesOfPacks{};
+        std::vector<std::string> namesOfRaces{};
+
+        std::cout << std::endl;
+        if (parameters.empty() || parameters.at(0) == options.at(0)) {
+            menuGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
+            std::cout << std::endl;
+            menuGUI.GenerateMenu("Display Options", options);
+        }
+        else if (parameters.at(0) == "help") {
+            ExecuteCommand(CommandCode("help"), currentHPack, merge_ordered(options, option_desc));
+        }
+        else if (parameters.at(0) == options.at(1)) {
+            menuGUI.GenerateMenu("Display Options", options);
+        }
+        else if (parameters.at(0) == options.at(2)) {
+            displayCoolGUI = true;
+            std::cout << "\nFancy GUI enabled.\n";
+        }
+        else if (parameters.at(0) == options.at(3)) {
+            displayCoolGUI = false;
+            std::cout << "\nFancy GUI disabled.\n";
+        }
+        else if (parameters.at(0) == options.at(4)) {
+            system("cls");
+            savedPacks = currentHPack.get_packs();
+            namesOfPacks.clear();
+            namesOfRaces.clear();
+            for (Pack i : savedPacks) {
+                for (Race k : i.get_races()) {
+                    if (std::find(namesOfRaces.begin(), namesOfRaces.end(), k.get_name()) == namesOfRaces.end()) {
+                        savedRaces.push_back(k);
+                        namesOfRaces.push_back(k.get_name() + " (" + i.get_name() + ")");
+                    }
+                }
+                namesOfPacks.push_back(i.get_name());
+            }
+            if (savedRaces.size() != 0) {
+                std::string choice{};
+                menuGUI.GenerateMenu("Select race", namesOfRaces);
+                namesOfRaces.push_back("filter");
+                std::cout << "To filter by pack use 'filter'\n";
+                std::cout << "Enter choice: ";
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, choice);
+                choice = HLib::InputCheck(choice, "Enter choice: ", false, false, namesOfRaces);
+                if (choice == "filter") {
+                    std::string filterChoice{};
+                    std::vector<std::string> filteredNamesOfRaces{};
+                    Pack filterPack{};
+                    std::cout << "Enter Filter: ";
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, filterChoice);
+                    filterChoice = HLib::InputCheck(filterChoice, "Enter Filter: ", false, false, namesOfPacks);
+                    for (Pack i : savedPacks) {
+                        if (i.get_name() == filterChoice) {
+                            filterPack = i;
+                            break;
+                        }
+                    }
+                    for (Race i : filterPack.get_races()) {
+                        filteredNamesOfRaces.push_back(i.get_name());
+                    }
+                    menuGUI.GenerateMenu("Select race", filteredNamesOfRaces);
+                    std::cout << "Enter choice: ";
+                    choice.clear();
+                    std::cin.clear();
+                    std::cin.sync();
+                    std::getline(std::cin, choice);
+                    choice = HLib::InputCheck(choice, "Enter choice: ", false, false, filteredNamesOfRaces);
+                    savedRaces.at(index(choice, filteredNamesOfRaces)).display_info();
+                    system("pause");
+                    break;
+                }
+                system("cls");
+                savedRaces.at(index(choice, namesOfRaces)).display_info();
+            }
+            else {
+                std::cout << "You have no saved races currently" << std::endl;
+            }
+            std::cout << std::endl;
+            system("pause");
+        }
+        else {
+            std::cout << "\nInvalid parameter\n";
+        }
+        break;
+    }
+    
+    //Add
+    case 3: {
+        GUI addGUI{};
+        std::vector<std::string> addOptions{ "cancel","race" };
+        std::string input{};
+
+        if (parameters.empty()) {
+            std::cout << "\nWhat would you like to add?\n";
+            std::getline(std::cin, input);
+            addOptions.push_back("options");
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat would you like to add?\n", true, false, addOptions);
+            ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{input}, "add");
+        }
+        else if (parameters.at(0) == "options") {
+            addGUI.GenerateMenu("Add Options", addOptions);
+            std::cout << std::endl;
+            ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{}, "add");
+        }
+        else if (parameters.at(0) == addOptions.at(0)) {
+            break;
+        }
+        else if (parameters.at(0) == addOptions.at(1)) {
+            Pack newPack{};
+            newPack.set_races(EditRaceInfo());
+            newPack.set_name(newPack.get_races().at(0).get_optionPack());
+            newPack.merge(currentHPack.get_packs());
+            currentHPack.add_pack(newPack);
+        }
+        break;
+    }
+    
+    //Load
+    case 4: {
+        GUI loadGUI{};
+        std::vector<std::string> loadOptions{ "cancel","all","single","multi"};
+        std::vector<std::string> fileTypes{ "hpck","pck","orcbrew" };
+        std::string input{};
+
+        if (parameters.empty()) {
+            std::cout << "\nHow many packs do you want to load?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow many packs do you want to load?\n", true, false, loadOptions);
+            ExecuteCommand(CommandCode("load"), currentHPack,std::vector<std::string>{input}, "load");
+        }
+        else if (parameters.at(0) == "options") {
+            loadGUI.GenerateMenu("Load Options", loadOptions);
+            std::cout << std::endl;
+            ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{}, "load");
+        }
+        else if (parameters.at(0) == loadOptions.at(0)) {
+            break;
+        }
+        else if (parameters.at(0) == loadOptions.at(1)) {
+            std::vector<std::string> nameOfFiles{};
+            input.clear();
+            
+            std::cout << "\nWhat type of file would you like to load?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat type of file would you like to load?\n", true, false, fileTypes);
+            
+            std::cout << "\nAll " << input << " files will be loaded in the local folder. Please ensure the files you want to load are currently in the folder then hit enter.\n";
+            system("pause");
+
+            if (input == "hpck" || input == "pck") {
+                for (const auto& i : std::filesystem::directory_iterator("CustomPacks")) {
+                    std::string path{ i.path().string() };
+                    path.erase(0, 12);
+                    if (path.substr(path.find(".") + 1) == input) {
+                        nameOfFiles.push_back(path);
+                    }
+                }
+            }
+            else {
+                for (const auto& i : std::filesystem::directory_iterator("OrcbrewPacks")) {
+                    std::string path{ i.path().string() };
+                    path.erase(0, 13);
+                    if (path.substr(path.find(".") + 1) == input) {
+                        nameOfFiles.push_back(path);
+                    }
+                }
+            }
+            
+            for (std::string i : nameOfFiles) {
+                if (input == "hpck") {
+                    HPack newHPack{};
+                    i.erase(i.size()-5, 5);
+                    newHPack.load(i);
+                    currentHPack.merge(std::vector<HPack>{newHPack});
+                }
+                else if (input == "pck") {
+                    Pack newPack{};
+                    i.erase(i.size() - 4, 4);
+                    newPack.load_pack(i);
+                    currentHPack.add_pack(newPack);
+                }
+                else if (input == "orcbrew") {
+                    HPack newHPack{};
+                    Orcbrew newPack{};
+                    i.erase(i.size() - 4, 4);
+                    newHPack = newPack.load(i);
+                    currentHPack.merge(std::vector<HPack>{newHPack});
+                }
+            }
+        }
+        else if (parameters.at(0) == loadOptions.at(2)) {
+            std::vector<std::string> nameOfFiles{};
+            input.clear();
+
+            std::cout << "\nWhat type of file would you like to load?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat type of file would you like to load?\n", true, false, fileTypes);
+            system("pause");
+
+            if (input == "hpck" || input == "pck") {
+                for (const auto& i : std::filesystem::directory_iterator("CustomPacks")) {
+                    std::string path{ i.path().string() };
+                    path.erase(0, 12);
+                    if (path.substr(path.find(".") + 1) == input) {
+                        nameOfFiles.push_back(path);
+                    }
+                }
+            }
+            else {
+                for (const auto& i : std::filesystem::directory_iterator("OrcbrewPacks")) {
+                    std::string path{ i.path().string() };
+                    path.erase(0, 13);
+                    if (path.substr(path.find(".") + 1) == input) {
+                        nameOfFiles.push_back(path);
+                    }
+                }
+            }
+            std::string fileName{};
+            std::cout << "\nPlease enter file to load\n";
+            std::getline(std::cin, fileName);
+            input = HLib::InputCheck(fileName + "." + input, "\nInvalid Item\nWhat type of file would you like to load?\n", true, false, nameOfFiles);
+
+
+            nameOfFiles = selection(nameOfFiles);
+
+            for (std::string i : nameOfFiles) {
+                if (input == "hpck" && i == input) {
+                    HPack newHPack{};
+                    i.erase(i.size() - 5, 5);
+                    newHPack.load(i);
+                    currentHPack.merge(std::vector<HPack>{newHPack});
+                }
+                else if (input == "pck" && i == input) {
+                    Pack newPack{};
+                    i.erase(i.size() - 4, 4);
+                    newPack.load_pack(i);
+                    currentHPack.add_pack(newPack);
+                }
+                else if (input == "orcbrew" && i == input) {
+                    HPack newHPack{};
+                    Orcbrew newPack{};
+                    i.erase(i.size() - 4, 4);
+                    newHPack = newPack.load(i);
+                    currentHPack.merge(std::vector<HPack>{newHPack});
+                }
+            }
+        }
+        else if (parameters.at(0) == loadOptions.at(3)) {
+
+            std::vector<std::string> nameOfFiles{};
+            input.clear();
+
+            std::cout << "\nWhat type of file would you like to load?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat type of file would you like to load?\n", true, false, fileTypes);
+
+            std::cout << "\nAll " << input << " files will be loaded in the local folder. Please ensure the files you want to load are currently in the folder then hit enter.\n";
+            system("pause");
+
+            if (input == "hpck" || input == "pck") {
+                for (const auto& i : std::filesystem::directory_iterator("CustomPacks")) {
+                    std::string path{ i.path().string() };
+                    path.erase(0, 12);
+                    if (path.substr(path.find(".") + 1) == input) {
+                        nameOfFiles.push_back(path);
+                    }
+                }
+            }
+            else {
+                for (const auto& i : std::filesystem::directory_iterator("OrcbrewPacks")) {
+                    std::string path{ i.path().string() };
+                    path.erase(0, 13);
+                    if (path.substr(path.find(".") + 1) == input) {
+                        nameOfFiles.push_back(path);
+                    }
+                }
+            }
+
+            nameOfFiles = selection(nameOfFiles);
+
+            for (std::string i : nameOfFiles) {
+                if (input == "hpck") {
+                    HPack newHPack{};
+                    i.erase(i.size() - 5, 5);
+                    newHPack.load(i);
+                    currentHPack.merge(std::vector<HPack>{newHPack});
+                }
+                else if (input == "pck") {
+                    Pack newPack{};
+                    i.erase(i.size() - 4, 4);
+                    newPack.load_pack(i);
+                    currentHPack.add_pack(newPack);
+                }
+                else if (input == "orcbrew") {
+                    HPack newHPack{};
+                    Orcbrew newPack{};
+                    i.erase(i.size() - 4, 4);
+                    newHPack = newPack.load(i);
+                    currentHPack.merge(std::vector<HPack>{newHPack});
+                }
+            }
+        }
+        break;
+    }
+
+    //Save
+    case 5: {
+        GUI saveGUI{};
+        std::vector<std::string> saveOptions{ "cancel","hpck","pck" };
+        std::string input{};
+
+        if (parameters.empty()) {
+            std::cout << "\nHow do you want to save your packs?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow do you want to save your packs?\n", true, false, loadOptions);
+            ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{input}, "load");
+        }
+        else if (parameters.at(0) == "cancel") {
+            break;
+        }
+        else if (parameters.at(0) == "options") {
+            saveGUI.GenerateMenu("Save Options", saveOptions);
+            std::cout << std::endl;
+            ExecuteCommand(CommandCode("save"), currentHPack, std::vector<std::string>{}, "save");
+        }
+        else if (parameters.at(0) == saveOptions.at(1)) {
+            currentHPack.save();
+        }
+        else if (parameters.at(0) == saveOptions.at(2)) {
+
+        }
+        break;
+    }
+
+    //Export
+    case 6: {
+        //orcbrew shit
+        /*else if (parameters.at(0) == saveOptions.at(3)) {
+            Orcbrew tempOrcbrew{};
+            tempOrcbrew.set_packs(currentHPack.get_packs());
+            tempOrcbrew.set_name(currentHPack.get_name());
+            tempOrcbrew.save();
+        }*/
+        break;
+    }
+    default:
+        std::cout << "\n\nAn error has occured, write down what you did and report it to the devs\n";
+        system("pause");
+        break;
+    }
+    if (context == "") {
+        system("pause");
+        system("cls");
+    }
+    return currentHPack;
+}
+
+void Console(std::vector<std::string> currentCommands, std::vector<std::string> currentCmdDef, HPack currentHPack) {
+    GUI consoleGUI{};
+    std::string input{};
+    std::vector<std::string> commands{};
+    std::vector<std::string> combined{};
+    int index{};
+
+    if (!currentCommands.empty()) { commands.insert(std::end(commands), std::begin(currentCommands), std::end(currentCommands)); }
+    for (std::string i : commands) {
+        combined.push_back(i);
+        combined.push_back(currentCmdDef.at(index));
+        index++;
+    }
+    commands.insert(std::begin(commands), std::begin(GlobalCommands), std::end(GlobalCommands));
+    
+    do {
+        std::string command{};
+        std::string parameter{};
+        std::string bufferCommand{};
+
+        if (displayCoolGUI) {
+            consoleGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
+        }
+
+        std::cout << "\nEnter input:\n";
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, input);
+
+        //seperates the command
+        parameter = input;
+        int parameterindex{};
+        for (char i : input) {
+            if (i != ' ') {
+                if (std::isalpha(i)) {
+                    command.push_back(std::tolower(i));
+                    parameter.erase(0, 1);
+                }
+                else {
+                    command.push_back(i);
+                    parameter.erase(0, 1);
+                }
+            }
+            else {
+                parameter.erase(0, 1);
+                break;
+            }
+        }
+        if (includes_string(command, commands)) {
+            std::vector<std::string> parameters{ split(parameter) };
+            currentHPack = ExecuteCommand(CommandCode(command), currentHPack, parameters);
+            input = command;
+        }
+        else {
+            std::cout << "\nInvalid Command, use 'help' for list of commands\n";
+        }
+    } while (input != "exit");
+}
+
+std::vector<std::string> split(std::string s){
+    std::stringstream ss(s);
+    std::istream_iterator<std::string> begin(ss);
+    std::istream_iterator<std::string> end;
+    std::vector<std::string> vstrings(begin, end);
+    return vstrings;
+}
+
+std::vector<std::string> selection(std::vector<std::string> parameters) {
+    GUI selectionGUI{};
+    std::vector<std::string> selected{};
+    std::string input{};
+    std::vector<std::string> commands{"add","remove","clear","done"};
+
+    do {
+        system("cls");
+
+        std::string command{};
+        std::string parameter{};
+
+        selectionGUI.GenerateMenu("Enter selections ", parameters, "Use add, remove, and clear", true, 3);
+        
+        if (!selected.empty()) {
+            std::cout << std::endl;
+            selectionGUI.GenerateMenu("Already Selected ", selected, "", true, 4);
+        }
+
+        std::cout << "\nEnter input:\n"; 
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, input);
+
+        //seperates the command
+        parameter = input;
+        int parameterindex{};
+        for (char i : input) {
+            if (i != ' ') {
+                if (std::isalpha(i)) {
+                    command.push_back(std::tolower(i));
+                    parameter.erase(0, 1);
+                }
+                else {
+                    command.push_back(i);
+                    parameter.erase(0, 1);
+                }
+            }
+            else {
+                parameter.erase(0, 1);
+                break;
+            }
+        }
+
+        if (includes_string(command, commands)) {
+            if (command == "add") {
+                if (parameter != "all") {
+                    bool found{ false };
+                    for (std::string i : selected) {
+                        if (i == parameter) {
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        selected.push_back(parameter);
+                    }
+                    else {
+                        std::cout << "\nItem was already selected\n";
+                    }
+                }
+                else {
+                    selected.clear();
+                    for (std::string i : parameters) {
+                        selected.push_back(i);
+                    }
+                }
+            }
+            else if (command == "remove") {
+                int index{-1};
+                bool found{false};
+                for (std::string i : selected) {
+                    index++;
+                    if (i == parameter) {
+                        selected.erase(selected.begin() + index);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    std::cout << "\nItem was not found\n";
+                }
+            }
+            else if (command == "clear") {
+                std::cout << "\nAre you sure you want to clear your selection?\n";
+                input.clear();
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, input);
+                input = HLib::InputCheck(input, "\nYes/No\nAre you sure you want to clear your selection?\n", true, false, { "Yes","No","yes","no" });
+                if (input == "yes" || input == "Yes") {
+                    selected.clear();
+                }
+            }
+            input = command;
+        }
+        else {
+            std::cout << "\nInvalid Command, use 'help' for list of commands\n";
+        }
+
+    } while (input != "done");
+
+
+    return selected;
+}

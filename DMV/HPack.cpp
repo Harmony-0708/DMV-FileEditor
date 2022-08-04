@@ -30,6 +30,17 @@ void HPack::set_packs(std::vector<Pack> packs)
 	Packs = packs;
 }
 
+void HPack::set_pack_name(std::string packName, std::string newName)
+{
+	int index{};
+	for (Pack i : get_packs()) {
+		if (i.get_name() == packName) {
+			Packs.at(index).set_name(newName);
+		}
+		index++;
+	}
+}
+
 void HPack::add_pack(Pack pack)
 {
 	std::vector<Pack> currentPacks{ get_packs() };

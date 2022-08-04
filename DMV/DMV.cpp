@@ -36,24 +36,230 @@ std::vector<std::string> split(std::string input);
 std::vector<std::string> merge_ordered(std::vector<std::string> command, std::vector<std::string> description);
 bool includes_string(std::string input, std::vector<std::string> vInput);
 std::vector<std::string> selection(std::vector<std::string>);
+Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> parameters = {}, std::string context = {});
+Race RaceConsole();
 
 //Globals
 HPack GlobalPack{};
-std::vector<std::string> GlobalLanguages{"Giant", "Common", "Celestial", "Undercommon", "Goblin", "Dwarvish", "Abyssal", "Sylvan", "Orc", "Deep Speech", "Primordial", "Draconic", "Gnomish", "Elvish", "Halfling", "Infernal" };
-std::vector<std::string> GlobalWeapons{"battleaxe", "halberd", "longsword", "dagger", "blowgun", "sickle", "handaxe", "war-pick", "flail", "greatsword", "whip", "rapier", "spear", "net", "shortbow", "warhammer", "mace", "crossbow-heavy", "glaive", "greataxe", "quarterstaff", "crossbow-light", "sling", "javelin", "light-hammer", "longbow", "greatclub", "club", "morningstar", "trident", "maul", "pike", "lance", "shortsword", "crossbow-hand", "scimitar", "dart"};
-std::vector<std::string> GlobalSkills{"religion", "persuasion", "investigation", "acrobatics", "performance", "perception", "sleight-of-hand", "survival", "history", "animal-handling", "nature", "deception", "intimidation", "arcana", "athletics", "insight", "medicine", "stealth"};
-std::vector<std::string> GlobalTools{"cartographers-tools", "painters-supplies", "poisoners-kit", "navigators-tools", "glassblowers-tools", "flute", "dice-set", "horn", "herbalism-kit", "dulcimer", "disguise-kit", "masons-tools", "land-vehicles", "viol", "thieves-tools", "jewelers-tools", "leatherworkers-tools", "smiths-tools", "drum", "cobblers-tools", "potters-tools", "dragonchess-set", "playing-card-set", "brewers-supplies", "three-dragon-ante-set", "forgery-kit", "pan-flute", "bagpipes", "woodcarvers-tools", "carpenters-tools", "tinkers-tools", "alchemists-supplies", "water-vehicles", "weavers-tools", "shawm", "cooks-utensils", "lute", "calligraphers-supplies", "lyre"};
-std::vector<std::string> GlobalArmorType{"light","medium", "heavy", "shield"};
-std::vector<std::string> GlobalDamageType{"fire", "acid", "psychic", "force", "bludgeoning", "radiant", "lightning", "slashing", "piercing", "thunder", "cold", "traps", "poison", "necrotic"};
-std::vector<std::string> GlobalCommands{"exit","help"};
-std::vector<std::string> GlobalCommandDefs{"Closes the program", "Displays Commands"};
+std::vector<std::string> GlobalLanguages{
+    "Giant", 
+    "Common",
+    "Celestial", 
+    "Undercommon",
+    "Goblin",
+    "Dwarvish",
+    "Abyssal", 
+    "Sylvan", 
+    "Orc", 
+    "Deep Speech",
+    "Primordial", 
+    "Draconic",
+    "Gnomish", 
+    "Elvish",
+    "Halfling",
+    "Infernal"
+};
+std::vector<std::string> GlobalWeapons{
+    "battleaxe", 
+    "halberd", 
+    "longsword",
+    "dagger", 
+    "blowgun", 
+    "sickle", 
+    "handaxe",
+    "war-pick",
+    "flail",
+    "greatsword", 
+    "whip", 
+    "rapier",
+    "spear",
+    "net",
+    "shortbow",
+    "warhammer",
+    "mace",
+    "crossbow-heavy",
+    "glaive", 
+    "greataxe",
+    "quarterstaff",
+    "crossbow-light", 
+    "sling", 
+    "javelin", 
+    "light-hammer",
+    "longbow",
+    "greatclub",
+    "club", 
+    "morningstar",
+    "trident",
+    "maul",
+    "pike", 
+    "lance",
+    "shortsword",
+    "crossbow-hand",
+    "scimitar",
+    "dart"
+};
+std::vector<std::string> GlobalSkills{
+    "religion", 
+    "persuasion", 
+    "investigation",
+    "acrobatics",
+    "performance",
+    "perception",
+    "sleight-of-hand",
+    "survival",
+    "history",
+    "animal-handling",
+    "nature",
+    "deception",
+    "intimidation",
+    "arcana",
+    "athletics",
+    "insight", 
+    "medicine", 
+    "stealth"
+};
+std::vector<std::string> GlobalTools{
+    "cartographers-tools", 
+    "painters-supplies", 
+    "poisoners-kit", 
+    "navigators-tools", 
+    "glassblowers-tools", 
+    "flute", 
+    "dice-set", 
+    "horn", 
+    "herbalism-kit", 
+    "dulcimer", 
+    "disguise-kit", 
+    "masons-tools", 
+    "land-vehicles", 
+    "viol", 
+    "thieves-tools", 
+    "jewelers-tools", 
+    "leatherworkers-tools", 
+    "smiths-tools", 
+    "drum", 
+    "cobblers-tools", 
+    "potters-tools", 
+    "dragonchess-set", 
+    "playing-card-set", 
+    "brewers-supplies", 
+    "three-dragon-ante-set", 
+    "forgery-kit", 
+    "pan-flute", 
+    "bagpipes", 
+    "woodcarvers-tools", 
+    "carpenters-tools", 
+    "tinkers-tools", 
+    "alchemists-supplies", 
+    "water-vehicles", 
+    "weavers-tools", 
+    "shawm", 
+    "cooks-utensils", 
+    "lute", 
+    "calligraphers-supplies", 
+    "lyre"
+};
+std::vector<std::string> GlobalArmorType{
+    "light",
+    "medium", 
+    "heavy", 
+    "shield"
+};
+std::vector<std::string> GlobalDamageType{
+    "fire", 
+    "acid", 
+    "psychic", 
+    "force", 
+    "bludgeoning", 
+    "radiant", 
+    "lightning", 
+    "slashing", 
+    "piercing", 
+    "thunder", 
+    "cold", 
+    "traps", 
+    "poison", 
+    "necrotic"
+};
+std::vector<std::string> GlobalCommands{
+    "exit",
+    "help"
+};
+std::vector<std::string> GlobalCommandDefs{
+    "Closes the program", 
+    "Displays Commands"
+};
+std::vector<std::string> GlobalRaceOptions{ 
+    "name", 
+    "option-pack", 
+    "description", 
+    "str", 
+    "dex", 
+    "con", 
+    "int", 
+    "wis", 
+    "cha", 
+    "size", 
+    "speed", 
+    "flying-speed", 
+    "swimming-speed", 
+    "dark-vision", 
+    "skill-opscount", 
+    "lang-opscount", 
+    "weapon-opscount", 
+    "lizard-ac", 
+    "tortle-ac", 
+    "languages", 
+    "tools", 
+    "skill-ops", 
+    "skill-profs", 
+    "language-ops", 
+    "weapon-ops", 
+    "Weapon-profs", 
+    "armor-profs", 
+    "damage-res", 
+    "damage-imm", 
+    "traits" 
+};
+std::vector<std::string> GlobalRaceDefs{ 
+    "The name of your Race", 
+    "The name of the pack your race is in", 
+    "The Description of your race", 
+    "Strength mod", 
+    "Dexterity mod",
+    "Constitution mod",
+    "Intelligence mod", 
+    "Wisdom mod",
+    "Charisma mod", 
+    "The size of your race", 
+    "Your race's speed", 
+    "Your race's flying speed, 0 if none", 
+    "Your race's swimming speed", 
+    "Your race's dark vision",
+    "The ammount of skill options you have, Min 1", 
+    "The ammount of language options you have, Min 1", 
+    "The ammount of weapon options you have, Min 1", 
+    "Whether or no your race has lizardfolk AC", 
+    "Whether or no your race has tortle AC",
+    "The languages your race knows", 
+    "The tools your race is proficent in", 
+    "Your race's skill options", 
+    "Your race's skill proficencies", 
+    "Your race's language options", 
+    "Your race's weapon options", 
+    "Your race's weapon proficiencies", 
+    "Your race's armor proficiencies", 
+    "Types of damage your race is resistance to", 
+    "Types of damage your race is immune to", 
+    "The specific traits of your race"
+};
 bool displayCoolGUI{true};
 
 int main()
 {
     HPack SessionPack{};
 
-    Console(std::vector<std::string>{"display", "add", "load", "save", "export"}, std::vector<std::string>{"Displays stuff", "Add to pack", "Load from a file", "Save to a file", "Export to Orcbrew"}, SessionPack);
+    Console(std::vector<std::string>{"display", "add", "load", "save", "export", "name"}, std::vector<std::string>{"Displays stuff", "Add to pack", "Load from a file", "Save to a file", "Export to Orcbrew", "Rename Packs"}, SessionPack);
     //GenerateMenu();
     return 0;
 }
@@ -540,139 +746,6 @@ void GenerateMenu() {
     system("cls");
 }
 
-Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Description, std::string Str, std::string Dex, std::string Con, std::string Int, std::string Wis, std::string Cha, std::string SizeChoice, std::string Speed, std::string FlyingSpd, std::string SwimmingSpd, std::string DarkVision, std::string SkillOptionsCount, std::string LanguageOptionsCount, std::string WeaponOptionsCount, std::string LizFolkAC, std::string TortAC, std::vector<std::string> Languages, std::vector<std::string> Tools, std::vector<std::string> SkillOptions, std::vector<std::string> SkillProf, std::vector<std::string> LanguageOptions, std::vector<std::string> WeaponOptions, std::vector<std::string> WeaponProf, std::vector<std::string> ArmorProf, std::vector<std::string> DamageRes, std::vector<std::string> DamageImmun, std::vector<Trait> Traits) {
-    Race NewRace{};
-    bool check{};
-    std::string selection{};
-
-    if (Name == "") {
-        std::cout << "Enter name for race: ";
-        std::cin.clear();
-        std::cin.sync();
-        std::getline(std::cin, Name);
-        if (Name == "") {
-            std::getline(std::cin, Name);
-        }
-        Name = HLib::InputCheck(Name, "Enter name for race: ");
-    }
-    NewRace.set_name(Name);
-
-    if (OptionPack == "") {
-        std::cout << "\nDo you want to save it to a custon pack? (y/n) ";
-        std::getline(std::cin, selection);
-        selection = HLib::InputCheck(selection, "\nDo you want to save it to a custon pack? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
-        if (selection[0] == 'y') {
-            std::string pack{};
-            std::cout << "Please enter Pack name: ";
-            std::getline(std::cin, pack);
-            NewRace.set_optionPack(pack);
-        }
-        else {
-            NewRace.set_optionPack("Default");
-        }
-    }
-    else {
-        NewRace.set_optionPack(OptionPack);
-    }
-
-    if (Description == "") {
-        std::cout << "\nEnter description: ";
-        std::getline(std::cin, Description);
-    }
-    NewRace.set_description(Description);
-
-    if (SizeChoice == "") {
-        std::cout << "\nWhat size is the race: Small (0), Medium (1), Large (2)\n";
-        std::getline(std::cin, SizeChoice);
-    }
-    int SizeChoiceSelection{ std::stoi(HLib::InputCheck(SizeChoice,"\nWhat size is the race: Small (0), Medium (1), Large (2)\n",false, true, std::vector<std::string>{"0","1","2"}))};
-    switch (SizeChoiceSelection)
-    {
-    case 0:
-        NewRace.set_size(SizeEnum::small);
-        break;
-    case 1:
-        NewRace.set_size(SizeEnum::medium);
-        break;
-    case 2:
-        NewRace.set_size(SizeEnum::large);
-        break;
-    }
-
-    NewRace.set_str(std::stoi(GetInputSingle("Enter Str Mod: ", Str)));
-
-    NewRace.set_dex(std::stoi(GetInputSingle("Enter Dex Mod: ", Dex)));
-
-    NewRace.set_con(std::stoi(GetInputSingle("Enter Con Mod: ", Con)));
-
-    NewRace.set_int(std::stoi(GetInputSingle("Enter Int Mod: ", Int)));
-
-    NewRace.set_wis(std::stoi(GetInputSingle("Enter Wis Mod: ", Wis)));
-
-    NewRace.set_cha(std::stoi(GetInputSingle("Enter Cha Mod: ", Cha)));
-
-    NewRace.set_speed(std::stoi(GetInputSingle("\nEnter Speed: ", Speed)));
-
-    NewRace.set_flySpeed(std::stoi(GetInputSingle("\nEnter Flying Speed: ", FlyingSpd)));
-
-    NewRace.set_swimSpeed(std::stoi(GetInputSingle("\nEnter Swimming Speed: ", SwimmingSpd)));
-
-    NewRace.set_darkVision(std::stoi(GetInputSingle("\nEnter Dark vision distance: ", DarkVision)));
-
-    NewRace.set_skillOptionsCount(std::stoi(GetInputSingle("\nEnter amount of Skill proficencies: ", SkillOptionsCount)));
-
-    NewRace.set_languageOptionsCount(std::stoi(GetInputSingle("\nEnter amount of Language proficencies: ", LanguageOptionsCount)));
-
-    NewRace.set_weaponOptionsCount(std::stoi(GetInputSingle("\nEnter amount of Weapon proficencies: ", WeaponOptionsCount)));
-
-    selection.clear();
-    if (LizFolkAC == "true") {
-        selection = "y";
-    }
-    else if (LizFolkAC == "false") {
-        selection = "n";
-    }
-    NewRace.set_lizFolkAC(std::stoi(GetInputSingle("\nDo they have Lizard folk AC? (y/n) ", selection, true)));
-
-    selection.clear();
-    if (TortAC == "true") {
-        selection = "y";
-    }
-    else if (TortAC == "false") {
-        selection = "n";
-    }
-    NewRace.set_tortAC(std::stoi(GetInputSingle("\nDo they have Tortle AC? (y/n) ", selection, true)));
-    
-    system("pause");
-
-    NewRace.insert_tool(GetInputVector("tool profs", GlobalTools, Tools));
-
-    NewRace.insert_languageOption(GetInputVector("language options", GlobalLanguages, LanguageOptions));
-
-    NewRace.insert_language(GetInputVector("languages", GlobalLanguages, Languages));
-
-    NewRace.insert_skillOption(GetInputVector("skills", GlobalSkills, SkillOptions));
-
-    NewRace.insert_skillProf(GetInputVector("skill profs", GlobalSkills, SkillProf));
-
-    NewRace.insert_weaponOption(GetInputVector("weapon options", GlobalWeapons, WeaponOptions));
-
-    NewRace.insert_weaponProf(GetInputVector("weapon profs", GlobalWeapons, WeaponProf));
-
-    NewRace.insert_armorProf(GetInputVector("armor profs", GlobalArmorType, ArmorProf));
-
-    NewRace.insert_damageRes(GetInputVector("damage resistance", GlobalDamageType, DamageRes));
-
-    NewRace.insert_damageImmun(GetInputVector("damage immunities", GlobalDamageType, DamageImmun));
-
-    NewRace.insert_trait(InsertTraitsPrompt(Traits));
-
-    std::cout << "\n\nRace has been finished\n";
-
-    system("pause");
-    return NewRace;
-}
-
 std::string GetInputSingle(std::string prompt, std::string inputVar, bool yesno) {
     if (!yesno) {
         if (inputVar != "") {
@@ -988,6 +1061,12 @@ int CommandCode(std::string command) {
     else if (command == "export") {
         return 6;
     }
+    else if (command == "name") {
+        return 7;
+    }
+    else if (command == "edit") {
+        return 8;
+    }
     else {
         return -1;
     }
@@ -1041,7 +1120,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
     case 2: {
         GUI menuGUI{};
         std::vector<std::string> options{"all", "options", "enable", "disable","races"};
-        std::vector<std::string> option_desc{ "Displays everything", "Shows Parameters", "Enables fancy GUI", "Disables fancy GUI" };
+        std::vector<std::string> option_desc{ "Displays everything", "Shows Parameters", "Enables fancy GUI", "Disables fancy GUI", "Displays Races"};
         std::vector<Race> savedRaces{};
         std::vector<Pack> savedPacks{};
         Orcbrew SaveOrcbrew{};
@@ -1051,15 +1130,16 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
 
         std::cout << std::endl;
         if (parameters.empty() || parameters.at(0) == options.at(0)) {
-            menuGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
+            //menuGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
             std::cout << std::endl;
             menuGUI.GenerateMenu("Display Options", options);
         }
         else if (parameters.at(0) == "help") {
-            ExecuteCommand(CommandCode("help"), currentHPack, merge_ordered(options, option_desc));
+            currentHPack = ExecuteCommand(CommandCode("help"), currentHPack, merge_ordered(options, option_desc));
         }
         else if (parameters.at(0) == options.at(1)) {
-            menuGUI.GenerateMenu("Display Options", options);
+            //menuGUI.GenerateMenu("Display Options", options);
+            currentHPack = ExecuteCommand(CommandCode("display"), currentHPack, std::vector<std::string>{}, "display");
         }
         else if (parameters.at(0) == options.at(2)) {
             displayCoolGUI = true;
@@ -1133,6 +1213,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
             std::cout << "\nInvalid parameter\n";
+            currentHPack = ExecuteCommand(CommandCode("display"), currentHPack, std::vector<std::string>{});
         }
         break;
     }
@@ -1140,7 +1221,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
     //Add
     case 3: {
         GUI addGUI{};
-        std::vector<std::string> addOptions{ "cancel","race" };
+        std::vector<std::string> addOptions{ "cancel","options","race" };
         std::string input{};
 
         if (parameters.empty()) {
@@ -1148,22 +1229,33 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::getline(std::cin, input);
             addOptions.push_back("options");
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat would you like to add?\n", true, false, addOptions);
-            ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{input}, "add");
+            currentHPack = ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{input}, "add");
         }
         else if (parameters.at(0) == "options") {
             addGUI.GenerateMenu("Add Options", addOptions);
             std::cout << std::endl;
-            ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{}, "add");
+            currentHPack =  ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{}, "add");
         }
         else if (parameters.at(0) == addOptions.at(0)) {
             break;
         }
-        else if (parameters.at(0) == addOptions.at(1)) {
+        else if (parameters.at(0) == addOptions.at(2)) {
             Pack newPack{};
-            newPack.set_races(EditRaceInfo());
-            newPack.set_name(newPack.get_races().at(0).get_optionPack());
-            newPack.merge(currentHPack.get_packs());
-            currentHPack.add_pack(newPack);
+            Race newRace{};
+            newRace = RaceConsole();
+            if (newRace.get_name() != "%%CANCELED%%") {
+                newPack.set_races(newRace);
+                newPack.set_name(newPack.get_races().at(0).get_optionPack());
+                newPack.merge(currentHPack.get_packs());
+                currentHPack.add_pack(newPack);
+            }
+            else {
+                std::cout << "\nRace creation canceled\n";
+            }
+        }
+        else {
+            std::cout << "\nInvalid parameter\n";
+            currentHPack = ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{});
         }
         break;
     }
@@ -1171,7 +1263,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
     //Load
     case 4: {
         GUI loadGUI{};
-        std::vector<std::string> loadOptions{ "cancel","all","single","multi"};
+        std::vector<std::string> loadOptions{ "cancel","options","all","single","multi"};
         std::vector<std::string> fileTypes{ "hpck","pck","orcbrew" };
         std::string input{};
 
@@ -1179,22 +1271,27 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nHow many packs do you want to load?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow many packs do you want to load?\n", true, false, loadOptions);
-            ExecuteCommand(CommandCode("load"), currentHPack,std::vector<std::string>{input}, "load");
+            currentHPack = ExecuteCommand(CommandCode("load"), currentHPack,std::vector<std::string>{input}, "load");
         }
         else if (parameters.at(0) == "options") {
             loadGUI.GenerateMenu("Load Options", loadOptions);
             std::cout << std::endl;
-            ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{}, "load");
+            currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{}, "load");
         }
         else if (parameters.at(0) == loadOptions.at(0)) {
             break;
         }
-        else if (parameters.at(0) == loadOptions.at(1)) {
+        else if (parameters.at(0) == loadOptions.at(2)) {
             std::vector<std::string> nameOfFiles{};
             input.clear();
             
-            std::cout << "\nWhat type of file would you like to load?\n";
-            std::getline(std::cin, input);
+            if (parameters.size() <= 1) {
+                std::cout << "\nWhat type of file would you like to load?\n";
+                std::getline(std::cin, input);
+            }
+            else {
+                input = parameters.at(1);
+            }
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat type of file would you like to load?\n", true, false, fileTypes);
             
             std::cout << "\nAll " << input << " files will be loaded in the local folder. Please ensure the files you want to load are currently in the folder then hit enter.\n";
@@ -1241,7 +1338,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                 }
             }
         }
-        else if (parameters.at(0) == loadOptions.at(2)) {
+        else if (parameters.at(0) == loadOptions.at(3)) {
             std::vector<std::string> nameOfFiles{};
             input.clear();
 
@@ -1298,7 +1395,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                 }
             }
         }
-        else if (parameters.at(0) == loadOptions.at(3)) {
+        else if (parameters.at(0) == loadOptions.at(4)) {
 
             std::vector<std::string> nameOfFiles{};
             input.clear();
@@ -1353,20 +1450,24 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                 }
             }
         }
+        else {
+        std::cout << "\nInvalid parameter\n";
+        currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{});
+        }
         break;
     }
 
     //Save
     case 5: {
         GUI saveGUI{};
-        std::vector<std::string> saveOptions{ "cancel","hpck","pck" };
+        std::vector<std::string> saveOptions{ "cancel","options","hpck","pck"};
         std::string input{};
 
         if (parameters.empty()) {
             std::cout << "\nHow do you want to save your packs?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow do you want to save your packs?\n", true, false, loadOptions);
-            ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{input}, "load");
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow do you want to save your packs?\n", true, false, saveOptions);
+            currentHPack = ExecuteCommand(CommandCode("save"), currentHPack, std::vector<std::string>{input}, "save");
         }
         else if (parameters.at(0) == "cancel") {
             break;
@@ -1374,28 +1475,115 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         else if (parameters.at(0) == "options") {
             saveGUI.GenerateMenu("Save Options", saveOptions);
             std::cout << std::endl;
-            ExecuteCommand(CommandCode("save"), currentHPack, std::vector<std::string>{}, "save");
-        }
-        else if (parameters.at(0) == saveOptions.at(1)) {
-            currentHPack.save();
+            currentHPack = ExecuteCommand(CommandCode("save"), currentHPack, std::vector<std::string>{}, "save");
         }
         else if (parameters.at(0) == saveOptions.at(2)) {
-
+            currentHPack.save();
+        }
+        else if (parameters.at(0) == saveOptions.at(3)) {
+            std::vector<std::string> packNames{};
+            for (Pack i : currentHPack.get_packs()) {
+                packNames.push_back(i.get_name());
+            }
+            std::cout << "\nWhich pack do you want to save?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhich pack do you want to save?\n", true, false, packNames);
+            for (Pack i : currentHPack.get_packs()) {
+                if (i.get_name() == input) {
+                    i.save_pack();
+                    break;
+                }
+            }
+        }
+        else {
+            std::cout << "\nInvalid parameter\n";
+            currentHPack = ExecuteCommand(CommandCode("save"), currentHPack, std::vector<std::string>{});
         }
         break;
     }
 
     //Export
     case 6: {
-        //orcbrew shit
-        /*else if (parameters.at(0) == saveOptions.at(3)) {
+        GUI exportGUI{};
+        std::vector<std::string> exportOptions{ "cancel","options", "no", "yes"};
+        std::string input{};
+
+        if (parameters.empty()) {
+            std::cout << "\nAre you sure you want to export your packs to orcbrew format? WARNING: Any orcbrew file with the same name as your current HPack will be overwritten\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nAre you sure you want to export your packs to orcbrew format?\n", true, false, exportOptions);
+            currentHPack = ExecuteCommand(CommandCode("export"), currentHPack, std::vector<std::string>{input}, "export");
+        }
+        else if (parameters.at(0) == "cancel" || parameters.at(0) == exportOptions.at(2)) {
+            break;
+        }
+        else if (parameters.at(0) == "options") {
+            exportGUI.GenerateMenu("Export Options", exportOptions);
+            std::cout << std::endl;
+            currentHPack = ExecuteCommand(CommandCode("export"), currentHPack, std::vector<std::string>{}, "export");
+        }
+        else if (parameters.at(0) == exportOptions.at(3)) {
             Orcbrew tempOrcbrew{};
             tempOrcbrew.set_packs(currentHPack.get_packs());
             tempOrcbrew.set_name(currentHPack.get_name());
             tempOrcbrew.save();
-        }*/
+        }
+        else {
+            std::cout << "\nInvalid parameter\n";
+            currentHPack = ExecuteCommand(CommandCode("export"), currentHPack, std::vector<std::string>{});
+        }
         break;
     }
+
+    //Name
+    case 7: {
+        GUI nameGUI{};
+        std::vector<std::string> nameOptions{ "cancel", "options","hpck", "pck"};
+        std::string input{};
+
+        if (parameters.empty()) {
+            std::cout << "\nWhat do you want to rename?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to rename?\n", true, false, nameOptions);
+            currentHPack = ExecuteCommand(CommandCode("name"), currentHPack, std::vector<std::string>{input}, "name");
+        }
+        else if (parameters.at(0) == "cancel") {
+            break;
+        }
+        else if (parameters.at(0) == "options") {
+            nameGUI.GenerateMenu("Name Options", nameOptions);
+            std::cout << std::endl;
+            currentHPack = ExecuteCommand(CommandCode("name"), currentHPack, std::vector<std::string>{}, "name");
+        }
+        else if (parameters.at(0) == nameOptions.at(2)) {
+            std::cout << "\nWhat do you want to rename the pack to?\n";
+            input.clear();
+            std::getline(std::cin, input);
+            currentHPack.set_name(input);
+        }
+        else if (parameters.at(0) == nameOptions.at(3)) {
+            std::vector<std::string> packNames{};
+            for (Pack i : currentHPack.get_packs()) {
+                packNames.push_back(i.get_name());
+            }
+            nameGUI.GenerateMenu("Packs loaded", packNames, "", true, 4);
+            std::cout << std::endl;
+            std::cout << "\nWhich pack do you want to rename?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhich pack do you want to rename?\n", true, false, packNames);
+            std::string newName{};
+            std::cout << "\nWhat do you want to rename the pack to?\n";
+            std::getline(std::cin, newName);
+            currentHPack.set_pack_name(input, newName);
+        }
+        else {
+            std::cout << "\nInvalid parameter\n";
+            currentHPack = ExecuteCommand(CommandCode("name"), currentHPack, std::vector<std::string>{});
+        }
+
+        break;
+    }
+
     default:
         std::cout << "\n\nAn error has occured, write down what you did and report it to the devs\n";
         system("pause");
@@ -1412,15 +1600,10 @@ void Console(std::vector<std::string> currentCommands, std::vector<std::string> 
     GUI consoleGUI{};
     std::string input{};
     std::vector<std::string> commands{};
-    std::vector<std::string> combined{};
+    std::vector<std::string> combined{merge_ordered(currentCommands,currentCmdDef)};
     int index{};
 
     if (!currentCommands.empty()) { commands.insert(std::end(commands), std::begin(currentCommands), std::end(currentCommands)); }
-    for (std::string i : commands) {
-        combined.push_back(i);
-        combined.push_back(currentCmdDef.at(index));
-        index++;
-    }
     commands.insert(std::begin(commands), std::begin(GlobalCommands), std::end(GlobalCommands));
     
     do {
@@ -1457,8 +1640,13 @@ void Console(std::vector<std::string> currentCommands, std::vector<std::string> 
             }
         }
         if (includes_string(command, commands)) {
-            std::vector<std::string> parameters{ split(parameter) };
-            currentHPack = ExecuteCommand(CommandCode(command), currentHPack, parameters);
+            if (command == "help") {
+                currentHPack = ExecuteCommand(CommandCode(command), currentHPack, combined);
+            }
+            else {
+                std::vector<std::string> parameters{ split(parameter) };
+                currentHPack = ExecuteCommand(CommandCode(command), currentHPack, parameters);
+            }
             input = command;
         }
         else {
@@ -1577,4 +1765,583 @@ std::vector<std::string> selection(std::vector<std::string> parameters) {
 
 
     return selected;
+}
+
+int RaceCommandCode(std::string command) {
+    if (command == "done") {
+        return 0;
+    }
+    else if (command == "help") {
+        return 1;
+    }
+    else if (command == "cancel") {
+        return 2;
+    }
+    else if (command == "add") {
+        return 3;
+    }
+    else if (command == "edit") {
+        return 4;
+    }
+    else if (command == "clear") {
+        return 5;
+    }
+    else if (command == "remove") {
+        return 6;
+    }
+    else {
+        return -1;
+    }
+}
+
+int RaceOptionCode(std::string option) {
+    if (option == "name") {
+        return 0;
+    }
+    else if (option == "option-pack") {
+        return 1;
+    }
+    else if (option == "description") {
+        return 2;
+    }
+    else if (option == "size") {
+        return 3;
+    }
+    else if (option == "str") {
+        return 4;
+    }
+    else if (option == "dex") {
+        return 5;
+    }
+    else if (option == "con") {
+        return 6;
+    }
+    else if (option == "int") {
+        return 7;
+    }
+    else if (option == "wis") {
+        return 8;
+    }
+    else if (option == "cha") {
+        return 9;
+    }
+    else if (option == "speed") {
+        return 10;
+    }
+    else if (option == "flying-speed") {
+        return 11;
+    }
+    else if (option == "swimming-speed") {
+        return 12;
+    }
+    else if (option == "dark-vision") {
+        return 13;
+    }
+    else if (option == "skill-opcount") {
+        return 14;
+    }
+    else if (option == "lang-opcount") {
+        return 15;
+    }
+    else if (option == "weapon-opcount") {
+        return 16;
+    }
+    else if (option == "lizard-ac") {
+        return 17;
+    }
+    else if (option == "tortle-ac") {
+        return 18;
+    }
+    else if (option == "languages") {
+        return 19;
+    }
+    else if (option == "tools") {
+        return 20;
+    }
+    else if (option == "skill-ops") {
+        return 21;
+    }
+    else if (option == "skill-profs") {
+        return 22;
+    }
+    else if (option == "language-ops") {
+        return 23;
+    }
+    else if (option == "weapon-ops") {
+        return 24;
+    }
+    else if (option == "weapon-profs") {
+        return 25;
+    }
+    else if (option == "armor-profs") {
+        return 26;
+    }
+    else if (option == "damage-res") {
+        return 27;
+    }
+    else if (option == "dammage-imm") {
+        return 28;
+    }
+    else if (option == "traits") {
+        return 29;
+    }
+    else {
+        return -1;
+    }
+}
+
+Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> parameters, std::string context) {
+    switch (cmdCode)
+    {
+    //Done
+    case 0: {
+        break;
+    }
+    
+    //Help
+    case 1: {
+        GUI helpGUI{};
+        std::vector<std::string> helpOptions{};
+        std::string input{};
+
+        if (parameters.empty()) {
+
+            //Can't happen, Help always gets parameters
+
+            //std::cout << "\nWhat do you need help with?\n";
+            //std::getline(std::cin, input);
+            //input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you need help with?\n", true, false, GlobalRaceOptions);
+            //currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{input}, "load");
+        }
+		else {
+			std::vector<std::string> selection{};
+			int index{};
+			if (parameters.at(0) == "all") {
+				parameters.clear();
+				parameters = merge_ordered(GlobalRaceOptions, GlobalRaceDefs);
+			}
+			if (context != "console") {
+				for (std::string i : GlobalRaceOptions) {
+					for (std::string k : parameters) {
+						if (i == k) {
+							selection.push_back(i);
+							selection.push_back(GlobalRaceDefs.at(index));
+						}
+					}
+					index++;
+				}
+            }
+            else {
+                selection = parameters;
+            }
+			if (selection.empty()) {
+				std::cout << "\nInput not found, try again\n";
+			}
+			else {
+				helpGUI.GenerateMenu("Command - Definition", selection, "", true, 2);
+			}
+		}
+		break;
+    }
+    
+    //Cancel
+    case 2: {
+        Race cancelRace{ "%%CANCELED%%" };
+        currentRace = cancelRace;
+        break;
+    }
+    
+    //Add
+    case 3: {
+        GUI addGUI{};
+        std::vector<std::string> addOptions{"cancel","options"};
+        addOptions.insert(std::end(addOptions), std::begin(GlobalRaceOptions), std::end(GlobalRaceOptions));
+        std::string input{};
+
+        if (parameters.empty()) {
+            std::cout << "\nWhat do want to add?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to add?\n", true, false, addOptions);
+            currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, std::vector<std::string>{input}, "add");
+        }
+        else if (parameters.at(0) == "cancel") {
+            break;
+        }
+        else if (parameters.at(0) == "options") {
+            addGUI.GenerateMenu("Add Commands", addOptions, "", true, 2);
+            currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, std::vector<std::string>{input}, "add");
+        }
+        else if (includes_string(parameters.at(0),addOptions)) {
+            switch (RaceOptionCode(parameters.at(0)))
+            {
+            case 0: {
+                if (parameters.size() > 1) {
+
+                }
+                else {
+                    std::cout << "What do you";
+                }
+
+                break;
+            }
+            case 1: {
+
+                break;
+            }
+            case 2: {
+
+                break;
+            }
+            case 3: {
+
+                break;
+            }
+            case 4: {
+
+                break;
+            }
+            case 5: {
+
+                break;
+            }
+            case 6: {
+
+                break;
+            }
+            case 7: {
+
+                break;
+            }
+            case 8: {
+
+                break;
+            }
+            case 9: {
+
+                break;
+            }
+            case 10: {
+
+                break;
+            }
+            case 11: {
+
+                break;
+            }
+            case 12: {
+
+                break;
+            }
+            case 13: {
+
+                break;
+            }
+            case 14: {
+
+                break;
+            }
+            case 15: {
+
+                break;
+            }
+            case 16: {
+
+                break;
+            }
+            case 17: {
+
+                break;
+            }
+            case 18: {
+
+                break;
+            }
+            case 19: {
+
+                break;
+            }
+            case 20: {
+
+                break;
+            }
+            case 21: {
+
+                break;
+            }
+            case 22: {
+
+                break;
+            }
+            case 23: {
+
+                break;
+            }
+            case 24: {
+
+                break;
+            }
+            case 25: {
+
+                break;
+            }
+            case 26: {
+
+                break;
+            }
+            case 27: {
+
+                break;
+            }
+            case 28: {
+
+                break;
+            }
+            case 29: {
+
+                break;
+            }
+            default:
+                break;
+            }
+        }
+
+        break;
+    }
+    
+    //Edit
+    case 4: {
+
+
+        break;
+    }
+    
+    //Clear
+    case 5: {
+
+
+        break;
+    }
+    
+    //Remove
+    case 6: {
+
+
+        break;
+    }
+    default:
+        break;
+    }
+    if (context == "") {
+        system("pause");
+        system("cls");
+    }
+    return currentRace;
+}
+
+void DrawRace(Race input) {
+
+}
+
+Race RaceConsole() {
+    Race newRace{};
+    GUI raceGUI{};
+    std::vector<std::string> commands{"done","help","cancel","add","edit","clear","remove"};
+    std::vector<std::string> commandsDef{"Finishes Race","Get help on command","Cancels current action","Add an aspect of race","Edit aspect","Clears race","Remove element"};
+    std::vector<std::string> combined{merge_ordered(commands,commandsDef)};
+    std::string input{};
+    
+    system("cls");
+    
+
+    do {
+        raceGUI.MakeBox("Race Creator", 2);
+        input.clear();
+        std::string command{};
+        std::string parameter{};
+        std::string bufferCommand{};
+
+        DrawRace(newRace);
+
+        std::cout << "\n\nEnter input:\n";
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, input);
+
+        //seperates the command
+        parameter = input;
+        int parameterindex{};
+        for (char i : input) {
+            if (i != ' ') {
+                if (std::isalpha(i)) {
+                    command.push_back(std::tolower(i));
+                    parameter.erase(0, 1);
+                }
+                else {
+                    command.push_back(i);
+                    parameter.erase(0, 1);
+                }
+            }
+            else {
+                parameter.erase(0, 1);
+                break;
+            }
+        }
+        if (includes_string(command, commands)) {
+            if (command == "help") {
+                if (parameter == "") {
+                    newRace = ExecuteRaceCommand(RaceCommandCode(command), newRace, combined,"console");
+                }
+                else {
+                    std::vector<std::string> parameters{ split(parameter) };
+                    newRace = ExecuteRaceCommand(RaceCommandCode(command), newRace, parameters);
+                }
+            }
+            else {
+                std::vector<std::string> parameters{ split(parameter) };
+                newRace = ExecuteRaceCommand(RaceCommandCode(command), newRace, parameters);
+            }
+            input = command;
+        }
+        else {
+            std::cout << "\nInvalid Command, use 'help' for list of commands\n";
+        }
+
+
+    } while (input != "done" && newRace.get_name() != "%%CANCELED%%");
+
+    return newRace;
+}
+
+
+Race EditRaceInfo(std::string Name, std::string OptionPack, std::string Description, std::string Str, std::string Dex, std::string Con, std::string Int, std::string Wis, std::string Cha, std::string SizeChoice, std::string Speed, std::string FlyingSpd, std::string SwimmingSpd, std::string DarkVision, std::string SkillOptionsCount, std::string LanguageOptionsCount, std::string WeaponOptionsCount, std::string LizFolkAC, std::string TortAC, std::vector<std::string> Languages, std::vector<std::string> Tools, std::vector<std::string> SkillOptions, std::vector<std::string> SkillProf, std::vector<std::string> LanguageOptions, std::vector<std::string> WeaponOptions, std::vector<std::string> WeaponProf, std::vector<std::string> ArmorProf, std::vector<std::string> DamageRes, std::vector<std::string> DamageImmun, std::vector<Trait> Traits) {
+    Race NewRace{};
+    bool check{};
+    std::string selection{};
+
+    if (Name == "") {
+        std::cout << "Enter name for race: ";
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, Name);
+        if (Name == "") {
+            std::getline(std::cin, Name);
+        }
+        Name = HLib::InputCheck(Name, "Enter name for race: ");
+    }
+    NewRace.set_name(Name);
+
+    if (OptionPack == "") {
+        std::cout << "\nDo you want to save it to a custon pack? (y/n) ";
+        std::getline(std::cin, selection);
+        selection = HLib::InputCheck(selection, "\nDo you want to save it to a custon pack? (y/n) ", true, false, std::vector<std::string>{"y", "n"});
+        if (selection[0] == 'y') {
+            std::string pack{};
+            std::cout << "Please enter Pack name: ";
+            std::getline(std::cin, pack);
+            NewRace.set_optionPack(pack);
+        }
+        else {
+            NewRace.set_optionPack("Default");
+        }
+    }
+    else {
+        NewRace.set_optionPack(OptionPack);
+    }
+
+    if (Description == "") {
+        std::cout << "\nEnter description: ";
+        std::getline(std::cin, Description);
+    }
+    NewRace.set_description(Description);
+
+    if (SizeChoice == "") {
+        std::cout << "\nWhat size is the race: Small (0), Medium (1), Large (2)\n";
+        std::getline(std::cin, SizeChoice);
+    }
+    int SizeChoiceSelection{ std::stoi(HLib::InputCheck(SizeChoice,"\nWhat size is the race: Small (0), Medium (1), Large (2)\n",false, true, std::vector<std::string>{"0","1","2"}))};
+    switch (SizeChoiceSelection)
+    {
+    case 0:
+        NewRace.set_size(SizeEnum::small);
+        break;
+    case 1:
+        NewRace.set_size(SizeEnum::medium);
+        break;
+    case 2:
+        NewRace.set_size(SizeEnum::large);
+        break;
+    }
+
+    NewRace.set_str(std::stoi(GetInputSingle("Enter Str Mod: ", Str)));
+
+    NewRace.set_dex(std::stoi(GetInputSingle("Enter Dex Mod: ", Dex)));
+
+    NewRace.set_con(std::stoi(GetInputSingle("Enter Con Mod: ", Con)));
+
+    NewRace.set_int(std::stoi(GetInputSingle("Enter Int Mod: ", Int)));
+
+    NewRace.set_wis(std::stoi(GetInputSingle("Enter Wis Mod: ", Wis)));
+
+    NewRace.set_cha(std::stoi(GetInputSingle("Enter Cha Mod: ", Cha)));
+
+    NewRace.set_speed(std::stoi(GetInputSingle("\nEnter Speed: ", Speed)));
+
+    NewRace.set_flySpeed(std::stoi(GetInputSingle("\nEnter Flying Speed: ", FlyingSpd)));
+
+    NewRace.set_swimSpeed(std::stoi(GetInputSingle("\nEnter Swimming Speed: ", SwimmingSpd)));
+
+    NewRace.set_darkVision(std::stoi(GetInputSingle("\nEnter Dark vision distance: ", DarkVision)));
+
+    NewRace.set_skillOptionsCount(std::stoi(GetInputSingle("\nEnter amount of Skill proficencies: ", SkillOptionsCount)));
+
+    NewRace.set_languageOptionsCount(std::stoi(GetInputSingle("\nEnter amount of Language proficencies: ", LanguageOptionsCount)));
+
+    NewRace.set_weaponOptionsCount(std::stoi(GetInputSingle("\nEnter amount of Weapon proficencies: ", WeaponOptionsCount)));
+
+    selection.clear();
+    if (LizFolkAC == "true") {
+        selection = "y";
+    }
+    else if (LizFolkAC == "false") {
+        selection = "n";
+    }
+    NewRace.set_lizFolkAC(std::stoi(GetInputSingle("\nDo they have Lizard folk AC? (y/n) ", selection, true)));
+
+    selection.clear();
+    if (TortAC == "true") {
+        selection = "y";
+    }
+    else if (TortAC == "false") {
+        selection = "n";
+    }
+    NewRace.set_tortAC(std::stoi(GetInputSingle("\nDo they have Tortle AC? (y/n) ", selection, true)));
+    
+    system("pause");
+
+    NewRace.insert_tool(GetInputVector("tool profs", GlobalTools, Tools));
+
+    NewRace.insert_languageOption(GetInputVector("language options", GlobalLanguages, LanguageOptions));
+
+    NewRace.insert_language(GetInputVector("languages", GlobalLanguages, Languages));
+
+    NewRace.insert_skillOption(GetInputVector("skills", GlobalSkills, SkillOptions));
+
+    NewRace.insert_skillProf(GetInputVector("skill profs", GlobalSkills, SkillProf));
+
+    NewRace.insert_weaponOption(GetInputVector("weapon options", GlobalWeapons, WeaponOptions));
+
+    NewRace.insert_weaponProf(GetInputVector("weapon profs", GlobalWeapons, WeaponProf));
+
+    NewRace.insert_armorProf(GetInputVector("armor profs", GlobalArmorType, ArmorProf));
+
+    NewRace.insert_damageRes(GetInputVector("damage resistance", GlobalDamageType, DamageRes));
+
+    NewRace.insert_damageImmun(GetInputVector("damage immunities", GlobalDamageType, DamageImmun));
+
+    NewRace.insert_trait(InsertTraitsPrompt(Traits));
+
+    std::cout << "\n\nRace has been finished\n";
+
+    system("pause");
+    return NewRace;
 }

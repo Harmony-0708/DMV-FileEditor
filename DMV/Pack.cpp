@@ -23,6 +23,11 @@ std::vector<Race> Pack::get_races()
 void Pack::set_name(std::string name)
 {
 	Name = name;
+	int index{};
+	for (Race i : get_races()) {
+		Races.at(index).set_optionPack(Name);
+		index++;
+	}
 }
 
 void Pack::update_race(Race inputRace)

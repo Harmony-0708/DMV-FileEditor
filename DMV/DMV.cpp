@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <curses.h>
 #include "TraitType.h"
 #include "SizeEnum.h"
 #include "Spell.h"
@@ -17,6 +18,8 @@
 #include "Pack.h"
 #include "HPack.h"
 #include "Orcbrew.h"
+#include "menu.h"
+#include "MenuBar.h"
 
 
 void GenerateMenu();
@@ -259,8 +262,39 @@ int main()
 {
     HPack SessionPack{};
 
-    Console(std::vector<std::string>{"display", "add", "load", "save", "export", "name"}, std::vector<std::string>{"Displays stuff", "Add to pack", "Load from a file", "Save to a file", "Export to Orcbrew", "Rename Packs"}, SessionPack);
+    initscr();
+    noecho();
+    curs_set(0);
+
+    int yMax, xMax;
+    getmaxyx(stdscr, yMax, xMax);
+
+    WINDOW *win = newwin(yMax/2, xMax/2,yMax/4,xMax/4);
+    box(win,0,0);
+
+    Menu menus[3] = {
+        Menu("File",'f'),
+        Menu("Edit",'e'),
+        Menu("Options",'o'),
+    };
+
+    MenuBar menubar{ win,menus,3 };
+    menubar.draw();
+
+
+
+    char ch{};
+    while (ch = wgetch(win)) 
+    {
+        
+        menubar.handleTrigger(ch);
+        menubar.draw();
+
+    }
+    
+    //Console(std::vector<std::string>{"display", "add", "load", "save", "export", "name"}, std::vector<std::string>{"Displays stuff", "Add to pack", "Load from a file", "Save to a file", "Export to Orcbrew", "Rename Packs"}, SessionPack);
     //GenerateMenu();
+    endwin();
     return 0;
 }
 
@@ -1932,6 +1966,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 				}
             }
             else {
+                context = "";
                 selection = parameters;
             }
 			if (selection.empty()) {
@@ -1955,6 +1990,8 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
     case 3: {
         GUI addGUI{};
         std::vector<std::string> addOptions{"cancel","options"};
+        std::vector<std::string> addDefs{ "Cancels add", "Lists all possible options" };
+        addDefs.insert(std::end(addDefs), std::begin(GlobalRaceDefs), std::end(GlobalRaceDefs));
         addOptions.insert(std::end(addOptions), std::begin(GlobalRaceOptions), std::end(GlobalRaceOptions));
         std::string input{};
 
@@ -1968,141 +2005,822 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             break;
         }
         else if (parameters.at(0) == "options") {
+            addOptions = merge_ordered(addOptions, addDefs);
             addGUI.GenerateMenu("Add Commands", addOptions, "", true, 2);
             currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, std::vector<std::string>{input}, "add");
         }
         else if (includes_string(parameters.at(0),addOptions)) {
             switch (RaceOptionCode(parameters.at(0)))
             {
-            case 0: {
-                if (parameters.size() > 1) {
-
+				//Name
+			case 0: {
+				if (currentRace.get_name() == "") {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
+							index++;
+						}
+						currentRace.set_name(newName);
+					}
+					else {
+						std::cout << "\nWhat do you want your race to be called?\n";
+						std::getline(std::cin, newName);
+						currentRace.set_name(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //OptionPack
+			case 1: {
+				if (currentRace.get_optionPack() == "") {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
+							index++;
+						}
+						currentRace.set_optionPack(newName);
+					}
+					else {
+						std::cout << "\nWhat is the option pack name for your race?\n";
+						std::getline(std::cin, newName);
+						currentRace.set_optionPack(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Description
+			case 2: {
+				if (currentRace.get_description() == "") {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
+							index++;
+						}
+						currentRace.set_description(newName);
+					}
+					else {
+						std::cout << "\nWhat is the description for your race? Warning: Pressing enter will enter the description as is, formatting is currently not supported\n";
+						std::getline(std::cin, newName);
+						currentRace.set_description(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Size
+			case 3: {
+				if (currentRace.get_sizename() == "Small") {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInvalid Size\nWhat is the size of your character? (Small, Medium, Large)\n", true, false, std::vector<std::string>{"small", "medium", "large"});
+						if (newName == "small") {
+							currentRace.set_size(SizeEnum::small);
+						}
+						else if (newName == "medium") {
+							currentRace.set_size(SizeEnum::medium);
+						}
+						else if (newName == "large") {
+							currentRace.set_size(SizeEnum::large);
+						}
+					}
+					else {
+						std::cout << "\nWhat is the size of your character? (Small, Medium, Large)\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nWhat is the size of your character? (Small, Medium, Large)\n", true, false, std::vector<std::string>{"small", "medium", "large"});
+						if (newName == "small") {
+							currentRace.set_size(SizeEnum::small);
+						}
+						else if (newName == "medium") {
+							currentRace.set_size(SizeEnum::medium);
+						}
+						else if (newName == "large") {
+							currentRace.set_size(SizeEnum::large);
+						}
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Str
+			case 4: {
+				if (currentRace.get_str() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's strength modifier?\n", false, true);
+						currentRace.set_str(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's strength modifier?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's strength modifier?\n", false, true);
+						currentRace.set_str(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Dex
+			case 5: {
+				if (currentRace.get_dex() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dexterity modifier?\n", false, true);
+						currentRace.set_dex(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's dexterity modifier?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dexterity modifier?\n", false, true);
+						currentRace.set_dex(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Con
+			case 6: {
+				if (currentRace.get_con() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's constitution modifier?\n", false, true);
+						currentRace.set_con(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's constitution modifier?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's constitution modifier?\n", false, true);
+						currentRace.set_con(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Int
+			case 7: {
+				if (currentRace.get_int() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's intelligence modifier?\n", false, true);
+						currentRace.set_int(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's intelligence modifier?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's intelligence modifier?\n", false, true);
+						currentRace.set_int(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Wis
+			case 8: {
+				if (currentRace.get_wis() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's wisdom modifier?\n", false, true);
+						currentRace.set_wis(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's wisdom modifier?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's wisdom modifier?\n", false, true);
+						currentRace.set_wis(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Cha
+			case 9: {
+				if (currentRace.get_cha() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's charisma modifier?\n", false, true);
+						currentRace.set_cha(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's charisma modifier?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's charisma modifier?\n", false, true);
+						currentRace.set_cha(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				  //Speed
+			case 10: {
+				if (currentRace.get_speed() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's speed?\n", false, true);
+						currentRace.set_speed(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's speed?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's speed?\n", false, true);
+						currentRace.set_speed(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //FlyingSpeed
+			case 11: {
+				if (currentRace.get_flySpeed() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's fly speed?\n", false, true);
+						currentRace.set_flySpeed(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's fly speed?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's fly speed?\n", false, true);
+						currentRace.set_flySpeed(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //SwimmingSpeed
+			case 12: {
+				if (currentRace.get_swimSpeed() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's swim speed?\n", false, true);
+						currentRace.set_swimSpeed(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's swim speed?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's swim speed?\n", false, true);
+						currentRace.set_swimSpeed(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Dark vision
+			case 13: {
+				if (currentRace.get_darkVision() == 0) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dark vision distance? (0 means none)\n", false, true);
+						currentRace.set_darkVision(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nWhat is your race's dark vision distance? (0 means none)\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dark vision distance? (0 means none)\n", false, true);
+						currentRace.set_darkVision(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Skill Options Count
+			case 14: {
+				if (currentRace.get_skillOptionsCount() == 1) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many skills can your race choose to be proficent in?\n", false, true);
+						currentRace.set_skillOptionsCount(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nHow many skills can your race choose to be proficent in?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many skills can your race choose to be proficent in?\n", false, true);
+						currentRace.set_skillOptionsCount(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Language Options Count
+			case 15: {
+				if (currentRace.get_languageOptionsCount() == 1) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many languages can your race choose to be proficent in?\n", false, true);
+						currentRace.set_languageOptionsCount(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nHow many languages can your race choose to be proficent in?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many languages can your race choose to be proficent in?\n", false, true);
+						currentRace.set_languageOptionsCount(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Weapon Options Count
+			case 16: {
+				if (currentRace.get_weaponOptionsCount() == 1) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many weapons can your race choose to be proficent in?\n", false, true);
+						currentRace.set_weaponOptionsCount(std::stoi(newName));
+					}
+					else {
+						std::cout << "\nHow many weapons can your race choose to be proficent in?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many weapons can your race choose to be proficent in?\n", false, true);
+						currentRace.set_weaponOptionsCount(std::stoi(newName));
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //LizFolkAC
+			case 17: {
+				if (currentRace.get_lizFolkAC() == false) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have lizardfolk AC?\n", true, false, std::vector<std::string>{"yes", "no"});
+						if (newName == "yes") {
+							currentRace.set_lizFolkAC(true);
+						}
+						else {
+							currentRace.set_lizFolkAC(false);
+						}
+					}
+					else {
+						std::cout << "\nDoes your race have lizardfolk AC?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have lizardfolk AC?\n", true, false, std::vector<std::string>{"yes", "no"});
+						if (newName == "yes") {
+							currentRace.set_lizFolkAC(true);
+						}
+						else {
+							currentRace.set_lizFolkAC(false);
+						}
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //TortAC
+			case 18: {
+				if (currentRace.get_tortAC() == false) {
+					std::string newName{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						newName = parameters.at(0);
+						newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have tortle AC?\n", true, false, std::vector<std::string>{"yes", "no"});
+						if (newName == "yes") {
+							currentRace.set_tortAC(true);
+						}
+						else {
+							currentRace.set_tortAC(false);
+						}
+					}
+					else {
+						std::cout << "\nDoes your race have tortle AC?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have tortle AC?\n", true, false, std::vector<std::string>{"yes", "no"});
+						if (newName == "yes") {
+							currentRace.set_tortAC(true);
+						}
+						else {
+							currentRace.set_tortAC(false);
+						}
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Languages
+			case 19: {
+				if (currentRace.get_language().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalLanguages)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded language\n";
+							}
+							index++;
+						}
+						currentRace.insert_language(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Languages", GlobalLanguages, "", true, 4);
+						std::cout << "\nWhat language do you want to add to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language do you want to add to your race?\n", true, false, GlobalLanguages);
+						currentRace.insert_language(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Tools
+			case 20: {
+				if (currentRace.get_tool().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalTools)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded tool\n";
+							}
+							index++;
+						}
+						currentRace.insert_tool(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Tools", GlobalTools, "", true, 4);
+						std::cout << "\nWhat tool proficencies do you want to add to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded tool\nWhat tool proficencies do you want to add to your race?\n", true, false, GlobalTools);
+						currentRace.insert_tool(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Skill Options
+			case 21: {
+				if (currentRace.get_skillOption().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalSkills)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded skill\n";
+							}
+							index++;
+						}
+						currentRace.insert_skillOption(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Skills", GlobalSkills, "", true, 4);
+						std::cout << "\nWhat skill options do you want to add to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded skill\nWhat skill options do you want to add to your race?\n", true, false, GlobalSkills);
+						currentRace.insert_skillOption(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Skill Profs
+			case 22: {
+				if (currentRace.get_skillProf().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalSkills)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded skill\n";
+							}
+							index++;
+						}
+						currentRace.insert_skillProf(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Skills", GlobalSkills, "", true, 4);
+						std::cout << "\nWhat skill proficencies do you want to add to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded skill\nWhat skill proficencies do you want to add to your race?\n", true, false, GlobalSkills);
+						currentRace.insert_skillProf(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Language Options
+			case 23: {
+				if (currentRace.get_languageOption().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalLanguages)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded language\n";
+							}
+							index++;
+						}
+						currentRace.insert_languageOption(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Languages", GlobalLanguages, "", true, 4);
+						std::cout << "\nWhat language options do you want to add to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language options do you want to add to your race?\n", true, false, GlobalLanguages);
+						currentRace.insert_languageOption(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Weapon Options
+			case 24: {
+				if (currentRace.get_weaponOption().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalWeapons)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded weapon\n";
+							}
+							index++;
+						}
+						currentRace.insert_weaponOption(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
+						std::cout << "\nWhat weapon options do you want to add to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon\nWhat weapon options do you want to add to your race?\n", true, false, GlobalWeapons);
+						currentRace.insert_weaponOption(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Weapon Profs
+			case 25: {
+				if (currentRace.get_weaponProf().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalWeapons)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded weapon\n";
+							}
+							index++;
+						}
+						currentRace.insert_weaponProf(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
+						std::cout << "\nWhat weapon proficencies do you want to add to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon\nWhat weapon proficencies do you want to add to your race?\n", true, false, GlobalWeapons);
+						currentRace.insert_weaponProf(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Armor Profs
+			case 26: {
+				if (currentRace.get_armorProf().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalArmorType)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded armor type\n";
+							}
+							index++;
+						}
+						currentRace.insert_armorProf(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Armor", GlobalArmorType, "", true, 4);
+						std::cout << "\nWhat armor types do you want to add to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded armor type\nWhat armor types do you want to add to your race?\n", true, false, GlobalArmorType);
+						currentRace.insert_armorProf(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Damage Res
+			case 27: {
+				if (currentRace.get_damageRes().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalDamageType)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded damage type\n";
+							}
+							index++;
+						}
+						currentRace.insert_damageRes(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Damage Types", GlobalDamageType, "", true, 4);
+						std::cout << "\nWhat damage types do you want to add resistance to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded damage type\nWhat damage types do you want to add resistance to your race?\n", true, false, GlobalDamageType);
+						currentRace.insert_damageRes(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Damage Imm
+			case 28: {
+				if (currentRace.get_damageImmun().empty()) {
+					std::string newName{};
+					std::vector<std::string> newLanguages{};
+					if (parameters.size() > 1) {
+						parameters.erase(parameters.begin());
+						int index{};
+						for (std::string i : parameters) {
+							if (includes_string(i, GlobalDamageType)) {
+								newLanguages.push_back(i);
+							}
+							else {
+								std::cout << "\n" << i << " is not a loaded damage type\n";
+							}
+							index++;
+						}
+						currentRace.insert_damageImmun(newLanguages);
+					}
+					else {
+						addGUI.GenerateMenu("Damage Types", GlobalDamageType, "", true, 4);
+						std::cout << "\nWhat damage types do you want to add immunity to your race?\n";
+						std::getline(std::cin, newName);
+						newName = HLib::InputCheck(newName, "\nThat is not a loaded damage type\nWhat damage types do you want to add immunity to your race?\n", true, false, GlobalDamageType);
+						currentRace.insert_damageImmun(newName);
+					}
+				}
+				else {
+					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+				}
+				break;
+			}
+				   //Traits
+			case 29: {
+                if (currentRace.get_trait().empty()) {
+                    //Testing phase
                 }
-                else {
-                    std::cout << "What do you";
-                }
-
-                break;
-            }
-            case 1: {
-
-                break;
-            }
-            case 2: {
-
-                break;
-            }
-            case 3: {
-
-                break;
-            }
-            case 4: {
-
-                break;
-            }
-            case 5: {
-
-                break;
-            }
-            case 6: {
-
-                break;
-            }
-            case 7: {
-
-                break;
-            }
-            case 8: {
-
-                break;
-            }
-            case 9: {
-
-                break;
-            }
-            case 10: {
-
-                break;
-            }
-            case 11: {
-
-                break;
-            }
-            case 12: {
-
-                break;
-            }
-            case 13: {
-
-                break;
-            }
-            case 14: {
-
-                break;
-            }
-            case 15: {
-
-                break;
-            }
-            case 16: {
-
-                break;
-            }
-            case 17: {
-
-                break;
-            }
-            case 18: {
-
-                break;
-            }
-            case 19: {
-
-                break;
-            }
-            case 20: {
-
-                break;
-            }
-            case 21: {
-
-                break;
-            }
-            case 22: {
-
-                break;
-            }
-            case 23: {
-
-                break;
-            }
-            case 24: {
-
-                break;
-            }
-            case 25: {
-
-                break;
-            }
-            case 26: {
-
-                break;
-            }
-            case 27: {
-
-                break;
-            }
-            case 28: {
-
-                break;
-            }
-            case 29: {
-
                 break;
             }
             default:
                 break;
             }
+        }
+        else {
+            std::cout << "\nInvalid Input\n";
         }
 
         break;
@@ -2110,7 +2828,843 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
     
     //Edit
     case 4: {
+        GUI editGUI{};
+        std::vector<std::string> editOptions{ "cancel","options" };
+        std::vector<std::string> editDefs{ "Cancels edit", "Lists all possible options" };
+        editDefs.insert(std::end(editDefs), std::begin(GlobalRaceDefs), std::end(GlobalRaceDefs));
+        editOptions.insert(std::end(editOptions), std::begin(GlobalRaceOptions), std::end(GlobalRaceOptions));
+        std::string input{};
 
+        if (parameters.empty()) {
+            std::cout << "\nWhat do want to edit?\n";
+            std::getline(std::cin, input);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to edit?\n", true, false, editOptions);
+            currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, std::vector<std::string>{input}, "edit");
+        }
+        else if (parameters.at(0) == "cancel") {
+            break;
+        }
+        else if (parameters.at(0) == "options") {
+            editOptions = merge_ordered(editOptions, editDefs);
+            editGUI.GenerateMenu("Add Commands", editOptions, "", true, 2);
+            currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, std::vector<std::string>{input}, "add");
+        }
+        else if (includes_string(parameters.at(0), editOptions)) {
+            switch (RaceOptionCode(parameters.at(0)))
+            {
+                //Name
+            case 0: {
+                if (currentRace.get_name() == "") {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                }
+                else {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (index != 0) { newName += " " + parameters.at(index); }
+                            else { newName += parameters.at(index); }
+                            index++;
+                        }
+                        currentRace.set_name(newName);
+                    }
+                    else {
+                        std::cout << "\nWhat do you want your race to be called?\n";
+                        std::getline(std::cin, newName);
+                        currentRace.set_name(newName);
+                    }
+                }
+                break;
+            }
+                  //OptionPack
+            case 1: {
+                if (currentRace.get_optionPack() == "") {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                }
+                else {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (index != 0) { newName += " " + parameters.at(index); }
+                            else { newName += parameters.at(index); }
+                            index++;
+                        }
+                        currentRace.set_optionPack(newName);
+                    }
+                    else {
+                        std::cout << "\nWhat is the option pack name for your race?\n";
+                        std::getline(std::cin, newName);
+                        currentRace.set_optionPack(newName);
+                    }
+                }
+                break;
+            }
+                  //Description
+            case 2: {
+                if (currentRace.get_description() == "") {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                }
+                else {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (index != 0) { newName += " " + parameters.at(index); }
+                            else { newName += parameters.at(index); }
+                            index++;
+                        }
+                        currentRace.set_description(newName);
+                    }
+                    else {
+                        std::cout << "\nWhat is the description for your race? Warning: Pressing enter will enter the description as is, formatting is currently not supported\n";
+                        std::getline(std::cin, newName);
+                        currentRace.set_description(newName);
+                    }
+                }
+                break;
+            }
+                  //Size
+            case 3: {
+                if (currentRace.get_sizename() == "Small") {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                }
+                else {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInvalid Size\nWhat is the size of your character? (Small, Medium, Large)\n", true, false, std::vector<std::string>{"small", "medium", "large"});
+                        if (newName == "small") {
+                            currentRace.set_size(SizeEnum::small);
+                        }
+                        else if (newName == "medium") {
+                            currentRace.set_size(SizeEnum::medium);
+                        }
+                        else if (newName == "large") {
+                            currentRace.set_size(SizeEnum::large);
+                        }
+                    }
+                    else {
+                        std::cout << "\nWhat is the size of your character? (Small, Medium, Large)\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nWhat is the size of your character? (Small, Medium, Large)\n", true, false, std::vector<std::string>{"small", "medium", "large"});
+                        if (newName == "small") {
+                            currentRace.set_size(SizeEnum::small);
+                        }
+                        else if (newName == "medium") {
+                            currentRace.set_size(SizeEnum::medium);
+                        }
+                        else if (newName == "large") {
+                            currentRace.set_size(SizeEnum::large);
+                        }
+                    }
+                }
+                break;
+            }
+                  //Str
+            case 4: {
+                if (currentRace.get_str() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's strength modifier?\n", false, true);
+                        currentRace.set_str(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's strength modifier?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's strength modifier?\n", false, true);
+                        currentRace.set_str(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                  //Dex
+            case 5: {
+                if (currentRace.get_dex() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dexterity modifier?\n", false, true);
+                        currentRace.set_dex(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's dexterity modifier?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dexterity modifier?\n", false, true);
+                        currentRace.set_dex(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                  //Con
+            case 6: {
+                if (currentRace.get_con() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's constitution modifier?\n", false, true);
+                        currentRace.set_con(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's constitution modifier?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's constitution modifier?\n", false, true);
+                        currentRace.set_con(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                  //Int
+            case 7: {
+                if (currentRace.get_int() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's intelligence modifier?\n", false, true);
+                        currentRace.set_int(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's intelligence modifier?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's intelligence modifier?\n", false, true);
+                        currentRace.set_int(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                  //Wis
+            case 8: {
+                if (currentRace.get_wis() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's wisdom modifier?\n", false, true);
+                        currentRace.set_wis(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's wisdom modifier?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's wisdom modifier?\n", false, true);
+                        currentRace.set_wis(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                  //Cha
+            case 9: {
+                if (currentRace.get_cha() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's charisma modifier?\n", false, true);
+                        currentRace.set_cha(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's charisma modifier?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's charisma modifier?\n", false, true);
+                        currentRace.set_cha(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                  //Speed
+            case 10: {
+                if (currentRace.get_speed() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's speed?\n", false, true);
+                        currentRace.set_speed(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's speed?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's speed?\n", false, true);
+                        currentRace.set_speed(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //FlyingSpeed
+            case 11: {
+                if (currentRace.get_flySpeed() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's fly speed?\n", false, true);
+                        currentRace.set_flySpeed(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's fly speed?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's fly speed?\n", false, true);
+                        currentRace.set_flySpeed(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //SwimmingSpeed
+            case 12: {
+                if (currentRace.get_swimSpeed() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's swim speed?\n", false, true);
+                        currentRace.set_swimSpeed(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's swim speed?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's swim speed?\n", false, true);
+                        currentRace.set_swimSpeed(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Dark vision
+            case 13: {
+                if (currentRace.get_darkVision() == 0) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dark vision distance? (0 means none)\n", false, true);
+                        currentRace.set_darkVision(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nWhat is your race's dark vision distance? (0 means none)\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dark vision distance? (0 means none)\n", false, true);
+                        currentRace.set_darkVision(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Skill Options Count
+            case 14: {
+                if (currentRace.get_skillOptionsCount() == 1) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many skills can your race choose to be proficent in?\n", false, true);
+                        currentRace.set_skillOptionsCount(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nHow many skills can your race choose to be proficent in?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many skills can your race choose to be proficent in?\n", false, true);
+                        currentRace.set_skillOptionsCount(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Language Options Count
+            case 15: {
+                if (currentRace.get_languageOptionsCount() == 1) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many languages can your race choose to be proficent in?\n", false, true);
+                        currentRace.set_languageOptionsCount(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nHow many languages can your race choose to be proficent in?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many languages can your race choose to be proficent in?\n", false, true);
+                        currentRace.set_languageOptionsCount(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Weapon Options Count
+            case 16: {
+                if (currentRace.get_weaponOptionsCount() == 1) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many weapons can your race choose to be proficent in?\n", false, true);
+                        currentRace.set_weaponOptionsCount(std::stoi(newName));
+                    }
+                    else {
+                        std::cout << "\nHow many weapons can your race choose to be proficent in?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many weapons can your race choose to be proficent in?\n", false, true);
+                        currentRace.set_weaponOptionsCount(std::stoi(newName));
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //LizFolkAC
+            case 17: {
+                if (currentRace.get_lizFolkAC() == false) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have lizardfolk AC?\n", true, false, std::vector<std::string>{"yes", "no"});
+                        if (newName == "yes") {
+                            currentRace.set_lizFolkAC(true);
+                        }
+                        else {
+                            currentRace.set_lizFolkAC(false);
+                        }
+                    }
+                    else {
+                        std::cout << "\nDoes your race have lizardfolk AC?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have lizardfolk AC?\n", true, false, std::vector<std::string>{"yes", "no"});
+                        if (newName == "yes") {
+                            currentRace.set_lizFolkAC(true);
+                        }
+                        else {
+                            currentRace.set_lizFolkAC(false);
+                        }
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //TortAC
+            case 18: {
+                if (currentRace.get_tortAC() == false) {
+                    std::string newName{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        newName = parameters.at(0);
+                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have tortle AC?\n", true, false, std::vector<std::string>{"yes", "no"});
+                        if (newName == "yes") {
+                            currentRace.set_tortAC(true);
+                        }
+                        else {
+                            currentRace.set_tortAC(false);
+                        }
+                    }
+                    else {
+                        std::cout << "\nDoes your race have tortle AC?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have tortle AC?\n", true, false, std::vector<std::string>{"yes", "no"});
+                        if (newName == "yes") {
+                            currentRace.set_tortAC(true);
+                        }
+                        else {
+                            currentRace.set_tortAC(false);
+                        }
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Languages
+            case 19: {
+                if (currentRace.get_language().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalLanguages)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded language\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_language(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Languages", GlobalLanguages, "", true, 4);
+                        std::cout << "\nWhat language do you want to add to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language do you want to add to your race?\n", true, false, GlobalLanguages);
+                        currentRace.insert_language(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Tools
+            case 20: {
+                if (currentRace.get_tool().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalTools)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded tool\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_tool(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Tools", GlobalTools, "", true, 4);
+                        std::cout << "\nWhat tool proficencies do you want to add to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded tool\nWhat tool proficencies do you want to add to your race?\n", true, false, GlobalTools);
+                        currentRace.insert_tool(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Skill Options
+            case 21: {
+                if (currentRace.get_skillOption().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalSkills)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded skill\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_skillOption(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Skills", GlobalSkills, "", true, 4);
+                        std::cout << "\nWhat skill options do you want to add to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded skill\nWhat skill options do you want to add to your race?\n", true, false, GlobalSkills);
+                        currentRace.insert_skillOption(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Skill Profs
+            case 22: {
+                if (currentRace.get_skillProf().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalSkills)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded skill\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_skillProf(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Skills", GlobalSkills, "", true, 4);
+                        std::cout << "\nWhat skill proficencies do you want to add to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded skill\nWhat skill proficencies do you want to add to your race?\n", true, false, GlobalSkills);
+                        currentRace.insert_skillProf(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Language Options
+            case 23: {
+                if (currentRace.get_languageOption().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalLanguages)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded language\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_languageOption(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Languages", GlobalLanguages, "", true, 4);
+                        std::cout << "\nWhat language options do you want to add to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language options do you want to add to your race?\n", true, false, GlobalLanguages);
+                        currentRace.insert_languageOption(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Weapon Options
+            case 24: {
+                if (currentRace.get_weaponOption().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalWeapons)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded weapon\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_weaponOption(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
+                        std::cout << "\nWhat weapon options do you want to add to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon\nWhat weapon options do you want to add to your race?\n", true, false, GlobalWeapons);
+                        currentRace.insert_weaponOption(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Weapon Profs
+            case 25: {
+                if (currentRace.get_weaponProf().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalWeapons)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded weapon\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_weaponProf(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
+                        std::cout << "\nWhat weapon proficencies do you want to add to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon\nWhat weapon proficencies do you want to add to your race?\n", true, false, GlobalWeapons);
+                        currentRace.insert_weaponProf(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Armor Profs
+            case 26: {
+                if (currentRace.get_armorProf().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalArmorType)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded armor type\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_armorProf(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Armor", GlobalArmorType, "", true, 4);
+                        std::cout << "\nWhat armor types do you want to add to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded armor type\nWhat armor types do you want to add to your race?\n", true, false, GlobalArmorType);
+                        currentRace.insert_armorProf(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Damage Res
+            case 27: {
+                if (currentRace.get_damageRes().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalDamageType)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded damage type\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_damageRes(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Damage Types", GlobalDamageType, "", true, 4);
+                        std::cout << "\nWhat damage types do you want to add resistance to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded damage type\nWhat damage types do you want to add resistance to your race?\n", true, false, GlobalDamageType);
+                        currentRace.insert_damageRes(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Damage Imm
+            case 28: {
+                if (currentRace.get_damageImmun().empty()) {
+                    std::string newName{};
+                    std::vector<std::string> newLanguages{};
+                    if (parameters.size() > 1) {
+                        parameters.erase(parameters.begin());
+                        int index{};
+                        for (std::string i : parameters) {
+                            if (includes_string(i, GlobalDamageType)) {
+                                newLanguages.push_back(i);
+                            }
+                            else {
+                                std::cout << "\n" << i << " is not a loaded damage type\n";
+                            }
+                            index++;
+                        }
+                        currentRace.insert_damageImmun(newLanguages);
+                    }
+                    else {
+                        editGUI.GenerateMenu("Damage Types", GlobalDamageType, "", true, 4);
+                        std::cout << "\nWhat damage types do you want to add immunity to your race?\n";
+                        std::getline(std::cin, newName);
+                        newName = HLib::InputCheck(newName, "\nThat is not a loaded damage type\nWhat damage types do you want to add immunity to your race?\n", true, false, GlobalDamageType);
+                        currentRace.insert_damageImmun(newName);
+                    }
+                }
+                else {
+                    currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+                }
+                break;
+            }
+                   //Traits
+            case 29: {
+                if (currentRace.get_trait().empty()) {
+                    //Testing phase
+                }
+                break;
+            }
+            default:
+                break;
+            }
+        }
+        else {
+            std::cout << "\nInvalid Input\n";
+        }
 
         break;
     }
@@ -2139,7 +3693,84 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 }
 
 void DrawRace(Race input) {
+    GUI displayGUI{};
+    std::vector<std::string> mods{};
 
+    if (input.get_name() != "") {
+        std::cout << std::endl << std::endl;
+        displayGUI.MakeBox(input.get_name(), 2);
+        std::cout << std::endl;
+    }
+    if (input.get_optionPack() != "") {
+        displayGUI.MakeBox(input.get_optionPack(), 1);
+        std::cout << std::endl;
+    }
+    if (input.get_sizename() != "") {
+        displayGUI.MakeBox(input.get_sizename(), 1);
+        std::cout << std::endl;
+    }
+    if (input.get_description() != "") {
+        displayGUI.GenerateMenu("Description", std::vector<std::string>{input.get_description()});
+        std::cout << std::endl;
+    }
+    if (input.get_str() != 0) {
+        mods.push_back("Str: " + std::to_string(input.get_str()));
+    }
+    if (input.get_dex() != 0) {
+        mods.push_back("Dex: " + std::to_string(input.get_dex()));
+    }
+    if (input.get_con() != 0) {
+        mods.push_back("Con: " + std::to_string(input.get_con()));
+    }
+    if (input.get_int() != 0) {
+        mods.push_back("Int: " + std::to_string(input.get_int()));
+    }
+    if (input.get_wis() != 0) {
+        mods.push_back("Wis: " + std::to_string(input.get_wis()));
+    }
+    if (input.get_cha() != 0) {
+        mods.push_back("Cha: " + std::to_string(input.get_cha()));
+    }
+    if (!mods.empty()) {
+        displayGUI.GenerateGrid(mods);
+    }
+
+    if(!input.get_language().empty()){
+    displayGUI.GenerateMenu("Languages", input.get_language(), "", true, 4);
+    }
+    if (!input.get_tool().empty()) {
+    displayGUI.GenerateMenu("Tools", input.get_tool(), "", true, 4);
+    }
+    if (!input.get_skillOption().empty()) {
+    displayGUI.GenerateMenu("Skill Options", input.get_skillOption(), "", true, 4);
+    }
+    if (!input.get_languageOption().empty()) {
+    displayGUI.GenerateMenu("Language Options", input.get_languageOption(), "", true, 4);
+    }
+    if (!input.get_weaponOption().empty()) {
+    displayGUI.GenerateMenu("Weapon Options", input.get_weaponOption(), "", true, 4);
+    }
+    if (!input.get_skillProf().empty()) {
+    displayGUI.GenerateMenu("Skill Proficencies", input.get_skillProf(), "", true, 4);
+    }
+    if (!input.get_weaponProf().empty()) {
+    displayGUI.GenerateMenu("Weapon Proficencies", input.get_weaponProf(), "", true, 4);
+    }
+    if (!input.get_armorProf().empty()) {
+    displayGUI.GenerateMenu("Armor Proficencies", input.get_armorProf(), "", true, 4);
+    }
+    if (!input.get_damageRes().empty()) {
+    displayGUI.GenerateMenu("Damage Resistance", input.get_damageRes(), "", true, 4);
+    }
+    if (!input.get_damageImmun().empty()) {
+        displayGUI.GenerateMenu("Damage Immunites", input.get_damageImmun(), "", true, 4);
+    }
+    
+    /*std::cout << std::endl;
+    for (Trait i : input.get_trait()) {
+        displayGUI.GenerateMenu(i.get_name(), std::vector<std::string>{i.get_description()}, i.get_typename());
+    }
+    std::cout << std::endl;*/
 }
 
 Race RaceConsole() {

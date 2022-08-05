@@ -805,5 +805,11 @@ void GUI::GenerateGrid(std::vector<std::string> objects, int height, int width)
 		}
 	}
 }
-
+void GUI::GenerateGrid(std::vector<int> objects, int height, int width) {
+	std::vector<std::string> input{};
+	for (int i : objects) {
+		input.push_back(std::to_string(i));
+	}
+	GenerateGrid(input, height, width);
+}
 

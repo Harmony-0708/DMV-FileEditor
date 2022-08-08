@@ -7,7 +7,6 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <curses.h>
 #include "TraitType.h"
 #include "SizeEnum.h"
 #include "Spell.h"
@@ -18,8 +17,6 @@
 #include "Pack.h"
 #include "HPack.h"
 #include "Orcbrew.h"
-#include "menu.h"
-#include "MenuBar.h"
 
 
 void GenerateMenu();
@@ -262,39 +259,8 @@ int main()
 {
     HPack SessionPack{};
 
-    initscr();
-    noecho();
-    curs_set(0);
-
-    int yMax, xMax;
-    getmaxyx(stdscr, yMax, xMax);
-
-    WINDOW *win = newwin(yMax/2, xMax/2,yMax/4,xMax/4);
-    box(win,0,0);
-
-    Menu menus[3] = {
-        Menu("File",'f'),
-        Menu("Edit",'e'),
-        Menu("Options",'o'),
-    };
-
-    MenuBar menubar{ win,menus,3 };
-    menubar.draw();
-
-
-
-    char ch{};
-    while (ch = wgetch(win)) 
-    {
-        
-        menubar.handleTrigger(ch);
-        menubar.draw();
-
-    }
-    
-    //Console(std::vector<std::string>{"display", "add", "load", "save", "export", "name"}, std::vector<std::string>{"Displays stuff", "Add to pack", "Load from a file", "Save to a file", "Export to Orcbrew", "Rename Packs"}, SessionPack);
+    Console(std::vector<std::string>{"display", "add", "load", "save", "export", "name"}, std::vector<std::string>{"Displays stuff", "Add to pack", "Load from a file", "Save to a file", "Export to Orcbrew", "Rename Packs"}, SessionPack);
     //GenerateMenu();
-    endwin();
     return 0;
 }
 

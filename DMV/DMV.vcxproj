@@ -130,7 +130,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DMV.cpp" />
-    <ClCompile Include="emptytest.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="harmonylib.cpp" />
     <ClCompile Include="HPack.cpp" />
@@ -143,7 +142,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbilityScore.h" />
-    <ClInclude Include="emptytest.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="harmonylib.h" />
     <ClInclude Include="HPack.h" />

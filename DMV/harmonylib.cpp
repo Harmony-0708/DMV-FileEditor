@@ -135,7 +135,7 @@ std::string HLib::InputCheck(std::string input, std::string repeatString, bool o
                     if (isalpha(i)) {
                         lowerInput += tolower(i);
                     }
-                    else if (i == ' ' || i == '-') {
+                    else if (i == ' ' || i == '-' || i == '\'') {
                         lowerInput += i;
                     }
                     else {

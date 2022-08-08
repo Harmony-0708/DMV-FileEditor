@@ -1,4 +1,3 @@
 ﻿  DMV.cpp
-D:\GitProjects\DMVApp\DMV\DMV\DMV.cpp(813,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
-LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/FORCE' specification
-  DMV.vcxproj -> D:\GitProjects\DMVApp\DMV\x64\Debug\DMV.exe
+C:\Users\arhea\source\repos\DMV\DMV\DMV.cpp(527,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
+  DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

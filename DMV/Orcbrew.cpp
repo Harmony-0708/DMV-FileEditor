@@ -19,6 +19,11 @@ void Orcbrew::set_packs(std::vector<Pack> packs) {
     Packs = packs;
 }
 
+void Orcbrew::set_name(std::string name)
+{
+    Name = name;
+}
+
 Pack Orcbrew::add_to_pack(Pack inPack, std::string command, std::string input, std::string packPart, std::string objectName)
 {
     if (packPart == "race") {

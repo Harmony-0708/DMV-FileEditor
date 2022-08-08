@@ -31,6 +31,7 @@ public:
 
 	void set_name(std::string name);
 	void set_packs(std::vector<Pack> packs);
+	void set_pack_name(std::string packName, std::string newName);
 	void add_pack(Pack pack);
 
 	std::vector<Pack> merge(std::vector<std::vector<Pack>> PackSet);

@@ -68,5 +68,6 @@ public:
 	void GenerateMenu(std::string header, std::vector<std::string> menuOptions, std::string footer = "", bool multiCol = false, int cols = 0);
 
 	void GenerateGrid(std::vector<std::string> objects, int height = 0, int width = 0);
+	void GenerateGrid(std::vector<int> objects, int height = 0, int width = 0);
 };
 

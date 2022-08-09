@@ -16,6 +16,7 @@ private:
 	std::string OptionPack{};
 	std::string Component{};
 	std::string CastingTime{};
+	std::string Range{};
 	int Level{};
 	bool Verbal{};
 	bool Somatic{};
@@ -38,6 +39,7 @@ public:
 	std::string get_optionPack();
 	std::string get_component();
 	std::string get_castingTime();
+	std::string get_range();
 	int get_level();
 	bool is_verbal();
 	bool is_somatic();
@@ -57,6 +59,7 @@ public:
 	void set_optionPack(std::string input);
 	void set_component(std::string input);
 	void set_castingTime(std::string input);
+	void set_range(std::string input);
 	void set_level(int input);
 	void set_verbal(bool input);
 	void set_somatic(bool input);

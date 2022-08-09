@@ -137,7 +137,136 @@ Pack Orcbrew::add_to_pack(Pack inPack, std::string command, std::string input, s
         }
         inPack.update_race(newRace);
     }
-    
+    else if (packPart == "spell") {
+        Spell newSpell{};
+        for (Spell i : inPack.get_spells()) {
+            if (i.get_key() == objectName) {
+                newSpell = i;
+            }
+        }
+        if (command == "spellName") {
+            newSpell.set_key(input);
+        }
+        else if (command == "key") {
+            std::string newInput{};
+            for (int k{}; k < input.size(); k++) {
+                if (k >= 5) {
+                    newInput.push_back(input[k]);
+                }
+            }
+            newSpell.set_key(newInput);
+        }
+        else if (command == "name") {
+            std::string newInput{};
+            if (input[0] == '\"') {
+                input.erase(0, 1);
+                for (char k : input) {
+                    if (k != '\"') {
+                        newInput.push_back(k);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            newSpell.set_name(newInput);
+        }
+        else if (command == "description") {
+            std::string newInput{};
+            if (input[0] == '\"') {
+                input.erase(0, 1);
+                for (char k : input) {
+                    if (k != '\"') {
+                        newInput.push_back(k);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            newSpell.set_description(newInput);
+        }
+        else if (command == "range") {
+            std::string newInput{};
+            if (input[0] == '\"') {
+                input.erase(0, 1);
+                for (char k : input) {
+                    if (k != '\"') {
+                        newInput.push_back(k);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            newSpell.set_range(newInput);
+        }
+        else if (command == "school") {
+            std::string newInput{};
+            if (input[0] == '\"') {
+                input.erase(0, 1);
+                for (char k : input) {
+                    if (k != '\"') {
+                        newInput.push_back(k);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            newSpell.set_school(newInput);
+        }
+        else if (command == "duration") {
+            std::string newInput{};
+            if (input[0] == '\"') {
+                input.erase(0, 1);
+                for (char k : input) {
+                    if (k != '\"') {
+                        newInput.push_back(k);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            newSpell.set_duration(newInput);
+        }
+        else if (command == "option-pack") {
+            std::string newInput{};
+            if (input[0] == '\"') {
+                input.erase(0, 1);
+                for (char k : input) {
+                    if (k != '\"') {
+                        newInput.push_back(k);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            newSpell.set_optionPack(newInput);
+        }
+        else if (command == "level") {
+            newSpell.set_level(std::stoi(input));
+        }
+        else if (command == "ritual") {
+            if (input == "false") {
+                newSpell.set_ritual(false);
+            }
+            else {
+                newSpell.set_ritual(true);
+            }
+        }
+        else if (command == "attack-roll?") {
+            if (input == "false") {
+                newSpell.set_attackRoll(false);
+            }
+            else {
+                newSpell.set_attackRoll(true);
+            }
+        }
+        inPack.update_spell(newSpell);
+    }
     return inPack;
 }
 
@@ -500,7 +629,109 @@ Pack Orcbrew::add_to_pack(Pack inPack, std::string command, std::vector<std::str
 
         inPack.update_race(newRace);
     }
-    
+    else if (packPart == "spell") {
+        Spell newSpell{};
+        for (Spell i : inPack.get_spells()) {
+            if (i.get_key() == objectName) {
+                newSpell = i;
+            }
+        }
+        if (command == "spell-lists") {
+            bool Itterate{ false };
+            bool inClasses{ true };;
+            bool endGroup{ false };
+            int index{ 0 };
+            int inputSize{};
+            inputSize = input.size();
+            for (std::string i : input) {
+                if (!Itterate) {
+                    std::string newInput{};
+                    for (int k{}; k < i.size(); k++) {
+                        if (!endGroup) {
+                            if (k >= 5) {
+                                newInput.push_back(i[k]);
+                            }
+                        }
+                        else {
+                            newInput.push_back(i[k]);
+                        }
+                    }
+                    
+                    if ((index + 1) < inputSize) {
+                        if (newInput == "}" && input[index + 1] == "}") {
+                            index++;
+                            continue;
+                        }
+                    }
+
+                    endGroup = false;
+
+                    if (inClasses) {
+                        newSpell.insert_class(newInput);
+                        Itterate = true;
+                        if (input.size() > index + 2) {
+                            if (input[index + 2] == "}") {
+                                endGroup = true;
+                                inClasses = false;
+                            }
+                        }
+                        else if (input.size() <= index + 2) {
+                            endGroup = true;
+                            inClasses = false;
+                        }
+                    }
+                }
+                else {
+                    Itterate = false;
+                }
+                index++;
+            }
+        }
+        else if (command == "components") {
+            bool Itterate{};
+            int index{ 0 };
+            for (std::string i : input) {
+                if (!Itterate) {
+                    std::string newInput{};
+                    if (i[0] == 'c' && i[1] == 'm' && i[2] == 'd') {
+                        Itterate = true;
+                        newInput = i;
+                        newInput.erase(0, 5);
+                    }
+                    if (newInput == "verbal") {
+                        newSpell.set_verbal(HLib::StringToBool(input[index + 1]));
+                    }
+                    else if (newInput == "somatic") {
+                        newSpell.set_somatic(HLib::StringToBool(input[index + 1]));
+                    }
+                    else if (newInput == "material") {
+                        newSpell.set_material(HLib::StringToBool(input[index + 1]));
+                    }
+                    else if (newInput == "material-component") {
+                        std::string newString{ input[index + 1] };
+                        newInput.clear();
+                        if (newString[0] == '\"') {
+                            newString.erase(0, 1);
+                            for (char k : newString) {
+                                if (k != '\"') {
+                                    newInput.push_back(k);
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                        }
+                        newSpell.set_component(newInput);
+                    }
+                }
+                else {
+                    Itterate = false;
+                }
+                index++;
+            }
+        }
+        inPack.update_spell(newSpell);
+    }
     return inPack;
 }
 
@@ -583,10 +814,12 @@ HPack Orcbrew::load(std::string fileName)
     bool inCommand{};
     bool inList{};
     bool inRaces{ false };
+    bool inSpells{ false };
     bool inTraits{ false };
     std::string command{};
     std::string newString{};
     std::string raceName{};
+    std::string spellName{};
     for (std::string i : brokenUpLine) {
         newString.clear();
         command.clear();
@@ -643,6 +876,11 @@ HPack Orcbrew::load(std::string fileName)
         if (inCommand) {
             if (command == "orcpub.dnd.e5/races") {
                 inRaces = true;
+                inSpells = false;
+            }
+            else if (command == "orcpub.dnd.e5/spells") {
+                inSpells = true;
+                inRaces = false;
             }
             else if (inRaces) {
                 if (counter >= 3) {
@@ -681,7 +919,44 @@ HPack Orcbrew::load(std::string fileName)
                     newPack = add_to_pack(newPack, "raceName", command, "race", raceName);
                 }
             }
-            
+            else if (inSpells) {
+                if (counter >= 3) {
+                    if (brokenUpLine[index + 1] == "{" || brokenUpLine[index + 1] == "[") {
+                        int tempCounter{ counter };
+                        counter++;
+                        std::vector<std::string> inputVec{};
+                        int incre{ 2 };
+                        while (true) {
+                            if (brokenUpLine[index + incre] == "{" || brokenUpLine[index + incre] == "[") {
+                                counter++;
+                            }
+                            else if (brokenUpLine[index + incre] == "}" || brokenUpLine[index + incre] == "]") {
+                                counter--;
+                            }
+                            if ((brokenUpLine[index + incre] != "}" && brokenUpLine[index + incre] != "]") || tempCounter != counter) {
+                                inputVec.push_back(brokenUpLine[index + incre]);
+                                incre++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        didItterate = true;
+                        toIndex = index + incre + 2;
+                        newPack = add_to_pack(newPack, command, inputVec, "spell", spellName);
+                    }
+                    else {
+                        didItterate = true;
+                        toIndex = index + 2;
+                        newPack = add_to_pack(newPack, command, brokenUpLine[index + 1], "spell", spellName);
+                    }
+                }
+                else if (counter != 0) {
+                    spellName = command;
+                    newPack = add_to_pack(newPack, "spellName", command, "spell", spellName);
+                }
+            }
+            inCommand = false;
         }
         if (counter == 0) {
             if (i[0] == '\"') {
@@ -724,7 +999,7 @@ void Orcbrew::save()
     }
 
     myfile
-        << "}";
+        << "}}";
 }
 
 //HPack Orcbrew::convert_pack_file()

@@ -70,6 +70,10 @@ std::string Spell::get_castingTime()
 {
 	return this->CastingTime;
 }
+std::string Spell::get_range()
+{
+	return this->Range;
+}
 int Spell::get_level()
 {
 	return this->Level;
@@ -165,6 +169,10 @@ void Spell::set_component(std::string input)
 void Spell::set_castingTime(std::string input)
 {
 	this->CastingTime = input;
+}
+void Spell::set_range(std::string input)
+{
+	this->Range = input;
 }
 void Spell::set_level(int input)
 {

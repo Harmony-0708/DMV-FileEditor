@@ -1,0 +1,37 @@
+{
+"Austin's Pack"
+{:orcpub.dnd.e5/races
+{
+},
+:orcpub.dnd.e5/spells
+{:test
+{:key :test
+, :name "Test
+", :description "testing
+", :school "abjuration
+", :duration "test
+", :range "60m
+", :casting-time "60min
+", :option-pack "Austin's Pack
+", :level 1
+, :ritual true
+, :attack-roll? true
+, :components{
+:verbal true,
+:somatic true,
+:material true,
+:material-component "Lead and gold"
+},:spell-lists{
+ :bard true,
+ :cleric true,
+ :druid true,
+ :paladin true,
+ :ranger true,
+ :sorcerer true,
+ :warlock true,
+ :wizard true,
+}
+},
+},
+}
+}

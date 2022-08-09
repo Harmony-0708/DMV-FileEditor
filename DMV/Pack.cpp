@@ -52,6 +52,23 @@ void Pack::update_race(Race inputRace)
 	}
 }
 
+void Pack::update_spell(Spell inputSpell)
+{
+	int index{ -1 };
+	bool found{ false };
+	for (Spell i : get_spells()) {
+		index++;
+		if (i.get_key() == inputSpell.get_key()) {
+			Spells[index] = inputSpell;
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		set_spells(inputSpell);
+	}
+}
+
 void Pack::set_races(Race inputRace)
 {
 	this->Races.push_back(inputRace);
@@ -93,7 +110,9 @@ int Pack::load_pack(std::string packName)
 	Name = packName;
 	std::ifstream myfile{};
 	std::vector<Race> myRaces{ Races };
+	std::vector<Spell> mySpells{ Spells };
 	Race newRace{};
+	Spell newSpell{};
 	Trait newTrait{};
 
 	
@@ -103,6 +122,7 @@ int Pack::load_pack(std::string packName)
 	std::string line;
 	int counter{};
 	bool inRaces{};
+	bool inSpells{};
 	bool inTraits{};
 	bool input{};
 
@@ -128,7 +148,7 @@ int Pack::load_pack(std::string packName)
 			declared += i;
 		}
 
-		if (!inRaces && !inTraits) {
+		if (!inRaces && !inTraits && !inSpells) {
 
 			if (counter == 0) {
 				unsigned first = line.find('\"');
@@ -138,6 +158,9 @@ int Pack::load_pack(std::string packName)
 			}
 			if (declared == "Races") {
 				inRaces = true;
+			}
+			else if (declared == "Spells") {
+				inSpells = true;
 			}
 		}
 		else if (inRaces) {
@@ -402,6 +425,75 @@ int Pack::load_pack(std::string packName)
 				newRace.clear();
 			}
 		}
+		else if (inSpells) {
+			if (declared == "Name") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_name(variableNew);
+			}
+			else if (declared == "OptionPack") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_optionPack(variableNew);
+			}
+			else if (declared == "School") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_school(variableNew);
+			}
+			else if (declared == "Duration") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_duration(variableNew);
+			}
+			else if (declared == "Component") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_component(variableNew);
+			}
+			else if (declared == "CastingTime") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_castingTime(variableNew);
+			}
+			else if (declared == "Range") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_range(variableNew);
+			}
+			else if (declared == "Level") {
+				newSpell.set_level(std::stoi(variable));
+			}
+			else if (declared == "Verbal") {
+				newSpell.set_verbal(HLib::StringToBool(variable));
+			}
+			else if (declared == "Somatic") {
+				newSpell.set_somatic(HLib::StringToBool(variable));
+			}
+			else if (declared == "Material") {
+				newSpell.set_material(HLib::StringToBool(variable));
+			}
+			else if (declared == "Ritual") {
+				newSpell.set_ritual(HLib::StringToBool(variable));
+			}
+			else if (declared == "AttackRoll") {
+				newSpell.set_attackRoll(HLib::StringToBool(variable));
+			}
+			else if (declared == "}") {
+				if (newSpell.get_name() != "") {
+					mySpells.push_back(newSpell);
+				}
+				newSpell.clear();
+			}
+
+		}
 		counter++;
 	}
 	
@@ -446,7 +538,7 @@ Pack Pack::load_pack(std::fstream& myfile)
 			declared += i;
 		}
 
-		if (!inRaces && !inTraits) {
+		if (!inRaces && !inTraits && !inSpells) {
 
 			if (counter == 0) {
 				if (line != "{") {
@@ -765,6 +857,12 @@ Pack Pack::load_pack(std::fstream& myfile)
 				std::string variableNew = variable.substr(first + 1, last - first - 1);
 				newSpell.set_castingTime(variableNew);
 			}
+			else if (declared == "Range") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_range(variableNew);
+			}
 			else if (declared == "Level") {
 				newSpell.set_level(std::stoi(variable));
 			}
@@ -828,6 +926,7 @@ void Pack::save_pack()
 {
 	std::ofstream myfile{};
 	std::vector<Race> myRaces{ Races };
+	std::vector<Spell> mySpells{ Spells };
 
 	if (!std::filesystem::exists("CustomPacks")) {
 		std::filesystem::create_directory("CustomPacks");
@@ -986,6 +1085,7 @@ void Pack::save_pack()
 			<< "\"\nDuration=\"" << i.get_duration()
 			<< "\"\nComponent=\"" << i.get_component()
 			<< "\"\nCastingTime=\"" << i.get_castingTime()
+			<< "\"\nRange=\"" << i.get_range()
 			<< "\"\nLevel=" << i.get_level()
 			<< std::boolalpha
 			<< "\nVerbal=" << i.is_verbal()
@@ -1165,6 +1265,7 @@ void Pack::save_pack(std::ofstream& myfile)
 			<< "\"\nDuration=\"" << i.get_duration()
 			<< "\"\nComponent=\"" << i.get_component()
 			<< "\"\nCastingTime=\"" << i.get_castingTime()
+			<< "\"\nRange=\"" << i.get_range()
 			<< "\"\nLevel=" << i.get_level()
 			<< std::boolalpha
 			<< "\nVerbal=" << i.is_verbal()
@@ -1487,9 +1588,80 @@ void Pack::print_pack(bool multi, std::ofstream& outputfile) {
 			}
 		}
 		outputfile
-			<< "\n]\n}";
+			<< "\n]\n},";
 
 	}
+	outputfile
+		<< "\n},\n:orcpub.dnd.e5/spells\n{";
+	for (Spell i : get_spells()) {
+		if (i.get_optionPack() != Name) {
+			break;
+		}
+		outputfile
+			<< ":" << i.get_key()
+			<< "\n{:key :" << i.get_key()
+			<< "\n, :name \"" << i.get_name()
+			<< "\n\", :description \"" << i.get_description()
+			<< "\n\", :school \"" << i.get_school()
+			<< "\n\", :duration \"" << i.get_duration()
+			<< "\n\", :range \"" << i.get_range()
+			<< "\n\", :casting-time \"" << i.get_castingTime()
+			<< "\n\", :option-pack \"" << i.get_optionPack()
+			<< "\n\", :level " << i.get_level()
+			<< std::boolalpha
+			<< "\n, :ritual " << i.is_ritual()
+			<< "\n, :attack-roll? " << i.is_attackRoll()
+			<< std::boolalpha
+			<< "\n, :components{";
+		if (i.is_verbal()) {
+			outputfile
+				<< std::boolalpha
+				<< "\n:verbal "
+				<< i.is_verbal()
+				<< std::boolalpha;
+			if (i.is_somatic() || i.is_material() || i.get_component() != "") {
+				outputfile
+					<< ",\n";
+			}
+		}
+		if (i.is_somatic()) {
+			outputfile
+				<< std::boolalpha
+				<< "\n:somatic "
+				<< i.is_somatic()
+				<< std::boolalpha;
+			if (i.is_material() || i.get_component() != "") {
+				outputfile
+					<< ",\n";
+			}
+		}
+		if (i.is_material()) {
+			outputfile
+				<< std::boolalpha
+				<< "\n:material "
+				<< i.is_material()
+				<< std::boolalpha;
+			if (i.get_component() != "") {
+				outputfile
+					<< ",\n";
+			}
+		}
+		if (i.get_component() != "") {
+			outputfile
+				<<"\n:material-component \"" << i.get_component() << "\"";
+		}
+		outputfile
+			<< "\n},:spell-lists{";
+		if (i.get_class().size() > 0) {
+			for (std::string k : i.get_class()) {
+				outputfile
+					<< "\n :" << k << " true,";
+			}
+		}
+		outputfile
+			<< "\n}\n},\n";
+	}
+
 	if (!multi) {
 		outputfile
 			<< "\n}\n}\n}";
@@ -1500,7 +1672,7 @@ void Pack::print_pack(bool multi, std::ofstream& outputfile) {
 	}
 	else {
 		outputfile
-			<< "\n}\n},\n";
+			<< "\n},\n";
 	}
 }
 void Pack::print_pack()

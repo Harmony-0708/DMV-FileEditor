@@ -1053,7 +1053,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                     HPack newHPack{};
                     i.erase(i.size()-5, 5);
                     newHPack.load(i);
-                    currentHPack.merge(std::vector<HPack>{newHPack});
+                    currentHPack = currentHPack.merge(std::vector<HPack>{newHPack});
                 }
                 else if (input == "pck") {
                     Pack newPack{};
@@ -1066,7 +1066,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                     Orcbrew newPack{};
                     i.erase(i.size() - 8, 8);
                     newHPack = newPack.load(i);
-                    currentHPack.merge(std::vector<HPack>{newHPack});
+                    currentHPack = currentHPack.merge(std::vector<HPack>{newHPack});
                 }
             }
         }

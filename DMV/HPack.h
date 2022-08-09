@@ -27,6 +27,7 @@ public:
 	HPack(std::string name);
 
 	std::vector<Pack> get_packs();
+	Pack get_pack(std::string name);
 	std::string get_name();
 
 	void set_name(std::string name);

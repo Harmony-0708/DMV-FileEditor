@@ -15,6 +15,17 @@ std::vector<Pack> HPack::get_packs()
 	return Packs;
 }
 
+Pack HPack::get_pack(std::string name)
+{
+	Pack emptyPack{};
+	for (Pack i : get_packs()) {
+		if (i.get_name() == name) {
+			return i;
+		}
+	}
+	return emptyPack;
+}
+
 std::string HPack::get_name()
 {
 	return Name;

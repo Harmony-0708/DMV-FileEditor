@@ -37,6 +37,7 @@ public:
 
 	std::string get_name();
 	std::vector<Race> get_races();
+	std::vector<Spell> get_spells();
 
 	void set_name(std::string name);
 

@@ -32,9 +32,7 @@ std::vector<std::string> selection(std::vector<std::string>);
 int index(std::string input, std::vector<std::string> inputVector);
 Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packName = "");
 
-int CommandCode(std::string command);
-int RaceCommandCode(std::string command);
-int RaceOptionCode(std::string option);
+int CommandCode(std::string command, std::vector<std::string> commands);
 
 HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> parameters = {}, std::string context = {});
 Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> parameters = {}, std::string context = {});
@@ -185,13 +183,49 @@ std::vector<std::string> GlobalDamageType{
     "poison", 
     "necrotic"
 };
+
+//Console
 std::vector<std::string> GlobalCommands{
     "exit",
-    "help"
+    "help",
+    "display", 
+    "add", 
+    "load", 
+    "save", 
+    "export", 
+    "name", 
+    "edit"
 };
 std::vector<std::string> GlobalCommandDefs{
     "Closes the program", 
-    "Displays Commands"
+    "Displays Commands",
+    "Displays stuff", 
+    "Add to pack", 
+    "Load from a file", 
+    "Save to a file", 
+    "Export to Orcbrew", 
+    "Rename Packs", 
+    "Edit an item"
+};
+
+//Race
+std::vector<std::string> GlobalRaceCommands{ 
+    "done",
+    "help",
+    "cancel",
+    "add",
+    "edit",
+    "clear",
+    "remove" 
+};
+std::vector<std::string> GlobalRaceCommandDefs{ 
+    "Finishes Race",
+    "Get help on command",
+    "Cancels current action",
+    "Add an aspect of race",
+    "Edit aspect",
+    "Clears race",
+    "Remove element" 
 };
 std::vector<std::string> GlobalRaceOptions{ 
     "name", 
@@ -257,11 +291,63 @@ std::vector<std::string> GlobalRaceDefs{
     "Types of damage your race is immune to", 
     "The specific traits of your race"
 };
-bool displayCoolGUI{true};
+
+//Spell
+std::vector<std::string> GlobalSpellCommands{ 
+    "done",
+    "help",
+    "cancel",
+    "add",
+    "edit",
+    "clear",
+    "remove" 
+};
+std::vector<std::string> GlobalSpellCommandDefs{ 
+    "Finishes Spell",
+    "Get help on command",
+    "Cancels current action",
+    "Add an aspect of spell",
+    "Edit aspect",
+    "Clears spell",
+    "Remove element" 
+};
+std::vector<std::string> GlobalSpellOptions{ 
+    "name", 
+    "option-pack", 
+    "description",
+    "school",
+    "duration",
+    "component",
+    "casting-time",
+    "level",
+    "verbal",
+    "somatic",
+    "material",
+    "ritual",
+    "attack-roll",
+    "classes"
+};
+std::vector<std::string> GlobalSpellDefs{ 
+    "The name of your Spell", 
+    "The name of the pack your spell is in", 
+    "The Description of your spell"
+    "The school of magic your spell is under",
+    "The duration of the spell",
+    "Components needed to case spell",
+    "How long it takes to case",
+    "Level of spell, 0 is cantrip",
+    "Veberal spell",
+    "Somatic spell",
+    "Material Spell",
+    "Ritual Spell",
+    "If spell is an attack roll",
+    "The classes that can use the spell"
+};
+
 
 int main()
 {
-    Console(std::vector<std::string>{"display", "add", "load", "save", "export", "name", "edit"}, std::vector<std::string>{"Displays stuff", "Add to pack", "Load from a file", "Save to a file", "Export to Orcbrew", "Rename Packs", "Edit an item"}, GlobalPack);
+    Console(GlobalCommands,GlobalCommandDefs, GlobalPack);
     return 0;
 }
 
@@ -339,6 +425,17 @@ void DrawRace(Race input) {
         for (Trait i : input.get_trait()) {
             displayGUI.GenerateMenu(i.get_name(), std::vector<std::string>{i.get_description()}, i.get_typename());
         }
+    }
+}
+void DrawSpell(Spell input) {
+
+}
+void DrawTrait(Trait input) {
+    GUI drawGUI{};
+    drawGUI.MakeBox((input.get_name() == "") ? "New Trait" : input.get_name(), 2);
+    drawGUI.MakeBox(input.get_typename(), 2);
+    if (input.get_description() != "") {
+        drawGUI.GenerateMenu("Description", std::vector<std::string>{input.get_description()});
     }
 }
 void ExitProgram() {
@@ -550,154 +647,9 @@ Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packN
 }
 
 //Command Codes
-int CommandCode(std::string command) {
-    if (command == "exit") {
-        return 0;
-    }
-    else if (command == "help") {
-        return 1;
-    }
-    else if (command == "display") {
-        return 2;
-    }
-    else if (command == "add") {
-        return 3;
-    }
-    else if (command == "load") {
-        return 4;
-    }
-    else if (command == "save") {
-        return 5;
-    }
-    else if (command == "export") {
-        return 6;
-    }
-    else if (command == "name") {
-        return 7;
-    }
-    else if (command == "edit") {
-        return 8;
-    }
-    else {
-        return -1;
-    }
-}
-int RaceCommandCode(std::string command) {
-    if (command == "done") {
-        return 0;
-    }
-    else if (command == "help") {
-        return 1;
-    }
-    else if (command == "cancel") {
-        return 2;
-    }
-    else if (command == "add") {
-        return 3;
-    }
-    else if (command == "edit") {
-        return 4;
-    }
-    else if (command == "clear") {
-        return 5;
-    }
-    else if (command == "remove") {
-        return 6;
-    }
-    else {
-        return -1;
-    }
-}
-int RaceOptionCode(std::string option) {
-    if (option == "name") {
-        return 0;
-    }
-    else if (option == "option-pack") {
-        return 1;
-    }
-    else if (option == "description") {
-        return 2;
-    }
-    else if (option == "size") {
-        return 3;
-    }
-    else if (option == "str") {
-        return 4;
-    }
-    else if (option == "dex") {
-        return 5;
-    }
-    else if (option == "con") {
-        return 6;
-    }
-    else if (option == "int") {
-        return 7;
-    }
-    else if (option == "wis") {
-        return 8;
-    }
-    else if (option == "cha") {
-        return 9;
-    }
-    else if (option == "speed") {
-        return 10;
-    }
-    else if (option == "flying-speed") {
-        return 11;
-    }
-    else if (option == "swimming-speed") {
-        return 12;
-    }
-    else if (option == "dark-vision") {
-        return 13;
-    }
-    else if (option == "skill-opcount") {
-        return 14;
-    }
-    else if (option == "lang-opcount") {
-        return 15;
-    }
-    else if (option == "weapon-opcount") {
-        return 16;
-    }
-    else if (option == "lizard-ac") {
-        return 17;
-    }
-    else if (option == "tortle-ac") {
-        return 18;
-    }
-    else if (option == "languages") {
-        return 19;
-    }
-    else if (option == "tools") {
-        return 20;
-    }
-    else if (option == "skill-ops") {
-        return 21;
-    }
-    else if (option == "skill-profs") {
-        return 22;
-    }
-    else if (option == "language-ops") {
-        return 23;
-    }
-    else if (option == "weapon-ops") {
-        return 24;
-    }
-    else if (option == "weapon-profs") {
-        return 25;
-    }
-    else if (option == "armor-profs") {
-        return 26;
-    }
-    else if (option == "damage-res") {
-        return 27;
-    }
-    else if (option == "dammage-imm") {
-        return 28;
-    }
-    else if (option == "trait") {
-        return 29;
+int CommandCode(std::string command,std::vector<std::string> commands) {
+    if (includes_string(command, commands)) {
+        return index(command, commands);
     }
     else {
         return -1;
@@ -748,18 +700,16 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             menuGUI.GenerateMenu("Display Options", options);
         }
         else if (parameters.at(0) == "help") {
-            currentHPack = ExecuteCommand(CommandCode("help"), currentHPack, merge_ordered(options, option_desc));
+            currentHPack = ExecuteCommand(CommandCode("help",GlobalCommands), currentHPack, merge_ordered(options, option_desc));
         }
         else if (parameters.at(0) == options.at(1)) {
             //menuGUI.GenerateMenu("Display Options", options);
-            currentHPack = ExecuteCommand(CommandCode("display"), currentHPack, std::vector<std::string>{}, "display");
+            currentHPack = ExecuteCommand(CommandCode("display",GlobalCommands), currentHPack, std::vector<std::string>{}, "display");
         }
         else if (parameters.at(0) == options.at(2)) {
-            displayCoolGUI = true;
             std::cout << "\nFancy GUI enabled.\n";
         }
         else if (parameters.at(0) == options.at(3)) {
-            displayCoolGUI = false;
             std::cout << "\nFancy GUI disabled.\n";
         }
         else if (parameters.at(0) == options.at(4)) {
@@ -826,7 +776,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("display"), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(CommandCode("display",GlobalCommands), currentHPack, std::vector<std::string>{});
         }
         break;
     }
@@ -834,7 +784,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
     //Add
     case 3: {
         GUI addGUI{};
-        std::vector<std::string> addOptions{ "cancel","options","race" };
+        std::vector<std::string> addOptions{ "cancel","options","race", "spell"};
         std::string input{};
 
         if (parameters.empty()) {
@@ -842,12 +792,12 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::getline(std::cin, input);
             addOptions.push_back("options");
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat would you like to add?\n", true, false, addOptions);
-            currentHPack = ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{input}, "add");
+            currentHPack = ExecuteCommand(CommandCode("add",GlobalCommands), currentHPack, std::vector<std::string>{input}, "add");
         }
         else if (parameters.at(0) == "options") {
             addGUI.GenerateMenu("Add Options", addOptions);
             std::cout << std::endl;
-            currentHPack =  ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{}, "add");
+            currentHPack =  ExecuteCommand(CommandCode("add", GlobalCommands), currentHPack, std::vector<std::string>{}, "add");
         }
         else if (parameters.at(0) == addOptions.at(0)) {
             break;
@@ -868,7 +818,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("add"), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(CommandCode("add", GlobalCommands), currentHPack, std::vector<std::string>{});
         }
         break;
     }
@@ -884,12 +834,12 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nHow many packs do you want to load?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow many packs do you want to load?\n", true, false, loadOptions);
-            currentHPack = ExecuteCommand(CommandCode("load"), currentHPack,std::vector<std::string>{input}, "load");
+            currentHPack = ExecuteCommand(CommandCode("load", GlobalCommands), currentHPack,std::vector<std::string>{input}, "load");
         }
         else if (parameters.at(0) == "options") {
             loadGUI.GenerateMenu("Load Options", loadOptions);
             std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{}, "load");
+            currentHPack = ExecuteCommand(CommandCode("load", GlobalCommands), currentHPack, std::vector<std::string>{}, "load");
         }
         else if (parameters.at(0) == loadOptions.at(0)) {
             break;
@@ -1065,7 +1015,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
         std::cout << "\nInvalid parameter\n";
-        currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{});
+        currentHPack = ExecuteCommand(CommandCode("load", GlobalCommands), currentHPack, std::vector<std::string>{});
         }
         break;
     }
@@ -1080,7 +1030,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nHow do you want to save your packs?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow do you want to save your packs?\n", true, false, saveOptions);
-            currentHPack = ExecuteCommand(CommandCode("save"), currentHPack, std::vector<std::string>{input}, "save");
+            currentHPack = ExecuteCommand(CommandCode("save", GlobalCommands), currentHPack, std::vector<std::string>{input}, "save");
         }
         else if (parameters.at(0) == "cancel") {
             break;
@@ -1088,7 +1038,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         else if (parameters.at(0) == "options") {
             saveGUI.GenerateMenu("Save Options", saveOptions);
             std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("save"), currentHPack, std::vector<std::string>{}, "save");
+            currentHPack = ExecuteCommand(CommandCode("save", GlobalCommands), currentHPack, std::vector<std::string>{}, "save");
         }
         else if (parameters.at(0) == saveOptions.at(2)) {
             currentHPack.save();
@@ -1110,7 +1060,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("save"), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(CommandCode("save", GlobalCommands), currentHPack, std::vector<std::string>{});
         }
         break;
     }
@@ -1125,7 +1075,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nAre you sure you want to export your packs to orcbrew format? WARNING: Any orcbrew file with the same name as your current HPack will be overwritten\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nAre you sure you want to export your packs to orcbrew format?\n", true, false, exportOptions);
-            currentHPack = ExecuteCommand(CommandCode("export"), currentHPack, std::vector<std::string>{input}, "export");
+            currentHPack = ExecuteCommand(CommandCode("export", GlobalCommands), currentHPack, std::vector<std::string>{input}, "export");
         }
         else if (parameters.at(0) == "cancel" || parameters.at(0) == exportOptions.at(2)) {
             break;
@@ -1133,7 +1083,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         else if (parameters.at(0) == "options") {
             exportGUI.GenerateMenu("Export Options", exportOptions);
             std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("export"), currentHPack, std::vector<std::string>{}, "export");
+            currentHPack = ExecuteCommand(CommandCode("export", GlobalCommands), currentHPack, std::vector<std::string>{}, "export");
         }
         else if (parameters.at(0) == exportOptions.at(3)) {
             Orcbrew tempOrcbrew{};
@@ -1143,7 +1093,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("export"), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(CommandCode("export", GlobalCommands), currentHPack, std::vector<std::string>{});
         }
         break;
     }
@@ -1158,7 +1108,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nWhat do you want to rename?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to rename?\n", true, false, nameOptions);
-            currentHPack = ExecuteCommand(CommandCode("name"), currentHPack, std::vector<std::string>{input}, "name");
+            currentHPack = ExecuteCommand(CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{input}, "name");
         }
         else if (parameters.at(0) == "cancel") {
             break;
@@ -1166,7 +1116,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         else if (parameters.at(0) == "options") {
             nameGUI.GenerateMenu("Name Options", nameOptions);
             std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("name"), currentHPack, std::vector<std::string>{}, "name");
+            currentHPack = ExecuteCommand(CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{}, "name");
         }
         else if (parameters.at(0) == nameOptions.at(2)) {
             std::cout << "\nWhat do you want to rename the pack to?\n";
@@ -1191,7 +1141,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("name"), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{});
         }
 
         break;
@@ -1207,7 +1157,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nWhat do you want to edit?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to edit?\n", true, false, nameOptions);
-            currentHPack = ExecuteCommand(CommandCode("edit"), currentHPack, std::vector<std::string>{input}, "edit");
+            currentHPack = ExecuteCommand(CommandCode("edit", GlobalCommands), currentHPack, std::vector<std::string>{input}, "edit");
         }
         else if (parameters.at(0) == "cancel") {
             break;
@@ -1215,7 +1165,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         else if (parameters.at(0) == "options") {
             editGUI.GenerateMenu("Edit Options", nameOptions);
             std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("edit"), currentHPack, std::vector<std::string>{}, "edit");
+            currentHPack = ExecuteCommand(CommandCode("edit", GlobalCommands), currentHPack, std::vector<std::string>{}, "edit");
         }
         else if (parameters.at(0) == nameOptions.at(2)) {
             std::vector<Race> races{};
@@ -1262,7 +1212,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("edit"), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(CommandCode("edit", GlobalCommands), currentHPack, std::vector<std::string>{});
         }
 
         break;
@@ -1353,7 +1303,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             std::cout << "\nWhat do want to add?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to add?\n", true, false, addOptions);
-            currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, std::vector<std::string>{input}, "add");
+            currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "add");
         }
         else if (parameters.at(0) == "cancel") {
             break;
@@ -1361,10 +1311,10 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
         else if (parameters.at(0) == "options") {
             addOptions = merge_ordered(addOptions, addDefs);
             addGUI.GenerateMenu("Add Commands", addOptions, "", true, 2);
-            currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, std::vector<std::string>{input}, "add");
+            currentRace = ExecuteRaceCommand(CommandCode("add", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "add");
         }
         else if (includes_string(parameters.at(0),addOptions)) {
-            switch (RaceOptionCode(parameters.at(0)))
+            switch (CommandCode(parameters.at(0), GlobalRaceOptions))
             {
 				//Name
 			case 0: {
@@ -1386,7 +1336,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1410,7 +1360,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1434,7 +1384,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1473,7 +1423,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1496,7 +1446,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1519,7 +1469,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1542,7 +1492,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1565,7 +1515,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1588,7 +1538,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1611,7 +1561,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1634,7 +1584,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1657,7 +1607,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1680,7 +1630,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1703,7 +1653,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1726,7 +1676,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1749,7 +1699,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1772,7 +1722,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1805,7 +1755,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1838,7 +1788,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1870,7 +1820,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1902,7 +1852,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1934,7 +1884,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1966,7 +1916,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -1998,7 +1948,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -2030,7 +1980,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -2062,7 +2012,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -2094,7 +2044,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -2126,7 +2076,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -2158,7 +2108,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 					}
 				}
 				else {
-					currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, parameters, "add");
+					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
 				}
 				break;
 			}
@@ -2200,7 +2150,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             std::cout << "\nWhat do want to edit?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to edit?\n", true, false, editOptions);
-            currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, std::vector<std::string>{input}, "edit");
+            currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "edit");
         }
         else if (parameters.at(0) == "cancel") {
             break;
@@ -2208,15 +2158,15 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
         else if (parameters.at(0) == "options") {
             editOptions = merge_ordered(editOptions, editDefs);
             editGUI.GenerateMenu("Remove Commands", editOptions, "", true, 2);
-            currentRace = ExecuteRaceCommand(RaceCommandCode("edit"), currentRace, std::vector<std::string>{input}, "edit");
+            currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "edit");
         }
         else if (includes_string(parameters.at(0), editOptions)) {
-            switch (RaceOptionCode(parameters.at(0)))
+            switch (CommandCode(parameters.at(0),GlobalRaceOptions))
             {
                 //Name
             case 0: {
                 if (currentRace.get_name() == "") {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2241,7 +2191,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //OptionPack
             case 1: {
                 if (currentRace.get_optionPack() == "") {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2266,7 +2216,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Description
             case 2: {
                 if (currentRace.get_description() == "") {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2292,7 +2242,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Size
             case 3: {
                 if (currentRace.get_sizename() == "Small") {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2331,7 +2281,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Str
             case 4: {
                 if (currentRace.get_str() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2354,7 +2304,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Dex
             case 5: {
                 if (currentRace.get_dex() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                     
                 }
                 else {
@@ -2378,7 +2328,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Con
             case 6: {
                 if (currentRace.get_con() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2401,7 +2351,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Int
             case 7: {
                 if (currentRace.get_int() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2424,7 +2374,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Wis
             case 8: {
                 if (currentRace.get_wis() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2447,7 +2397,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Cha
             case 9: {
                 if (currentRace.get_cha() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2470,7 +2420,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                   //Speed
             case 10: {
                 if (currentRace.get_speed() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2493,7 +2443,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //FlyingSpeed
             case 11: {
                 if (currentRace.get_flySpeed() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2516,7 +2466,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //SwimmingSpeed
             case 12: {
                 if (currentRace.get_swimSpeed() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2539,7 +2489,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Dark vision
             case 13: {
                 if (currentRace.get_darkVision() == 0) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2562,7 +2512,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Skill Options Count
             case 14: {
                 if (currentRace.get_skillOptionsCount() == 1) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2585,7 +2535,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Language Options Count
             case 15: {
                 if (currentRace.get_languageOptionsCount() == 1) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2608,7 +2558,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Weapon Options Count
             case 16: {
                 if (currentRace.get_weaponOptionsCount() == 1) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2631,7 +2581,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //LizFolkAC
             case 17: {
                 if (currentRace.get_lizFolkAC() == false) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2664,7 +2614,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //TortAC
             case 18: {
                 if (currentRace.get_tortAC() == false) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2697,7 +2647,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Languages
             case 19: {
                 if (currentRace.get_language().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2729,7 +2679,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Tools
             case 20: {
                 if (currentRace.get_tool().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2761,7 +2711,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Skill Options
             case 21: {
                 if (currentRace.get_skillOption().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2793,7 +2743,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Skill Profs
             case 22: {
                 if (currentRace.get_skillProf().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2825,7 +2775,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Language Options
             case 23: {
                 if (currentRace.get_languageOption().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2857,7 +2807,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Weapon Options
             case 24: {
                 if (currentRace.get_weaponOption().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2889,7 +2839,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Weapon Profs
             case 25: {
                 if (currentRace.get_weaponProf().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2921,7 +2871,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Armor Profs
             case 26: {
                 if (currentRace.get_armorProf().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2953,7 +2903,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Damage Res
             case 27: {
                 if (currentRace.get_damageRes().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -2985,7 +2935,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
                    //Damage Imm
             case 28: {
                 if (currentRace.get_damageImmun().empty()) {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode("add"), currentRace, parameters, "edit");
+                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
                 }
                 else {
                     std::string newName{};
@@ -3075,7 +3025,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             std::cout << "\nAre you sure?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid option\nAre you sure?\n", true, false, editOptions);
-            currentRace = ExecuteRaceCommand(RaceCommandCode("clear"), currentRace, std::vector<std::string>{input}, "clear");
+            currentRace = ExecuteRaceCommand(CommandCode("clear", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "clear");
         }
         else if (parameters.at(0) == "yes") {
             std::vector<std::string> empty{};
@@ -3130,7 +3080,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             std::cout << "\nWhat do want to remove?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to remove?\n", true, false, editOptions);
-            currentRace = ExecuteRaceCommand(RaceCommandCode("remove"), currentRace, std::vector<std::string>{input}, "remove");
+            currentRace = ExecuteRaceCommand(CommandCode("remove", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "remove");
         }
         else if (parameters.at(0) == "cancel") {
             break;
@@ -3138,10 +3088,10 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
         else if (parameters.at(0) == "options") {
             editOptions = merge_ordered(editOptions, editDefs);
             editGUI.GenerateMenu("Remove Commands", editOptions, "", true, 2);
-            currentRace = ExecuteRaceCommand(RaceCommandCode("remove"), currentRace, std::vector<std::string>{input}, "remove");
+            currentRace = ExecuteRaceCommand(CommandCode("remove",GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "remove");
         }
         else if (includes_string(parameters.at(0), editOptions)) {
-            switch (RaceOptionCode(parameters.at(0)))
+            switch (CommandCode(parameters.at(0),GlobalRaceOptions))
             {
                 //Name
             case 0: {
@@ -3727,21 +3677,15 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 void Console(std::vector<std::string> currentCommands, std::vector<std::string> currentCmdDef, HPack currentHPack) {
     GUI consoleGUI{};
     std::string input{};
-    std::vector<std::string> commands{};
     std::vector<std::string> combined{merge_ordered(currentCommands,currentCmdDef)};
     int index{};
-
-    if (!currentCommands.empty()) { commands.insert(std::end(commands), std::begin(currentCommands), std::end(currentCommands)); }
-    commands.insert(std::begin(commands), std::begin(GlobalCommands), std::end(GlobalCommands));
     
     do {
         std::string command{};
         std::string parameter{};
         std::string bufferCommand{};
 
-        if (displayCoolGUI) {
-            consoleGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
-        }
+        consoleGUI.MakeBox("Harmony's Dungeon Master's Vault file editor", 2);
 
         std::cout << "\nEnter input:\n";
         std::cin.clear();
@@ -3767,13 +3711,13 @@ void Console(std::vector<std::string> currentCommands, std::vector<std::string> 
                 break;
             }
         }
-        if (includes_string(command, commands)) {
+        if (includes_string(command, currentCommands)) {
             if (command == "help") {
-                currentHPack = ExecuteCommand(CommandCode(command), currentHPack, combined);
+                currentHPack = ExecuteCommand(CommandCode(command, currentCommands), currentHPack, combined);
             }
             else {
                 std::vector<std::string> parameters{ split(parameter) };
-                currentHPack = ExecuteCommand(CommandCode(command), currentHPack, parameters);
+                currentHPack = ExecuteCommand(CommandCode(command, currentCommands), currentHPack, parameters);
             }
             input = command;
         }
@@ -3828,16 +3772,16 @@ Race RaceConsole(Race currentRace) {
         if (includes_string(command, commands)) {
             if (command == "help") {
                 if (parameter == "") {
-                    currentRace = ExecuteRaceCommand(RaceCommandCode(command), currentRace, combined,"console");
+                    currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, combined,"console");
                 }
                 else {
                     std::vector<std::string> parameters{ split(parameter) };
-                    currentRace = ExecuteRaceCommand(RaceCommandCode(command), currentRace, parameters);
+                    currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, parameters);
                 }
             }
             else {
                 std::vector<std::string> parameters{ split(parameter) };
-                currentRace = ExecuteRaceCommand(RaceCommandCode(command), currentRace, parameters);
+                currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, parameters);
             }
             input = command;
         }
@@ -3849,6 +3793,74 @@ Race RaceConsole(Race currentRace) {
     } while (input != "done" && currentRace.get_name() != "%%CANCELED%%");
 
     return currentRace;
+}
+Spell SpellConsole(Spell currentSpell) {
+    GUI spellGUI{};
+    std::vector<std::string> commands{"done","help","cancel","add","edit","clear","remove"};
+    std::vector<std::string> commandsDef{"Finishes Spell","Get help on command","Cancels current action","Add an aspect of spell","Edit aspect","Clears spell","Remove element"};
+    std::vector<std::string> combined{merge_ordered(commands,commandsDef)};
+    std::string input{};
+    
+    system("cls");
+    
+
+    do {
+        spellGUI.MakeBox("Spell Creator", 2);
+        input.clear();
+        std::string command{};
+        std::string parameter{};
+        std::string bufferCommand{};
+
+        DrawSpell(currentSpell);
+
+        std::cout << "\n\nEnter input:\n";
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, input);
+
+        //seperates the command
+        parameter = input;
+        int parameterindex{};
+        for (char i : input) {
+            if (i != ' ') {
+                if (std::isalpha(i)) {
+                    command.push_back(std::tolower(i));
+                    parameter.erase(0, 1);
+                }
+                else {
+                    command.push_back(i);
+                    parameter.erase(0, 1);
+                }
+            }
+            else {
+                parameter.erase(0, 1);
+                break;
+            }
+        }
+        if (includes_string(command, commands)) {
+            if (command == "help") {
+                if (parameter == "") {
+                    currentSpell = ExecuteSpellCommand(SpellCommandCode(command), currentSpell, combined,"console");
+                }
+                else {
+                    std::vector<std::string> parameters{ split(parameter) };
+                    currentSpell = ExecuteSpellCommand(SpellCommandCode(command), currentSpell, parameters);
+                }
+            }
+            else {
+                std::vector<std::string> parameters{ split(parameter) };
+                currentSpell = ExecuteSpellCommand(SpellCommandCode(command), currentSpell, parameters);
+            }
+            input = command;
+        }
+        else {
+            std::cout << "\nInvalid Command, use 'help' for list of commands\n";
+        }
+
+
+    } while (input != "done" && currentSpell.get_name() != "%%CANCELED%%");
+
+    return currentSpell;
 }
 Trait EditTrait(Trait currentTrait) {
     GUI traitGUI{};
@@ -3867,11 +3879,8 @@ Trait EditTrait(Trait currentTrait) {
         std::string command{};
         std::string parameter{};
         std::string bufferCommand{};
-        traitGUI.MakeBox((currentTrait.get_name() == "") ? "New Trait" : currentTrait.get_name(),2);
-        traitGUI.MakeBox(currentTrait.get_typename(),2);
-        if (currentTrait.get_description() != "") {
-            traitGUI.GenerateMenu("Description", std::vector<std::string>{currentTrait.get_description()});
-        }
+
+        DrawTrait(currentTrait);
 
         std::cout << "\n\nEnter input:\n";
         std::cin.clear();

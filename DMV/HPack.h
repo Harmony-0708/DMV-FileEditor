@@ -33,7 +33,10 @@ public:
 	void set_name(std::string name);
 	void set_packs(std::vector<Pack> packs);
 	void set_pack_name(std::string packName, std::string newName);
+	void update_pack(Pack pack);
 	void add_pack(Pack pack);
+
+	bool has_pack(Pack inputPack);
 
 	std::vector<Pack> merge(std::vector<std::vector<Pack>> PackSet);
 	HPack merge(std::vector<HPack> HPackPack);

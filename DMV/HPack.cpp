@@ -52,11 +52,33 @@ void HPack::set_pack_name(std::string packName, std::string newName)
 	}
 }
 
+void HPack::update_pack(Pack pack)
+{
+	int index{};
+	for (Pack i : get_packs()) {
+		if (i.get_name() == pack.get_name()) {
+			Packs.at(index) = pack.merge(std::vector<Pack>{i, pack});
+		}
+		index++;
+	}
+}
+
 void HPack::add_pack(Pack pack)
 {
+
 	std::vector<Pack> currentPacks{ get_packs() };
 	currentPacks.push_back(pack);
 	set_packs(currentPacks);
+}
+
+bool HPack::has_pack(Pack inputPack)
+{
+	for (Pack i : get_packs()) {
+		if (i.get_name() == inputPack.get_name()) {
+			return true;
+		}
+	}
+	return false;
 }
 
 std::vector<Pack> HPack::merge(std::vector<std::vector<Pack>> PackSet)
@@ -67,13 +89,33 @@ std::vector<Pack> HPack::merge(std::vector<std::vector<Pack>> PackSet)
 HPack HPack::merge(std::vector<HPack> HPackPack)
 {
 	HPack MergedHPack{};
+	int index{};
+	bool samePack{};
 	MergedHPack.set_name(get_name());
+	MergedHPack = HPackPack.at(0);
+
+	bool skip{true};
 	for (HPack i : HPackPack) {
-		Pack newPack{};
-		newPack.set_name(i.get_name());
-		MergedHPack.add_pack(newPack.merge(i.get_packs()));
+		if (!skip) {
+			Pack tempPack{};
+			for (Pack j : i.get_packs()) {
+				if (MergedHPack.has_pack(j)) {
+					samePack = true;
+					tempPack = j;
+				}
+				if (samePack) {
+					tempPack = tempPack.merge(std::vector<Pack>{MergedHPack.get_pack(tempPack.get_name()), tempPack});
+					MergedHPack.update_pack(tempPack);
+				}
+				else {
+					MergedHPack.add_pack(j);
+				}
+			}
+		}
+		else {
+			skip = false;
+		}
 	}
-	
 	return MergedHPack;
 }
 

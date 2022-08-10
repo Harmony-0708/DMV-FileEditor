@@ -423,6 +423,7 @@ int Pack::load_pack(std::string packName)
 				myRaces.push_back(newRace);
 				}
 				newRace.clear();
+				inRaces = false;
 			}
 		}
 		else if (inSpells) {
@@ -491,6 +492,7 @@ int Pack::load_pack(std::string packName)
 					mySpells.push_back(newSpell);
 				}
 				newSpell.clear();
+				inSpells = false;
 			}
 
 		}
@@ -498,6 +500,7 @@ int Pack::load_pack(std::string packName)
 	}
 	
 	set_races(myRaces);
+	set_spells(mySpells);
 	return 0;
 }
 
@@ -818,6 +821,7 @@ Pack Pack::load_pack(std::fstream& myfile)
 					myRaces.push_back(newRace);
 				}
 				newRace.clear();
+				inRaces = false;
 			}
 		}
 		else if (inSpells) {
@@ -886,6 +890,7 @@ Pack Pack::load_pack(std::fstream& myfile)
 					mySpells.push_back(newSpell);
 				}
 				newSpell.clear();
+				inSpells = false;
 			}
 
 		}
@@ -1095,7 +1100,7 @@ void Pack::save_pack()
 			<< "\nAttackRoll=" << i.is_attackRoll()
 			<< std::boolalpha;
 		myfile
-			<< "\ClassList={";
+			<< "\nClassList={";
 		if (i.get_class().size() > 0) {
 			for (std::string k : i.get_class()) {
 				myfile
@@ -1103,7 +1108,7 @@ void Pack::save_pack()
 			}
 		}
 		myfile
-			<< "}";
+			<< "}\n";
 	}
 	myfile
 		<< "}\n";
@@ -1275,7 +1280,7 @@ void Pack::save_pack(std::ofstream& myfile)
 			<< "\nAttackRoll=" << i.is_attackRoll()
 			<< std::boolalpha;
 		myfile
-			<< "\ClassList={";
+			<< "\nClassList={";
 		if (i.get_class().size() > 0) {
 			for (std::string k : i.get_class()) {
 				myfile
@@ -1283,10 +1288,10 @@ void Pack::save_pack(std::ofstream& myfile)
 			}
 		}
 		myfile
-			<< "}";
+			<< "\n}";
 	}
 	myfile
-		<< "}\n";
+		<< "\n}\n";
 
 }
 

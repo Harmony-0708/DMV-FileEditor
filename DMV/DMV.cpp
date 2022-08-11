@@ -26,7 +26,9 @@ HPack Load(HPack currentHPack, std::vector<std::string> parameters);
 HPack Save(HPack currentHPack, std::vector<std::string> parameters);
 HPack Edit(HPack currentHPack, std::vector<std::string> parameters);
 
+void VectorToString(std::vector<std::string>& parameters, std::string& newName);
 bool includes_string(std::string input, std::vector<std::string> vInput);
+std::string InputCheck(std::string input, std::string repeatString = {""}, std::vector<std::string> parameters = {}, bool onlyAlpha = true, bool onlyNums = false);
 std::vector<Trait> remove(std::vector<Trait> input, int index);
 std::vector<Spell> remove(std::vector<Spell> input, int index);
 std::vector<std::string> remove(std::vector<std::string> input, int index);
@@ -43,7 +45,11 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
 Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> parameters = {}, std::string context = {});
 Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::string> parameters, std::string context = {});
 
+void VectorToString(std::vector<std::string>& parameters, std::string& newName);
+
+void ConsoleInput(std::string& parameter, std::string& input, std::string& command);
 void Console(std::vector<std::string> currentCommands = {}, std::vector<std::string> currentCmdDef = {}, HPack currentHPack = {});
+void ConsoleInput(std::string& parameter, std::string& input, std::string& command);
 Race RaceConsole(Race currentRace = {});
 Spell SpellConsole(Spell currentSpell = {});
 Trait EditTrait(Trait currentTrait = {});
@@ -504,7 +510,7 @@ void ExitProgram() {
     std::string input{};
     std::cout << "\nAre you sure you want to exit?\n";
     std::getline(std::cin, input);
-    input = HLib::InputCheck(input, "\nInput incorrect format\nAre you sure you want to exit?\n", true, false, std::vector<std::string>{"yes", "no", "y", "n"});
+    input = InputCheck(input, "\nInput incorrect format\nAre you sure you want to exit?\n", std::vector<std::string>{"yes", "no", "y", "n"}, true, false);
     if (input == "yes" || input == "y") {
         std::cout << "\n\nGoodbye!\n";
         system("pause");
@@ -516,6 +522,91 @@ void ExitProgram() {
         system("cls");
         main();
     }
+}
+HPack Display(HPack currentHPack, std::vector<std::string> parameters) {
+    GUI displayGUI{};
+    std::vector<Pack> packs{ currentHPack.get_packs() };
+    std::vector<std::string> packNames{};
+    std::vector<Race> races{};
+    std::vector<std::string> raceNames{};
+    std::string input{};
+
+    for (Pack i : packs) {
+        for (Race j : i.get_races()) {
+            races.push_back(j);
+            raceNames.push_back(j.get_name() + " (" + j.get_optionPack() + ")");
+        }
+        packNames.push_back(i.get_name());
+    }
+    if (!races.empty()) {
+        system("cls");
+        displayGUI.GenerateMenu("Loaded Races", raceNames, "Use 'filter' to filter by pack");
+        raceNames.push_back("filter");
+        std::cout << "\nEnter race:\n";
+        std::getline(std::cin, input);
+        input = InputCheck(input, "\nInvalid input\nEnter race:\n", raceNames, false, false);
+        if (input == "filter") {
+            system("cls");
+
+            input.clear();
+            displayGUI.GenerateMenu("Loaded Packs", packNames);
+            raceNames.push_back("filter");
+            std::cout << "\nEnter Pack:\n";
+            std::getline(std::cin, input);
+            input = InputCheck(input, "\nInvalid input\nEnter Pack:\n", packNames, false, false);
+
+            Race chosenRace{};
+            Pack chosenPack{};
+            races.clear();
+            raceNames.clear();
+
+            for (Pack i : packs) {
+                if (i.get_name() == input) {
+                    chosenPack = i;
+                    for (Race j : i.get_races()) {
+                        races.push_back(j);
+                        raceNames.push_back(j.get_name());
+                    }
+                }
+            }
+
+            system("cls");
+
+            displayGUI.GenerateMenu(input + " Races", raceNames);
+            input.clear();
+            std::cout << "\nEnter race:\n";
+            std::getline(std::cin, input);
+            input = InputCheck(input, "\nInvalid input\nEnter race:\n", raceNames, false, false);
+
+            for (Race i : chosenPack.get_races()) {
+                if ((i.get_name()) == input) {
+                    chosenRace = i;
+                    break;
+                }
+            }
+
+            system("cls");
+            DrawRace(chosenRace);
+        }
+        else {
+            Race chosenRace{};
+            for (Pack i : packs) {
+                for (Race j : i.get_races()) {
+                    if ((j.get_name() + " (" + i.get_name() + ")") == input) {
+                        chosenRace = j;
+                        break;
+                    }
+                }
+            }
+            system("cls");
+            DrawRace(chosenRace);
+        }
+    }
+    else {
+        std::cout << "You have no saved races currently" << std::endl;
+    }
+    std::cout << std::endl;
+    return currentHPack;
 }
 HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
     GUI loadGUI{};
@@ -535,44 +626,44 @@ HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
         //Count
         std::cout << "\nHow many files do you want to load?\n";
         std::getline(std::cin, countFiles);
-        countFiles = HLib::InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", true, false, countOptions);
+        countFiles = InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions), true, false;
 
         //File Type
         std::cout << "\nWhat type of file do you want to load?\n";
         std::getline(std::cin, fileType);
-        fileType = HLib::InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", true, false, fileTypes);
+        fileType = InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
 
         break;
     }
     case 1: {
         //Count
         countFiles = parameters.at(0);
-        countFiles = HLib::InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", true, false, countOptions);
+        countFiles = InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions, true, false);
 
         //File Type
         std::cout << "\nWhat type of file do you want to load?\n";
         std::getline(std::cin, fileType);
-        fileType = HLib::InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", true, false, fileTypes);
+        fileType = InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
         break;
     }
     case 2: {
         //Count
         countFiles = parameters.at(0);
-        countFiles = HLib::InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", true, false, countOptions);
+        countFiles = InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions, true, false);
 
         //File Type
         fileType = parameters.at(1);
-        fileType = HLib::InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", true, false, fileTypes);
+        fileType = InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
         break;
     }
     default: {
         //Count
         countFiles = parameters.at(0);
-        countFiles = HLib::InputCheck(countFiles, "\nInvalid Item\nLoad by filename must be single\n", true, false, std::vector<std::string>{"single"});
+        countFiles = InputCheck(countFiles, "\nInvalid Item\nLoad by filename must be single\n", std::vector<std::string>{"single"} , true, false);
 
         //File Type
         fileType = parameters.at(1);
-        fileType = HLib::InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", true, false, fileTypes);
+        fileType = InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
 
         int index{ 0 };
         for (std::string i : parameters) {
@@ -622,13 +713,13 @@ HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
 
             std::cout << "\nWhat is the name of your file?\n";
             std::getline(std::cin, fileName);
-            fileName = HLib::InputCheck(fileName, "\nInvalid Item\nWhat is the name of your file?\n", false, false, nameOfFiles); 
+            fileName = InputCheck(fileName, "\nInvalid Item\nWhat is the name of your file?\n", nameOfFiles, false, false);
 
             nameOfFiles.clear();
             nameOfFiles.push_back(fileName);
         }
         else {
-            fileName = HLib::InputCheck(fileName, "\nInvalid Item\nWhat is the name of your file?\n", false, false, nameOfFiles);
+            fileName = InputCheck(fileName, "\nInvalid Item\nWhat is the name of your file?\n", nameOfFiles, false, false);
             nameOfFiles.clear();
             nameOfFiles.push_back(fileName);
         }
@@ -674,7 +765,7 @@ HPack Save(HPack currentHPack, std::vector<std::string> parameters) {
         }
         std::cout << "\nWhich pack do you want to save?\n";
         std::getline(std::cin, packName);
-        packName = HLib::InputCheck(packName, "\nInvalid Item, use options to find valid items\nWhich pack do you want to save?\n", true, false, packNames);
+        packName = InputCheck(packName, "\nInvalid Item, use options to find valid items\nWhich pack do you want to save?\n", packNames, true, false);
         for (Pack i : currentHPack.get_packs()) {
             if (i.get_name() == packName) {
                 i.save_pack();
@@ -697,10 +788,88 @@ HPack Save(HPack currentHPack, std::vector<std::string> parameters) {
 HPack Edit(HPack currentHPack, std::vector<std::string> parameters) {
     GUI editGUI{};
     std::string input{};
+    std::string editType{};
+    std::string packName{};
+    std::string objectName{};
+    std::vector<std::string> packs{};
+    std::vector<std::string> chosenType{};
+
+    Pack loadedPack{};
+    for (Pack i : currentHPack.get_packs()) {
+        packs.push_back(i.get_name());
+    }
+    
+
+    if (parameters.size() < 2) {
+        if (parameters.at(0) == "race") {
+            editType = "race";
+        }
+        else if (parameters.at(0) == "spell") {
+            editType = "spell";
+        }
+
+        editGUI.GenerateMenu("Packs", packs);
+
+        std::cout << "\nWhat pack is the " << editType << " in?\n";
+        std::getline(std::cin, packName);
+        packName = InputCheck(packName, "\nWhat pack is the " + editType + " in?\n", packs, false, false);
+
+        loadedPack = currentHPack.get_pack(packName);
+
+        if (editType == "race") {
+            for (Race i : loadedPack.get_races()) {
+                chosenType.push_back(i.get_name());
+            }
+        }
+        else if (editType == "spell") {
+            for (Spell i : loadedPack.get_spells()) {
+                chosenType.push_back(i.get_name());
+            }
+        }
+
+        editGUI.GenerateMenu("Races", chosenType);
+
+        std::cout << "\nWhat " << editType << " do you want to edit?\n";
+        std::getline(std::cin, objectName);
+        objectName = InputCheck(objectName, "\nWhat " + editType + " do you want to edit?\n", chosenType, false, false);
+    }
+    else {
+        if (parameters.at(0) == "race") {
+            editType = "race";
+        }
+        else if (parameters.at(0) == "spell") {
+            editType = "spell";
+        }
+
+        std::cout << "\nWhat pack is the " << editType << " in?\n";
+        std::getline(std::cin, packName);
+        packName = InputCheck(packName, "\nWhat pack is the " + editType + " in?\n", packs, false, false);
+
+        loadedPack = currentHPack.get_pack(packName);
+
+        if (editType == "race") {
+            for (Race i : loadedPack.get_races()) {
+                chosenType.push_back(i.get_name());
+            }
+        }
+        else if (editType == "spell") {
+            for (Spell i : loadedPack.get_spells()) {
+                chosenType.push_back(i.get_name());
+            }
+        }
+
+        editGUI.GenerateMenu("Races", chosenType);
+
+        std::cout << "\nWhat " << editType << " do you want to edit?\n";
+        std::getline(std::cin, objectName);
+        objectName = InputCheck(objectName, "\nWhat " + editType + " do you want to edit?\n", chosenType, false, false);
+    }
+
+
 
     std::vector<Race> races{};
     std::vector<std::string> raceNames{};
-    std::string packName{};
+    //std::string packName{};
     std::cout << "\n";
 
     for (Pack i : currentHPack.get_packs()) {
@@ -710,7 +879,7 @@ HPack Edit(HPack currentHPack, std::vector<std::string> parameters) {
     std::cout << "\nWhat option pack is the race in?\n";
     input.clear();
     std::getline(std::cin, input);
-    input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the race in?\n", true, false, raceNames);
+    input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the race in?\n", raceNames, true, false);
     packName = input;
 
     raceNames.clear();
@@ -727,7 +896,7 @@ HPack Edit(HPack currentHPack, std::vector<std::string> parameters) {
     std::cout << "\nWhat race do you want to edit?\n";
     input.clear();
     std::getline(std::cin, input);
-    input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat race do you want to edit?\n", true, false, raceNames);
+    input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat race do you want to edit?\n", raceNames, true, false);
 
     races.at(index(input, raceNames)) = RaceConsole(races.at(index(input, raceNames)));
     std::vector<Pack> newPacks{ currentHPack.get_packs() };
@@ -739,6 +908,7 @@ HPack Edit(HPack currentHPack, std::vector<std::string> parameters) {
         index++;
     }
     currentHPack.set_packs(newPacks);
+    return currentHPack;
 }
 
 //Functional
@@ -749,6 +919,51 @@ bool includes_string(std::string input, std::vector<std::string> vInput) {
         }
     }
     return false;
+}
+std::string InputCheck(std::string input, std::string repeatString, std::vector<std::string> parameters, bool onlyAlpha, bool onlyNums) {
+	bool check{};
+    if (onlyAlpha && onlyNums) {
+        onlyNums = false;
+    }
+	do {
+		bool alphacheck{ false };
+		bool numcheck{ false };
+		std::string lowerInput{};
+		for (char i : input) {
+			if (isalpha(i)) {
+				lowerInput += tolower(i);
+				alphacheck = true;
+			}
+			else if (!isdigit(i)) {
+				lowerInput += i;
+				alphacheck = true;
+			}
+			else {
+				lowerInput += i;
+				numcheck = true;
+			}
+		}
+        if (onlyAlpha && numcheck) {
+            onlyAlpha = false;
+        }
+        else if (onlyNums && alphacheck) {
+            onlyNums = false;
+        }
+        else if (!onlyNums && !onlyAlpha) {
+            onlyAlpha = true;
+            onlyNums = true;
+        }
+  		if ((input == "") || (!onlyAlpha && !onlyNums) || (!parameters.empty() && (!includes_string(input, parameters)))) {
+			std::cout << "\nInvalid input\n" << repeatString;
+			std::cin.clear();
+			std::cin.sync();
+			std::getline(std::cin, input);
+		}
+		else {
+			check = true;
+		}
+	} while (check != true);
+    return input;
 }
 std::vector<Trait> remove(std::vector<Trait> input, int index) {
     std::vector<Trait> newVector{};
@@ -887,7 +1102,7 @@ std::vector<std::string> selection(std::vector<std::string> parameters) {
                 std::cin.clear();
                 std::cin.sync();
                 std::getline(std::cin, input);
-                input = HLib::InputCheck(input, "\nYes/No\nAre you sure you want to clear your selection?\n", true, false, { "Yes","No","yes","no" });
+                input = InputCheck(input, "\nYes/No\nAre you sure you want to clear your selection?\n", { "Yes","No","yes","no" }, true, false);
                 if (input == "yes" || input == "Yes") {
                     selected.clear();
                 }
@@ -1018,7 +1233,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                 raceNames.push_back("filter");
 				std::cout << "\nEnter race:\n";
 				std::getline(std::cin, input);
-                input = HLib::InputCheck(input, "\nInvalid input\nEnter race:\n", false, false, raceNames);
+                input = InputCheck(input, "\nInvalid input\nEnter race:\n", raceNames, false, false);
                 if (input == "filter") {
                     system("cls");
 
@@ -1027,7 +1242,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                     raceNames.push_back("filter");
                     std::cout << "\nEnter Pack:\n";
                     std::getline(std::cin, input);
-                    input = HLib::InputCheck(input, "\nInvalid input\nEnter Pack:\n", false, false, packNames);
+                    input = InputCheck(input, "\nInvalid input\nEnter Pack:\n", packNames, false, false);
 
                     Race chosenRace{};
                     Pack chosenPack{};
@@ -1050,7 +1265,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                     input.clear();
                     std::cout << "\nEnter race:\n";
                     std::getline(std::cin, input);
-					input = HLib::InputCheck(input, "\nInvalid input\nEnter race:\n", false, false, raceNames);
+					input = InputCheck(input, "\nInvalid input\nEnter race:\n", raceNames, false, false);
 
 					for (Race i : chosenPack.get_races()) {
 						if ((i.get_name()) == input) {
@@ -1109,7 +1324,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                 spellNames.push_back("filter");
 				std::cout << "\nEnter spell:\n";
 				std::getline(std::cin, input);
-                input = HLib::InputCheck(input, "\nInvalid input\nEnter spell:\n", false, false, spellNames);
+                input = InputCheck(input, "\nInvalid input\nEnter spell:\n", spellNames, false, false);
                 if (input == "filter") {
                     system("cls");
 
@@ -1118,7 +1333,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                     spellNames.push_back("filter");
                     std::cout << "\nEnter Pack:\n";
                     std::getline(std::cin, input);
-                    input = HLib::InputCheck(input, "\nInvalid input\nEnter Pack:\n", false, false, packNames);
+                    input = InputCheck(input, "\nInvalid input\nEnter Pack:\n", packNames, false, false);
 
                     Spell chosenSpell{};
                     Pack chosenPack{};
@@ -1141,7 +1356,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
                     input.clear();
                     std::cout << "\nEnter spell:\n";
                     std::getline(std::cin, input);
-					input = HLib::InputCheck(input, "\nInvalid input\nEnter spell:\n", false, false, spellNames);
+					input = InputCheck(input, "\nInvalid input\nEnter spell:\n", spellNames, false, false);
 
 					for (Spell i : chosenPack.get_spells()) {
 						if ((i.get_name()) == input) {
@@ -1189,7 +1404,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nWhat would you like to add?\n";
             std::getline(std::cin, input);
             addOptions.push_back("options");
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat would you like to add?\n", true, false, addOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat would you like to add?\n", addOptions, true, false);
             currentHPack = ExecuteCommand(CommandCode("add",GlobalCommands), currentHPack, std::vector<std::string>{input}, "add");
         }
         else if (parameters.at(0) == "options") {
@@ -1245,7 +1460,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         if (parameters.empty()) {
             std::cout << "\nHow many packs do you want to load?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow many packs do you want to load?\n", true, false, loadOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nHow many packs do you want to load?\n", loadOptions, true, false);
             currentHPack = ExecuteCommand(CommandCode("load", GlobalCommands), currentHPack,std::vector<std::string>{input}, "load");
         }
         else if (parameters.at(0) == "options") {
@@ -1275,7 +1490,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         if (parameters.empty()) {
             std::cout << "\nHow do you want to save your packs?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nHow do you want to save your packs?\n", true, false, saveOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nHow do you want to save your packs?\n", saveOptions, true, false);
             currentHPack = ExecuteCommand(CommandCode("save", GlobalCommands), currentHPack, std::vector<std::string>{input}, "save");
         }
         else if (parameters.at(0) == "cancel") {
@@ -1305,7 +1520,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         if (parameters.empty()) {
             std::cout << "\nAre you sure you want to export your packs to orcbrew format? WARNING: Any orcbrew file with the same name as your current HPack will be overwritten\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nAre you sure you want to export your packs to orcbrew format?\n", true, false, exportOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nAre you sure you want to export your packs to orcbrew format?\n", exportOptions, true, false);
             currentHPack = ExecuteCommand(CommandCode("export", GlobalCommands), currentHPack, std::vector<std::string>{input}, "export");
         }
         else if (parameters.at(0) == "cancel" || parameters.at(0) == exportOptions.at(2)) {
@@ -1335,7 +1550,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         if (parameters.empty()) {
             std::cout << "\nWhat do you want to rename?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to rename?\n", true, false, nameOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to rename?\n", nameOptions, true, false);
             currentHPack = ExecuteCommand(CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{input}, "name");
         }
         else if (parameters.at(0) == "cancel") {
@@ -1361,7 +1576,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << std::endl;
             std::cout << "\nWhich pack do you want to rename?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhich pack do you want to rename?\n", true, false, packNames);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhich pack do you want to rename?\n", packNames, true, false);
             std::string newName{};
             std::cout << "\nWhat do you want to rename the pack to?\n";
             std::getline(std::cin, newName);
@@ -1384,7 +1599,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         if (parameters.empty()) {
             std::cout << "\nWhat do you want to edit?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to edit?\n", true, false, editOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to edit?\n", editOptions, true, false);
             currentHPack = ExecuteCommand(CommandCode("edit", GlobalCommands), currentHPack, std::vector<std::string>{input}, "edit");
         }
         else if (parameters.at(0) == "cancel") {
@@ -1408,7 +1623,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nWhat option pack is the race in?\n";
             input.clear();
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the race in?\n", true, false, raceNames);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the race in?\n", raceNames, true, false);
             packName = input;
 
             raceNames.clear();
@@ -1425,7 +1640,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nWhat race do you want to edit?\n";
             input.clear();
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat race do you want to edit?\n", true, false, raceNames);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat race do you want to edit?\n", raceNames, true, false);
 
             races.at(index(input, raceNames)) = RaceConsole(races.at(index(input, raceNames)));
             std::vector<Pack> newPacks{currentHPack.get_packs()};
@@ -1451,7 +1666,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nWhat option pack is the spell in?\n";
             input.clear();
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the spell in?\n", true, false, spellNames);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the spell in?\n", spellNames, true, false);
             packName = input;
 
             spellNames.clear();
@@ -1468,7 +1683,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nWhat spell do you want to edit?\n";
             input.clear();
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat spell do you want to edit?\n", true, false, spellNames);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat spell do you want to edit?\n", spellNames, true, false);
 
             spells.at(index(input, spellNames)) = SpellConsole(spells.at(index(input, spellNames)));
             std::vector<Pack> newPacks{currentHPack.get_packs()};
@@ -1519,7 +1734,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 
             //std::cout << "\nWhat do you need help with?\n";
             //std::getline(std::cin, input);
-            //input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you need help with?\n", true, false, GlobalRaceOptions);
+            //input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you need help with?\n", true, false, GlobalRaceOptions);
             //currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{input}, "load");
         }
 		else {
@@ -1573,7 +1788,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
         if (parameters.empty()) {
             std::cout << "\nWhat do want to add?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to add?\n", true, false, addOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to add?\n", addOptions, true, false);
             currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "add");
         }
         else if (parameters.at(0) == "cancel") {
@@ -1585,816 +1800,222 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             currentRace = ExecuteRaceCommand(CommandCode("add", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "add");
         }
         else if (includes_string(parameters.at(0),addOptions)) {
-            switch (CommandCode(parameters.at(0), GlobalRaceOptions))
+            std::string newName{};
+            std::vector<std::string> compareBase{};
+            bool multi{ true };
+            int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+
+            switch (cmdCode)
             {
-				//Name
-			case 0: {
-				if (currentRace.get_name() == "") {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
-							index++;
-						}
-						currentRace.set_name(newName);
-					}
-					else {
-						std::cout << "\nWhat do you want your race to be called?\n";
-						std::getline(std::cin, newName);
-						currentRace.set_name(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //OptionPack
-			case 1: {
-				if (currentRace.get_optionPack() == "") {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
-							index++;
-						}
-						currentRace.set_optionPack(newName);
-					}
-					else {
-						std::cout << "\nWhat is the option pack name for your race?\n";
-						std::getline(std::cin, newName);
-						currentRace.set_optionPack(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Description
-			case 2: {
-				if (currentRace.get_description() == "") {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
-							index++;
-						}
-						currentRace.set_description(newName);
-					}
-					else {
-						std::cout << "\nWhat is the description for your race? Warning: Pressing enter will enter the description as is, formatting is currently not supported\n";
-						std::getline(std::cin, newName);
-						currentRace.set_description(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Size
-			case 3: {
-				if (currentRace.get_sizename() == "Small") {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInvalid Size\nWhat is the size of your character? (Small, Medium, Large)\n", true, false, std::vector<std::string>{"small", "medium", "large"});
-						if (newName == "small") {
-							currentRace.set_size(SizeEnum::small);
-						}
-						else if (newName == "medium") {
-							currentRace.set_size(SizeEnum::medium);
-						}
-						else if (newName == "large") {
-							currentRace.set_size(SizeEnum::large);
-						}
-					}
-					else {
-						std::cout << "\nWhat is the size of your character? (Small, Medium, Large)\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nWhat is the size of your character? (Small, Medium, Large)\n", true, false, std::vector<std::string>{"small", "medium", "large"});
-						if (newName == "small") {
-							currentRace.set_size(SizeEnum::small);
-						}
-						else if (newName == "medium") {
-							currentRace.set_size(SizeEnum::medium);
-						}
-						else if (newName == "large") {
-							currentRace.set_size(SizeEnum::large);
-						}
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Str
-			case 4: {
-				if (currentRace.get_str() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's strength modifier?\n", false, true);
-						currentRace.set_str(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's strength modifier?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's strength modifier?\n", false, true);
-						currentRace.set_str(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Dex
-			case 5: {
-				if (currentRace.get_dex() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dexterity modifier?\n", false, true);
-						currentRace.set_dex(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's dexterity modifier?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dexterity modifier?\n", false, true);
-						currentRace.set_dex(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Con
-			case 6: {
-				if (currentRace.get_con() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's constitution modifier?\n", false, true);
-						currentRace.set_con(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's constitution modifier?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's constitution modifier?\n", false, true);
-						currentRace.set_con(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Int
-			case 7: {
-				if (currentRace.get_int() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's intelligence modifier?\n", false, true);
-						currentRace.set_int(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's intelligence modifier?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's intelligence modifier?\n", false, true);
-						currentRace.set_int(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Wis
-			case 8: {
-				if (currentRace.get_wis() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's wisdom modifier?\n", false, true);
-						currentRace.set_wis(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's wisdom modifier?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's wisdom modifier?\n", false, true);
-						currentRace.set_wis(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Cha
-			case 9: {
-				if (currentRace.get_cha() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's charisma modifier?\n", false, true);
-						currentRace.set_cha(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's charisma modifier?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's charisma modifier?\n", false, true);
-						currentRace.set_cha(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				  //Speed
-			case 10: {
-				if (currentRace.get_speed() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's speed?\n", false, true);
-						currentRace.set_speed(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's speed?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's speed?\n", false, true);
-						currentRace.set_speed(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				   //FlyingSpeed
-			case 11: {
-				if (currentRace.get_flySpeed() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's fly speed?\n", false, true);
-						currentRace.set_flySpeed(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's fly speed?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's fly speed?\n", false, true);
-						currentRace.set_flySpeed(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				   //SwimmingSpeed
-			case 12: {
-				if (currentRace.get_swimSpeed() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's swim speed?\n", false, true);
-						currentRace.set_swimSpeed(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's swim speed?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's swim speed?\n", false, true);
-						currentRace.set_swimSpeed(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				   //Dark vision
-			case 13: {
-				if (currentRace.get_darkVision() == 0) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dark vision distance? (0 means none)\n", false, true);
-						currentRace.set_darkVision(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nWhat is your race's dark vision distance? (0 means none)\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dark vision distance? (0 means none)\n", false, true);
-						currentRace.set_darkVision(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				   //Skill Options Count
-			case 14: {
-				if (currentRace.get_skillOptionsCount() == 1) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many skills can your race choose to be proficent in?\n", false, true);
-						currentRace.set_skillOptionsCount(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nHow many skills can your race choose to be proficent in?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many skills can your race choose to be proficent in?\n", false, true);
-						currentRace.set_skillOptionsCount(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				   //Language Options Count
-			case 15: {
-				if (currentRace.get_languageOptionsCount() == 1) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many languages can your race choose to be proficent in?\n", false, true);
-						currentRace.set_languageOptionsCount(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nHow many languages can your race choose to be proficent in?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many languages can your race choose to be proficent in?\n", false, true);
-						currentRace.set_languageOptionsCount(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				   //Weapon Options Count
-			case 16: {
-				if (currentRace.get_weaponOptionsCount() == 1) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many weapons can your race choose to be proficent in?\n", false, true);
-						currentRace.set_weaponOptionsCount(std::stoi(newName));
-					}
-					else {
-						std::cout << "\nHow many weapons can your race choose to be proficent in?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many weapons can your race choose to be proficent in?\n", false, true);
-						currentRace.set_weaponOptionsCount(std::stoi(newName));
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				   //LizFolkAC
-			case 17: {
-				if (currentRace.get_lizFolkAC() == false) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have lizardfolk AC?\n", true, false, std::vector<std::string>{"yes", "no"});
-						if (newName == "yes") {
-							currentRace.set_lizFolkAC(true);
-						}
-						else {
-							currentRace.set_lizFolkAC(false);
-						}
-					}
-					else {
-						std::cout << "\nDoes your race have lizardfolk AC?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have lizardfolk AC?\n", true, false, std::vector<std::string>{"yes", "no"});
-						if (newName == "yes") {
-							currentRace.set_lizFolkAC(true);
-						}
-						else {
-							currentRace.set_lizFolkAC(false);
-						}
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
-				   //TortAC
-			case 18: {
-				if (currentRace.get_tortAC() == false) {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						newName = parameters.at(0);
-						newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have tortle AC?\n", true, false, std::vector<std::string>{"yes", "no"});
-						if (newName == "yes") {
-							currentRace.set_tortAC(true);
-						}
-						else {
-							currentRace.set_tortAC(false);
-						}
-					}
-					else {
-						std::cout << "\nDoes your race have tortle AC?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have tortle AC?\n", true, false, std::vector<std::string>{"yes", "no"});
-						if (newName == "yes") {
-							currentRace.set_tortAC(true);
-						}
-						else {
-							currentRace.set_tortAC(false);
-						}
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
-				break;
-			}
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7: 
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17: 
+            case 18: {
+                currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "edit");
+                multi = false;
+                break;
+            }
+            case 19: {
+                compareBase = GlobalLanguages;
+                break;
+            }
+            case 20: {
+                compareBase = GlobalTools;
+                break;
+            }
+            case 21: {
+                compareBase = GlobalSkills;
+                break;
+            }
+            case 22: {
+                compareBase = GlobalSkills;
+                break;
+            }
+            case 23: {
+                compareBase = GlobalLanguages;
+                break;
+            }
+            case 24: {
+                compareBase = GlobalWeapons;
+                break;
+            }
+            case 25: {
+                compareBase = GlobalWeapons;
+                break;
+            }
+            case 26: {
+                compareBase = GlobalArmorType;
+                break;
+            }
+            case 27: {
+                compareBase = GlobalDamageType;
+                break;
+            }
+            case 28: {
+                compareBase = GlobalDamageType;
+                break;
+            }
+            case 29: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    for (std::string i : parameters) {
+                        newName += i;
+                    }
+                }
+                multi = false;
+                break;
+            }
+            }
+
+            if (multi) {
+                if (parameters.size() == 1) {
+                    addGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
+                    std::cout << "\nWhat do you want to add?\n";
+                    std::getline(std::cin, newName);
+                    newName = InputCheck(newName, "\nWhat do you want to add?\n", compareBase, true, false);
+                    parameters.clear();
+                    parameters.push_back(newName);
+                }
+                else {
+                    parameters.erase(parameters.begin());
+                }
+            }
+
+            switch (cmdCode)
+            {
 				   //Languages
 			case 19: {
-				if (currentRace.get_language().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalLanguages)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded language\n";
-							}
-							index++;
-						}
-						currentRace.insert_language(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Languages", GlobalLanguages, "", true, 4);
-						std::cout << "\nWhat language do you want to add to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language do you want to add to your race?\n", true, false, GlobalLanguages);
-						currentRace.insert_language(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Tools
 			case 20: {
-				if (currentRace.get_tool().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalTools)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded tool\n";
-							}
-							index++;
-						}
-						currentRace.insert_tool(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Tools", GlobalTools, "", true, 4);
-						std::cout << "\nWhat tool proficencies do you want to add to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded tool\nWhat tool proficencies do you want to add to your race?\n", true, false, GlobalTools);
-						currentRace.insert_tool(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Skill Options
 			case 21: {
-				if (currentRace.get_skillOption().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalSkills)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded skill\n";
-							}
-							index++;
-						}
-						currentRace.insert_skillOption(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Skills", GlobalSkills, "", true, 4);
-						std::cout << "\nWhat skill options do you want to add to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded skill\nWhat skill options do you want to add to your race?\n", true, false, GlobalSkills);
-						currentRace.insert_skillOption(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Skill Profs
 			case 22: {
-				if (currentRace.get_skillProf().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalSkills)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded skill\n";
-							}
-							index++;
-						}
-						currentRace.insert_skillProf(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Skills", GlobalSkills, "", true, 4);
-						std::cout << "\nWhat skill proficencies do you want to add to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded skill\nWhat skill proficencies do you want to add to your race?\n", true, false, GlobalSkills);
-						currentRace.insert_skillProf(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Language Options
 			case 23: {
-				if (currentRace.get_languageOption().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalLanguages)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded language\n";
-							}
-							index++;
-						}
-						currentRace.insert_languageOption(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Languages", GlobalLanguages, "", true, 4);
-						std::cout << "\nWhat language options do you want to add to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language options do you want to add to your race?\n", true, false, GlobalLanguages);
-						currentRace.insert_languageOption(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Weapon Options
 			case 24: {
-				if (currentRace.get_weaponOption().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalWeapons)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded weapon\n";
-							}
-							index++;
-						}
-						currentRace.insert_weaponOption(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
-						std::cout << "\nWhat weapon options do you want to add to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon\nWhat weapon options do you want to add to your race?\n", true, false, GlobalWeapons);
-						currentRace.insert_weaponOption(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Weapon Profs
 			case 25: {
-				if (currentRace.get_weaponProf().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalWeapons)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded weapon\n";
-							}
-							index++;
-						}
-						currentRace.insert_weaponProf(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
-						std::cout << "\nWhat weapon proficencies do you want to add to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon\nWhat weapon proficencies do you want to add to your race?\n", true, false, GlobalWeapons);
-						currentRace.insert_weaponProf(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Armor Profs
 			case 26: {
-				if (currentRace.get_armorProf().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalArmorType)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded armor type\n";
-							}
-							index++;
-						}
-						currentRace.insert_armorProf(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Armor", GlobalArmorType, "", true, 4);
-						std::cout << "\nWhat armor types do you want to add to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded armor type\nWhat armor types do you want to add to your race?\n", true, false, GlobalArmorType);
-						currentRace.insert_armorProf(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Damage Res
 			case 27: {
-				if (currentRace.get_damageRes().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalDamageType)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded damage type\n";
-							}
-							index++;
-						}
-						currentRace.insert_damageRes(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Damage Types", GlobalDamageType, "", true, 4);
-						std::cout << "\nWhat damage types do you want to add resistance to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded damage type\nWhat damage types do you want to add resistance to your race?\n", true, false, GlobalDamageType);
-						currentRace.insert_damageRes(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Damage Imm
 			case 28: {
-				if (currentRace.get_damageImmun().empty()) {
-					std::string newName{};
-					std::vector<std::string> newLanguages{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if (includes_string(i, GlobalDamageType)) {
-								newLanguages.push_back(i);
-							}
-							else {
-								std::cout << "\n" << i << " is not a loaded damage type\n";
-							}
-							index++;
-						}
-						currentRace.insert_damageImmun(newLanguages);
-					}
-					else {
-						addGUI.GenerateMenu("Damage Types", GlobalDamageType, "", true, 4);
-						std::cout << "\nWhat damage types do you want to add immunity to your race?\n";
-						std::getline(std::cin, newName);
-						newName = HLib::InputCheck(newName, "\nThat is not a loaded damage type\nWhat damage types do you want to add immunity to your race?\n", true, false, GlobalDamageType);
-						currentRace.insert_damageImmun(newName);
-					}
-				}
-				else {
-					currentRace = ExecuteRaceCommand(CommandCode("edit",GlobalRaceCommands), currentRace, parameters, "add");
-				}
+                int index{};
+                for (std::string i : parameters) {
+                    if (includes_string(i, compareBase)) {
+                        currentRace.insert_language(i);
+                    }
+                    index++;
+                }
 				break;
 			}
 				   //Traits
 			case 29: {
 				Trait newTrait{};
-				std::string newName{};
-				if (parameters.size() > 1) {
-					parameters.erase(parameters.begin());
-					for (std::string i : parameters) {
-						newName += i;
-					}
-					newTrait.set_name(newName);
-				}
-				currentRace.insert_trait(EditTrait(newTrait));
+				newTrait.set_name(newName);
+                newTrait = EditTrait(newTrait);
+                if (newTrait.get_name() != "%%CANCELED%%") {
+                    currentRace.insert_trait(newTrait);
+                }
 				break;
             }
             default:
@@ -2420,7 +2041,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
         if (parameters.empty()) {
             std::cout << "\nWhat do want to edit?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to edit?\n", true, false, editOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to edit?\n", editOptions, true, false);
             currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "edit");
         }
         else if (parameters.at(0) == "cancel") {
@@ -2432,806 +2053,223 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "edit");
         }
         else if (includes_string(parameters.at(0), editOptions)) {
-            switch (CommandCode(parameters.at(0),GlobalRaceOptions))
+            std::string newName{};
+            std::vector<std::string> traitNames{};
+            for (Trait i : currentRace.get_trait()) {
+                traitNames.push_back(i.get_name());
+            }
+            int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+
+            switch (cmdCode)
             {
-                //Name
-            case 0: {
-                if (currentRace.get_name() == "") {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
+            case 0:
+            case 1:
+            case 2: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    VectorToString(parameters, newName);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentRace.set_name(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat do you want your race to be called?\n";
-                        std::getline(std::cin, newName);
-                        currentRace.set_name(newName);
+                    std::cout << "\nEnter new value:\n";
+                    std::getline(std::cin, newName);
+                }
+                break;
+            }
+            case 3: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    VectorToString(parameters, newName);
+                }
+                else {
+                    std::cout << "\nEnter new value:\n";
+                    std::getline(std::cin, newName);
+                }
+                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"small", "medium", "large"}, true, false);
+                break;
+            }
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    VectorToString(parameters, newName);
+                }
+                else {
+                    std::cout << "\nEnter new value:\n";
+                    std::getline(std::cin, newName);
+                }
+                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
+                break;
+            }
+            case 17:
+            case 18: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    VectorToString(parameters, newName);
+                }
+                else {
+                    std::cout << "\nEnter new value:\n";
+                    std::getline(std::cin, newName);
+                }
+                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
+                break;
+            }
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+            case 23:
+            case 24:
+            case 25:
+            case 26: 
+            case 27:
+            case 28: {
+                currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "edit");
+                break;
+            }
+            case 29: {
+                parameters.erase(parameters.begin());
+                if (parameters.size() == 0) {
+                    std::cout << "\nWhich trait do you want to edit?\n";
+                    std::getline(std::cin, newName);
+                    newName = InputCheck(newName, "\nWhich trait do you want to edit?\n", traitNames, true, false);
+                }
+                else {
+                    int index{};
+                    for (std::string i : parameters) {
+                        if(index==0){ newName += i; }
+                        else { newName += " " + i; }
+                        index++;
                     }
                 }
+
+
+                break;
+            }
+            }
+            
+            switch (cmdCode)
+            {
+                    //Name
+            case 0: {
+                currentRace.set_name(newName);
                 break;
             }
                   //OptionPack
             case 1: {
-                if (currentRace.get_optionPack() == "") {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentRace.set_optionPack(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the option pack name for your race?\n";
-                        std::getline(std::cin, newName);
-                        currentRace.set_optionPack(newName);
-                    }
-                }
+                currentRace.set_optionPack(newName);
                 break;
             }
                   //Description
             case 2: {
-                if (currentRace.get_description() == "") {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentRace.set_description(newName);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Current Description", std::vector<std::string>{currentRace.get_description()});
-                        std::cout << "\nWhat is the description for your race? Warning: Pressing enter will enter the description as is, formatting is currently not supported\n";
-                        std::getline(std::cin, newName);
-                        currentRace.set_description(newName);
-                    }
-                }
+                currentRace.set_description(newName);
                 break;
             }
                   //Size
             case 3: {
-                if (currentRace.get_sizename() == "Small") {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
+                if (newName == "small") {
+                    currentRace.set_size(SizeEnum::small);
                 }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInvalid Size\nWhat is the size of your character? (Small, Medium, Large)\n", true, false, std::vector<std::string>{"small", "medium", "large"});
-                        if (newName == "small") {
-                            currentRace.set_size(SizeEnum::small);
-                        }
-                        else if (newName == "medium") {
-                            currentRace.set_size(SizeEnum::medium);
-                        }
-                        else if (newName == "large") {
-                            currentRace.set_size(SizeEnum::large);
-                        }
-                    }
-                    else {
-                        std::cout << "\nWhat is the size of your character? (Small, Medium, Large)\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nWhat is the size of your character? (Small, Medium, Large)\n", true, false, std::vector<std::string>{"small", "medium", "large"});
-                        if (newName == "small") {
-                            currentRace.set_size(SizeEnum::small);
-                        }
-                        else if (newName == "medium") {
-                            currentRace.set_size(SizeEnum::medium);
-                        }
-                        else if (newName == "large") {
-                            currentRace.set_size(SizeEnum::large);
-                        }
-                    }
+                else if (newName == "medium") {
+                    currentRace.set_size(SizeEnum::medium);
+                }
+                else if (newName == "large") {
+                    currentRace.set_size(SizeEnum::large);
                 }
                 break;
             }
                   //Str
             case 4: {
-                if (currentRace.get_str() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's strength modifier?\n", false, true);
-                        currentRace.set_str(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's strength modifier?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's strength modifier?\n", false, true);
-                        currentRace.set_str(std::stoi(newName));
-                    }
-                }
+                currentRace.set_str(std::stoi(newName));
                 break;
             }
                   //Dex
             case 5: {
-                if (currentRace.get_dex() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                    
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dexterity modifier?\n", false, true);
-                        currentRace.set_dex(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's dexterity modifier?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dexterity modifier?\n", false, true);
-                        currentRace.set_dex(std::stoi(newName));
-                    }
-                }
+                currentRace.set_dex(std::stoi(newName));
                 break;
             }
                   //Con
             case 6: {
-                if (currentRace.get_con() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's constitution modifier?\n", false, true);
-                        currentRace.set_con(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's constitution modifier?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's constitution modifier?\n", false, true);
-                        currentRace.set_con(std::stoi(newName));
-                    }
-                }
+                currentRace.set_con(std::stoi(newName));
                 break;
             }
                   //Int
             case 7: {
-                if (currentRace.get_int() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's intelligence modifier?\n", false, true);
-                        currentRace.set_int(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's intelligence modifier?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's intelligence modifier?\n", false, true);
-                        currentRace.set_int(std::stoi(newName));
-                    }
-                }
+                currentRace.set_int(std::stoi(newName));
                 break;
             }
                   //Wis
             case 8: {
-                if (currentRace.get_wis() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's wisdom modifier?\n", false, true);
-                        currentRace.set_wis(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's wisdom modifier?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's wisdom modifier?\n", false, true);
-                        currentRace.set_wis(std::stoi(newName));
-                    }
-                }
+                currentRace.set_wis(std::stoi(newName));
                 break;
             }
                   //Cha
             case 9: {
-                if (currentRace.get_cha() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's charisma modifier?\n", false, true);
-                        currentRace.set_cha(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's charisma modifier?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's charisma modifier?\n", false, true);
-                        currentRace.set_cha(std::stoi(newName));
-                    }
-                }
+                currentRace.set_cha(std::stoi(newName));
                 break;
             }
                   //Speed
             case 10: {
-                if (currentRace.get_speed() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's speed?\n", false, true);
-                        currentRace.set_speed(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's speed?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's speed?\n", false, true);
-                        currentRace.set_speed(std::stoi(newName));
-                    }
-                }
+                currentRace.set_speed(std::stoi(newName));
                 break;
             }
                    //FlyingSpeed
             case 11: {
-                if (currentRace.get_flySpeed() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's fly speed?\n", false, true);
-                        currentRace.set_flySpeed(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's fly speed?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's fly speed?\n", false, true);
-                        currentRace.set_flySpeed(std::stoi(newName));
-                    }
-                }
+                currentRace.set_flySpeed(std::stoi(newName));
                 break;
             }
                    //SwimmingSpeed
             case 12: {
-                if (currentRace.get_swimSpeed() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's swim speed?\n", false, true);
-                        currentRace.set_swimSpeed(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's swim speed?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's swim speed?\n", false, true);
-                        currentRace.set_swimSpeed(std::stoi(newName));
-                    }
-                }
+                currentRace.set_swimSpeed(std::stoi(newName));
                 break;
             }
                    //Dark vision
             case 13: {
-                if (currentRace.get_darkVision() == 0) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dark vision distance? (0 means none)\n", false, true);
-                        currentRace.set_darkVision(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your race's dark vision distance? (0 means none)\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your race's dark vision distance? (0 means none)\n", false, true);
-                        currentRace.set_darkVision(std::stoi(newName));
-                    }
-                }
+                currentRace.set_darkVision(std::stoi(newName));
                 break;
             }
                    //Skill Options Count
             case 14: {
-                if (currentRace.get_skillOptionsCount() == 1) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many skills can your race choose to be proficent in?\n", false, true);
-                        currentRace.set_skillOptionsCount(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nHow many skills can your race choose to be proficent in?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many skills can your race choose to be proficent in?\n", false, true);
-                        currentRace.set_skillOptionsCount(std::stoi(newName));
-                    }
-                }
+                currentRace.set_skillOptionsCount(std::stoi(newName));
                 break;
             }
                    //Language Options Count
             case 15: {
-                if (currentRace.get_languageOptionsCount() == 1) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many languages can your race choose to be proficent in?\n", false, true);
-                        currentRace.set_languageOptionsCount(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nHow many languages can your race choose to be proficent in?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many languages can your race choose to be proficent in?\n", false, true);
-                        currentRace.set_languageOptionsCount(std::stoi(newName));
-                    }
-                }
+                currentRace.set_languageOptionsCount(std::stoi(newName));
                 break;
             }
                    //Weapon Options Count
             case 16: {
-                if (currentRace.get_weaponOptionsCount() == 1) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many weapons can your race choose to be proficent in?\n", false, true);
-                        currentRace.set_weaponOptionsCount(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nHow many weapons can your race choose to be proficent in?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nHow many weapons can your race choose to be proficent in?\n", false, true);
-                        currentRace.set_weaponOptionsCount(std::stoi(newName));
-                    }
-                }
+                currentRace.set_weaponOptionsCount(std::stoi(newName));
                 break;
             }
                    //LizFolkAC
             case 17: {
-                if (currentRace.get_lizFolkAC() == false) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
+                if (newName == "yes") {
+                    currentRace.set_lizFolkAC(true);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have lizardfolk AC?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentRace.set_lizFolkAC(true);
-                        }
-                        else {
-                            currentRace.set_lizFolkAC(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nDoes your race have lizardfolk AC?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have lizardfolk AC?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentRace.set_lizFolkAC(true);
-                        }
-                        else {
-                            currentRace.set_lizFolkAC(false);
-                        }
-                    }
+                    currentRace.set_lizFolkAC(false);
                 }
                 break;
             }
                    //TortAC
             case 18: {
-                if (currentRace.get_tortAC() == false) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
+                if (newName == "yes") {
+                    currentRace.set_tortAC(true);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have tortle AC?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentRace.set_tortAC(true);
-                        }
-                        else {
-                            currentRace.set_tortAC(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nDoes your race have tortle AC?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your race have tortle AC?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentRace.set_tortAC(true);
-                        }
-                        else {
-                            currentRace.set_tortAC(false);
-                        }
-                    }
-                }
-                break;
-            }
-                   //Languages
-            case 19: {
-                if (currentRace.get_language().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalLanguages)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded language\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_language(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Languages", GlobalLanguages, "", true, 4);
-                        std::cout << "\nWhat language do you want to add to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language do you want to add to your race?\n", true, false, GlobalLanguages);
-                        currentRace.insert_language(newName);
-                    }
-                }
-                break;
-            }
-                   //Tools
-            case 20: {
-                if (currentRace.get_tool().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalTools)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded tool\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_tool(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Tools", GlobalTools, "", true, 4);
-                        std::cout << "\nWhat tool proficencies do you want to add to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded tool\nWhat tool proficencies do you want to add to your race?\n", true, false, GlobalTools);
-                        currentRace.insert_tool(newName);
-                    }
-                }
-                break;
-            }
-                   //Skill Options
-            case 21: {
-                if (currentRace.get_skillOption().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalSkills)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded skill\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_skillOption(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Skills", GlobalSkills, "", true, 4);
-                        std::cout << "\nWhat skill options do you want to add to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded skill\nWhat skill options do you want to add to your race?\n", true, false, GlobalSkills);
-                        currentRace.insert_skillOption(newName);
-                    }
-                }
-                break;
-            }
-                   //Skill Profs
-            case 22: {
-                if (currentRace.get_skillProf().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalSkills)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded skill\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_skillProf(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Skills", GlobalSkills, "", true, 4);
-                        std::cout << "\nWhat skill proficencies do you want to add to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded skill\nWhat skill proficencies do you want to add to your race?\n", true, false, GlobalSkills);
-                        currentRace.insert_skillProf(newName);
-                    }
-                }
-                break;
-            }
-                   //Language Options
-            case 23: {
-                if (currentRace.get_languageOption().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalLanguages)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded language\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_languageOption(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Languages", GlobalLanguages, "", true, 4);
-                        std::cout << "\nWhat language options do you want to add to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language options do you want to add to your race?\n", true, false, GlobalLanguages);
-                        currentRace.insert_languageOption(newName);
-                    }
-                }
-                break;
-            }
-                   //Weapon Options
-            case 24: {
-                if (currentRace.get_weaponOption().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalWeapons)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded weapon\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_weaponOption(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
-                        std::cout << "\nWhat weapon options do you want to add to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon\nWhat weapon options do you want to add to your race?\n", true, false, GlobalWeapons);
-                        currentRace.insert_weaponOption(newName);
-                    }
-                }
-                break;
-            }
-                   //Weapon Profs
-            case 25: {
-                if (currentRace.get_weaponProf().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalWeapons)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded weapon\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_weaponProf(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Weapons", GlobalWeapons, "", true, 4);
-                        std::cout << "\nWhat weapon proficencies do you want to add to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon\nWhat weapon proficencies do you want to add to your race?\n", true, false, GlobalWeapons);
-                        currentRace.insert_weaponProf(newName);
-                    }
-                }
-                break;
-            }
-                   //Armor Profs
-            case 26: {
-                if (currentRace.get_armorProf().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalArmorType)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded armor type\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_armorProf(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Armor", GlobalArmorType, "", true, 4);
-                        std::cout << "\nWhat armor types do you want to add to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded armor type\nWhat armor types do you want to add to your race?\n", true, false, GlobalArmorType);
-                        currentRace.insert_armorProf(newName);
-                    }
-                }
-                break;
-            }
-                   //Damage Res
-            case 27: {
-                if (currentRace.get_damageRes().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalDamageType)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded damage type\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_damageRes(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Damage Types", GlobalDamageType, "", true, 4);
-                        std::cout << "\nWhat damage types do you want to add resistance to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded damage type\nWhat damage types do you want to add resistance to your race?\n", true, false, GlobalDamageType);
-                        currentRace.insert_damageRes(newName);
-                    }
-                }
-                break;
-            }
-                   //Damage Imm
-            case 28: {
-                if (currentRace.get_damageImmun().empty()) {
-                    currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (includes_string(i, GlobalDamageType)) {
-                                newLanguages.push_back(i);
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not a loaded damage type\n";
-                            }
-                            index++;
-                        }
-                        currentRace.insert_damageImmun(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Damage Types", GlobalDamageType, "", true, 4);
-                        std::cout << "\nWhat damage types do you want to add immunity to your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded damage type\nWhat damage types do you want to add immunity to your race?\n", true, false, GlobalDamageType);
-                        currentRace.insert_damageImmun(newName);
-                    }
+                    currentRace.set_tortAC(false);
                 }
                 break;
             }
@@ -3239,40 +2277,15 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             case 29: {
                 Trait newTrait{};
                 std::vector<Trait> allTraits{ currentRace.get_trait() };
-                std::string newName{};
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    for (std::string i : parameters) {
-                        newName += i;
+                int index{};
+                for (Trait i : allTraits) {
+                    if (i.get_name() == newName) {
+                        newTrait = i;
                     }
-                    int index{};
-                    for (Trait i : allTraits) {
-                        if (i.get_name() == newName) {
-                            newTrait = i;
-                        }
-                        index++;
-                    }
-                    allTraits.at(index) = EditTrait(newTrait);
-                    currentRace.insert_trait(allTraits);
+                    index++;
                 }
-                else {
-                    std::vector<std::string> traitNames{};
-                    for (Trait i : allTraits) {
-                        traitNames.push_back(i.get_name());
-                    }
-                    std::cout << "\nWhich trait do you want to edit?\n";
-                    std::getline(std::cin, newName);
-                    newName = HLib::InputCheck(newName, "\nThat is not a saved trait\nWhich trait do you want to edit?\n", true, false, traitNames);
-                    int index{};
-                    for (Trait i : allTraits) {
-                        if (i.get_name() == newName) {
-                            newTrait = i;
-                        }
-                        index++;
-                    }
-                    allTraits.at(index) = EditTrait(newTrait);
-                    currentRace.insert_trait(allTraits);
-                }
+                allTraits.at(index) = EditTrait(newTrait);
+                currentRace.insert_trait(allTraits);
                 break;
             }
             default:
@@ -3295,41 +2308,12 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
         if (parameters.empty()) {
             std::cout << "\nAre you sure?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid option\nAre you sure?\n", true, false, editOptions);
+            input = InputCheck(input, "\nInvalid option\nAre you sure?\n", editOptions, true, false);
             currentRace = ExecuteRaceCommand(CommandCode("clear", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "clear");
         }
         else if (parameters.at(0) == "yes") {
-            std::vector<std::string> empty{};
-            currentRace.set_key("");
-            currentRace.set_name("");
-            currentRace.set_optionPack("");
-            currentRace.set_description("");
-            currentRace.set_size(SizeEnum::small);
-            currentRace.set_str(0);
-            currentRace.set_dex(0);
-            currentRace.set_con(0);
-            currentRace.set_int(0);
-            currentRace.set_wis(0);
-            currentRace.set_cha(0);
-            currentRace.set_speed(0);
-            currentRace.set_flySpeed(0);
-            currentRace.set_swimSpeed(0);
-            currentRace.set_darkVision(0);
-            currentRace.set_skillOptionsCount(0);
-            currentRace.set_languageOptionsCount(0);
-            currentRace.set_weaponOptionsCount(0);
-            currentRace.set_lizFolkAC(false);
-            currentRace.set_tortAC(false);
-            currentRace.insert_language(empty);
-            currentRace.insert_tool(empty);
-            currentRace.insert_skillOption(empty);
-            currentRace.insert_skillProf(empty);
-            currentRace.insert_languageOption(empty);
-            currentRace.insert_weaponOption(empty);
-            currentRace.insert_weaponProf(empty);
-            currentRace.insert_armorProf(empty);
-            currentRace.insert_damageRes(empty);
-            currentRace.insert_damageImmun(empty);
+            Race newRace{};
+            currentRace = newRace;
             break;
         }
         else {
@@ -3340,31 +2324,121 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
     
     //Remove
     case 6: {
-        GUI editGUI{};
-        std::vector<std::string> editOptions{ "cancel","options" };
-        std::vector<std::string> editDefs{ "Cancels remove", "Lists all possible options" };
-        editDefs.insert(std::end(editDefs), std::begin(GlobalRaceDefs), std::end(GlobalRaceDefs));
-        editOptions.insert(std::end(editOptions), std::begin(GlobalRaceOptions), std::end(GlobalRaceOptions));
+        GUI removeGUI{};
+        std::vector<std::string> removeOptions{ "cancel","options" };
+        std::vector<std::string> removeDefs{ "Cancels remove", "Lists all possible options" };
+        removeDefs.insert(std::end(removeDefs), std::begin(GlobalRaceDefs), std::end(GlobalRaceDefs));
+        removeOptions.insert(std::end(removeOptions), std::begin(GlobalRaceOptions), std::end(GlobalRaceOptions));
         std::string input{};
 
         if (parameters.empty()) {
             std::cout << "\nWhat do want to remove?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to remove?\n", true, false, editOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to remove?\n", removeOptions, true, false);
             currentRace = ExecuteRaceCommand(CommandCode("remove", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "remove");
         }
         else if (parameters.at(0) == "cancel") {
             break;
         }
         else if (parameters.at(0) == "options") {
-            editOptions = merge_ordered(editOptions, editDefs);
-            editGUI.GenerateMenu("Remove Commands", editOptions, "", true, 2);
+            removeOptions = merge_ordered(removeOptions, removeDefs);
+            removeGUI.GenerateMenu("Remove Commands", removeDefs, "", true, 2);
             currentRace = ExecuteRaceCommand(CommandCode("remove",GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "remove");
         }
-        else if (includes_string(parameters.at(0), editOptions)) {
-            switch (CommandCode(parameters.at(0),GlobalRaceOptions))
+        else if (includes_string(parameters.at(0), removeOptions)) {
+            std::string newName{};
+            std::vector<std::string> compareBase{};
+            bool multi{ true };
+            int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+
+            switch (cmdCode)
             {
-                //Name
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18: {
+                multi = false;
+                break;
+            }
+            case 19: {
+                compareBase = currentRace.get_language();
+                break;
+            }
+            case 20: {
+                compareBase = currentRace.get_tool();
+                break;
+            }
+            case 21: {
+                compareBase = currentRace.get_skillOption();
+                break;
+            }
+            case 22: {
+                compareBase = currentRace.get_skillProf();
+                break;
+            }
+            case 23: {
+                compareBase = currentRace.get_languageOption();
+                break;
+            }
+            case 24: {
+                compareBase = currentRace.get_weaponOption();
+                break;
+            }
+            case 25: {
+                compareBase = currentRace.get_weaponProf();
+                break;
+            }
+            case 26: {
+                compareBase = currentRace.get_armorProf();
+                break;
+            }
+            case 27: {
+                compareBase = currentRace.get_damageRes();
+                break;
+            }
+            case 28: {
+                compareBase = currentRace.get_damageImmun();
+                break;
+            }
+            case 29: {
+                currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "remove");
+                multi = false;
+                break;
+            }
+            }
+
+            if (multi) {
+                if (parameters.size() == 1) {
+                    removeGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
+                    std::cout << "\nWhat do you want to remove?\n";
+                    std::getline(std::cin, newName);
+                    newName = InputCheck(newName, "\nWhat do you want to remove?\n", compareBase, true, false);
+                    parameters.clear();
+                    parameters.push_back(newName);
+                }
+                else {
+                    parameters.erase(parameters.begin());
+                }
+            }
+
+            switch (cmdCode)
+            {
+                    //Name
             case 0: {
                 if (currentRace.get_name() == "") {
                     std::cout << "\nNothing to remove\n"; break;
@@ -3557,375 +2631,114 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
             }
                    //Languages
             case 19: {
-                if (currentRace.get_language().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_language(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Current Languages", currentRace.get_language(), "", true, 4);
-                        std::cout << "\nWhat language do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded language\nWhat language do you want to remove from your race?\n", true, false, currentRace.get_language());
-                        std::vector<std::string> newVector{remove(currentRace.get_language(),index(newName,currentRace.get_language()))};
-                        currentRace.insert_language(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_language()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_language(newInsert);
                 break;
             }
                    //Tools
             case 20: {
-                if (currentRace.get_tool().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_tool(newLanguages);
-                    }
-                    else {
-                        editGUI.GenerateMenu("Current Tools", currentRace.get_tool(), "", true, 4);
-                        std::cout << "\nWhat tool do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded tool\nWhat tool do you want to remove from your race?\n", true, false, currentRace.get_tool());
-                        std::vector<std::string> newVector{ remove(currentRace.get_tool(),index(newName,currentRace.get_tool())) };
-                        currentRace.insert_tool(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_tool()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_tool(newInsert);
                 break;
             }
                    //Skill Options
             case 21: {
-                if (currentRace.get_skillOption().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_skillOption(newLanguages);
-                    }
-                    else {
-                        newLanguages = currentRace.get_skillOption();
-                        editGUI.GenerateMenu("Current Skill Options", newLanguages, "", true, 4);
-                        std::cout << "\nWhat skill option do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded skill option\nWhat skill option do you want to remove from your race?\n", true, false, newLanguages);
-                        std::vector<std::string> newVector{ remove(newLanguages,index(newName,newLanguages)) };
-                        currentRace.insert_skillOption(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_skillOption()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_skillOption(newInsert);
                 break;
             }
                    //Skill Profs
             case 22: {
-                if (currentRace.get_skillProf().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_skillProf(newLanguages);
-                    }
-                    else {
-                        newLanguages = currentRace.get_skillProf();
-                        editGUI.GenerateMenu("Current Skill Prof", newLanguages, "", true, 4);
-                        std::cout << "\nWhat skill prof do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded skill prof\nWhat skill prof do you want to remove from your race?\n", true, false, newLanguages);
-                        std::vector<std::string> newVector{ remove(newLanguages,index(newName,newLanguages)) };
-                        currentRace.insert_skillProf(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_skillProf()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_skillProf(newInsert);
                 break;
             }
                    //Language Options
             case 23: {
-                if (currentRace.get_languageOption().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_languageOption(newLanguages);
-                    }
-                    else {
-                        newLanguages = currentRace.get_languageOption();
-                        editGUI.GenerateMenu("Current Language Options", newLanguages, "", true, 4);
-                        std::cout << "\nWhat language option do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded language option\nWhat language option do you want to remove from your race?\n", true, false, newLanguages);
-                        std::vector<std::string> newVector{ remove(newLanguages,index(newName,newLanguages)) };
-                        currentRace.insert_languageOption(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_languageOption()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_languageOption(newInsert);
                 break;
             }
                    //Weapon Options
             case 24: {
-                if (currentRace.get_weaponOption().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_weaponOption(newLanguages);
-                    }
-                    else {
-                        newLanguages = currentRace.get_weaponOption();
-                        editGUI.GenerateMenu("Current Weapon Options", newLanguages, "", true, 4);
-                        std::cout << "\nWhat weapon option do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon option\nWhat weapon option do you want to remove from your race?\n", true, false, newLanguages);
-                        std::vector<std::string> newVector{ remove(newLanguages,index(newName,newLanguages)) };
-                        currentRace.insert_weaponOption(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_weaponOption()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_weaponOption(newInsert);
                 break;
             }
                    //Weapon Profs
             case 25: {
-                if (currentRace.get_weaponProf().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_weaponProf(newLanguages);
-                    }
-                    else {
-                        newLanguages = currentRace.get_weaponProf();
-                        editGUI.GenerateMenu("Current Weapon Prof", newLanguages, "", true, 4);
-                        std::cout << "\nWhat weapon prof do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded weapon prof\nWhat skill prof do you want to remove from your race?\n", true, false, newLanguages);
-                        std::vector<std::string> newVector{ remove(newLanguages,index(newName,newLanguages)) };
-                        currentRace.insert_weaponProf(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_weaponProf()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_weaponProf(newInsert);
                 break;
             }
                    //Armor Profs
             case 26: {
-                if (currentRace.get_armorProf().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_armorProf(newLanguages);
-                    }
-                    else {
-                        newLanguages = currentRace.get_armorProf();
-                        editGUI.GenerateMenu("Current Skill Prof", newLanguages, "", true, 4);
-                        std::cout << "\nWhat armor prof do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded armor prof\nWhat armor prof do you want to remove from your race?\n", true, false, newLanguages);
-                        std::vector<std::string> newVector{ remove(newLanguages,index(newName,newLanguages)) };
-                        currentRace.insert_armorProf(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_armorProf()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_armorProf(newInsert);
                 break;
             }
                    //Damage Res
             case 27: {
-                if (currentRace.get_damageRes().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_damageRes(newLanguages);
-                    }
-                    else {
-                        newLanguages = currentRace.get_damageRes();
-                        editGUI.GenerateMenu("Current Damage Res", newLanguages, "", true, 4);
-                        std::cout << "\nWhat damage res do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded damage res\nWhat damage res do you want to remove from your race?\n", true, false, newLanguages);
-                        std::vector<std::string> newVector{ remove(newLanguages,index(newName,newLanguages)) };
-                        currentRace.insert_damageRes(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_damageRes()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_damageRes(newInsert);
                 break;
             }
                    //Damage Imm
             case 28: {
-                if (currentRace.get_damageImmun().empty()) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    std::string newName{};
-                    std::vector<std::string> newLanguages{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        newLanguages = currentRace.get_language();
-                        for (std::string i : parameters) {
-                            if (includes_string(i, newLanguages)) {
-                                newLanguages = remove(newLanguages, index(i, newLanguages));
-                            }
-                            else {
-                                std::cout << "\n" << i << " is not added\n";
-                            }
-                        }
-                        currentRace.insert_damageImmun(newLanguages);
-                    }
-                    else {
-                        newLanguages = currentRace.get_damageImmun();
-                        editGUI.GenerateMenu("Current Damage Immun", newLanguages, "", true, 4);
-                        std::cout << "\nWhat damage immunity do you want to remove from your race?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a loaded damage immunity\nWhat damage immunity do you want to remove from your race?\n", true, false, newLanguages);
-                        std::vector<std::string> newVector{ remove(newLanguages,index(newName,newLanguages)) };
-                        currentRace.insert_damageImmun(newVector);
+                std::vector<std::string> newInsert{};
+                for (std::string i : currentRace.get_damageImmun()) {
+                    if (!includes_string(i, parameters)) {
+                        newInsert.push_back(i);
                     }
                 }
+                currentRace.insert_damageImmun(newInsert);
                 break;
             }
-                   //Traits
-            case 29: {
-                if (currentRace.get_trait().empty()) {
-                    std::cout << "\nNothing to remove\n";
-                }
-                else {
-                    std::vector<Trait> newTraits{};
-                    std::vector<Trait> allTraits{ currentRace.get_trait() };
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        for (std::string i : parameters) {
-                            newName += i;
-                        }
-                        int index{};
-                        for (Trait i : allTraits) {
-                            if (i.get_name() != newName) {
-                                newTraits.push_back(i);
-                            }
-                        }
-                        currentRace.insert_trait(allTraits);
-                    }
-                    else {
-                        std::vector<std::string> traitNames{};
-                        for (Trait i : allTraits) {
-                            traitNames.push_back(i.get_name());
-                        }
-                        std::cout << "\nWhich trait do you want to edit?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nThat is not a saved trait\nWhich trait do you want to edit?\n", true, false, traitNames);
-                        int index{};
-                        for (Trait i : allTraits) {
-                            if (i.get_name() != newName) {
-                                newTraits.push_back(i);
-                            }
-                        }
-                        currentRace.insert_trait(allTraits);
-                    }
-                }
-                break;
-            }
-            default:
-                break;
             }
         }
         else {
@@ -3963,7 +2776,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
 
             //std::cout << "\nWhat do you need help with?\n";
             //std::getline(std::cin, input);
-            //input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you need help with?\n", true, false, GlobalSpellOptions);
+            //input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you need help with?\n", true, false, GlobalSpellOptions);
             //currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{input}, "load");
         }
 		else {
@@ -4017,7 +2830,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
         if (parameters.empty()) {
             std::cout << "\nWhat do want to add?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to add?\n", true, false, addOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to add?\n", addOptions, true, false);
             currentSpell = ExecuteSpellCommand(CommandCode("add",GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "add");
         }
         else if (parameters.at(0) == "cancel") {
@@ -4029,411 +2842,51 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
             currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "add");
         }
         else if (includes_string(parameters.at(0),addOptions)) {
+            std::string newName{};
+            int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+
+            switch (cmdCode)
+            {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12: {
+                currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
+                break;
+            }
+            case 13: {
+                if (parameters.size() == 1) {
+                    std::cout << "\nWhat class do you want to add?\n";
+                    std::getline(std::cin, newName);
+                    parameters.clear();
+                    parameters.push_back(newName);
+                }
+                else {
+                    parameters.erase(parameters.begin());
+                }
+                break;
+            }
+            case 14: {
+                currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
+                break;
+            }
+            }
+
             switch (CommandCode(parameters.at(0), GlobalSpellOptions))
             {
-			//Name
-			case 0: {
-				if (currentSpell.get_name() == "") {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
-							index++;
-						}
-						currentSpell.set_name(newName);
-					}
-					else {
-						std::cout << "\nWhat do you want your spell to be called?\n";
-						std::getline(std::cin, newName);
-						currentSpell.set_name(newName);
-					}
-				}
-				else {
-					currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-				}
-				break;
-			}
-		    //OptionPack
-			case 1: {
-				if (currentSpell.get_optionPack() == "") {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
-							index++;
-						}
-						currentSpell.set_optionPack(newName);
-					}
-					else {
-						std::cout << "\nWhat is the option pack name for your spell?\n";
-						std::getline(std::cin, newName);
-						currentSpell.set_optionPack(newName);
-					}
-				}
-				else {
-					currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-				}
-				break;
-			}
-		    //Description
-			case 2: {
-				if (currentSpell.get_description() == "") {
-					std::string newName{};
-					if (parameters.size() > 1) {
-						parameters.erase(parameters.begin());
-						int index{};
-						for (std::string i : parameters) {
-							if(index!=0){newName += " " + parameters.at(index);}else{newName += parameters.at(index);}
-							index++;
-						}
-						currentSpell.set_description(newName);
-					}
-					else {
-						std::cout << "\nWhat is the description for your spell? Warning: Pressing enter will enter the description as is, formatting is currently not supported\n";
-						std::getline(std::cin, newName);
-						currentSpell.set_description(newName);
-					}
-				}
-				else {
-					currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-				}
-				break;
-			}
-            //School
-            case 3: {
-                if (currentSpell.get_school() == "") {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_school(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat school is your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_school(newName);
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Duration
-            case 4: {
-                if (currentSpell.get_duration() == "") {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_duration(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the duration of your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_duration(newName);
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Component
-            case 5: {
-                if (currentSpell.get_component() == "") {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_component(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat components are needed for your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_component(newName);
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Casting time
-            case 6: {
-                if (currentSpell.get_castingTime() == "") {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_castingTime(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the casting time of your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_castingTime(newName);
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Level
-            case 7: {
-                if (currentSpell.get_level() == 0) {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your spell's level (0 is cantrip)?\n", false, true);
-                        currentSpell.set_level(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your spell's level (0 is cantrip)?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your spell's level (0 is cantrip)?\n", false, true);
-                        currentSpell.set_level(std::stoi(newName));
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Verbal
-            case 8: {
-                if (currentSpell.is_verbal() == false) {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell verbal?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_verbal(true);
-                        }
-                        else {
-                            currentSpell.set_verbal(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nIs your spell verbal?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell verbal?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_verbal(true);
-                        }
-                        else {
-                            currentSpell.set_verbal(false);
-                        }
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Somatic
-            case 9: {
-                if (currentSpell.is_somatic() == false) {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell somatic?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_somatic(true);
-                        }
-                        else {
-                            currentSpell.set_somatic(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nIs your spell somatic?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell somatic?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_somatic(true);
-                        }
-                        else {
-                            currentSpell.set_somatic(false);
-                        }
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Material
-            case 10: {
-                if (currentSpell.is_material() == false) {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell material?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_material(true);
-                        }
-                        else {
-                            currentSpell.set_material(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nIs your spell material?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell material?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_material(true);
-                        }
-                        else {
-                            currentSpell.set_material(false);
-                        }
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Ritual
-            case 11: {
-                if (currentSpell.is_ritual() == false) {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell ritual?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_ritual(true);
-                        }
-                        else {
-                            currentSpell.set_ritual(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nIs your spell a ritual?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell ritual?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_ritual(true);
-                        }
-                        else {
-                            currentSpell.set_ritual(false);
-                        }
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-            //Attack Roll
-            case 12: {
-                if (currentSpell.is_attackRoll() == false) {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your spell use an attack roll?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_attackRoll(true);
-                        }
-                        else {
-                            currentSpell.set_attackRoll(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nDoes your spell use an attack roll?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your spell use an attack roll?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_attackRoll(true);
-                        }
-                        else {
-                            currentSpell.set_attackRoll(false);
-                        }
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
             //Classes
             case 13: {
-                if (currentSpell.get_class().empty()) {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        for (std::string i : parameters) {
-                            currentSpell.insert_class(i);
-                        }
-                    }
-                    else {
-                        std::cout << "\nWhat class can use this spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.insert_class(newName);
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                }
-                break;
-            }
-                   //Range
-            case 14: {
-                if (currentSpell.get_range() == "") {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_range(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the range of your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_range(newName);
-                    }
-                }
-                else {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+                for (std::string i : parameters) {
+                    currentSpell.insert_class(i);
                 }
                 break;
             }
@@ -4460,7 +2913,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
         if (parameters.empty()) {
             std::cout << "\nWhat do want to edit?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to edit?\n", true, false, editOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to edit?\n", editOptions, true, false);
             currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "edit");
         }
         else if (parameters.at(0) == "cancel") {
@@ -4472,425 +2925,175 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
             currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "edit");
         }
         else if (includes_string(parameters.at(0), editOptions)) {
-            switch (CommandCode(parameters.at(0), GlobalSpellOptions))
+            std::string newName{};
+            int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+
+            switch (cmdCode)
             {
-                //Name
-            case 0: {
-                if (currentSpell.get_name() == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    VectorToString(parameters, newName);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_name(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat do you want your spell to be called?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_name(newName);
-                    }
+                    std::cout << "\nEnter new value:\n";
+                    std::getline(std::cin, newName);
                 }
+                break;
+            }
+            case 7: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    VectorToString(parameters, newName);
+                }
+                else {
+                    std::cout << "\nEnter new value:\n";
+                    std::getline(std::cin, newName);
+                }
+                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
+                break;
+            }
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    VectorToString(parameters, newName);
+                }
+                else {
+                    std::cout << "\nEnter new value:\n";
+                    std::getline(std::cin, newName);
+                }
+                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
+                break;
+            }
+            case 13: {
+                currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+                break;
+            }
+            case 14: {
+                if (parameters.size() > 1) {
+                    parameters.erase(parameters.begin());
+                    VectorToString(parameters, newName);
+                }
+                else {
+                    std::cout << "\nEnter new value:\n";
+                    std::getline(std::cin, newName);
+                }
+                break;
+            }
+            }
+
+            switch (cmdCode)
+            {
+                    //Name
+            case 0: {
+                currentSpell.set_name(newName);
                 break;
             }
                   //OptionPack
             case 1: {
-                if (currentSpell.get_optionPack() == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_optionPack(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the option pack name for your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_optionPack(newName);
-                    }
-                }
+                currentSpell.set_optionPack(newName);
                 break;
             }
                   //Description
             case 2: {
-                if (currentSpell.get_description() == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_description(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the description for your spell? Warning: Pressing enter will enter the description as is, formatting is currently not supported\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_description(newName);
-                    }
-                }
+                currentSpell.set_description(newName);
                 break;
             }
                   //School
             case 3: {
-                if (currentSpell.get_school() == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_school(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat school is your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_school(newName);
-                    }
-                }
+                currentSpell.set_school(newName);
                 break;
             }
                   //Duration
             case 4: {
-                if (currentSpell.get_duration() == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_duration(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the duration of your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_duration(newName);
-                    }
-                }
+                currentSpell.set_duration(newName);
                 break;
             }
                   //Component
             case 5: {
-                if (currentSpell.get_component() == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_component(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat components are needed for your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_component(newName);
-                    }
-                }
+                currentSpell.set_component(newName);
                 break;
             }
                   //Casting time
             case 6: {
-                if (currentSpell.get_castingTime() == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_castingTime(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the casting time of your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_castingTime(newName);
-                    }
-                }
+                currentSpell.set_castingTime(newName);
                 break;
             }
                   //Level
             case 7: {
-                if (currentSpell.get_level() == 0) {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your spell's level (0 is cantrip)?\n", false, true);
-                        currentSpell.set_level(std::stoi(newName));
-                    }
-                    else {
-                        std::cout << "\nWhat is your spell's level (0 is cantrip)?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be numeric\nWhat is your spell's level (0 is cantrip)?\n", false, true);
-                        currentSpell.set_level(std::stoi(newName));
-                    }
-                }
+                currentSpell.set_level(std::stoi(newName));
                 break;
             }
                   //Verbal
             case 8: {
-                if (currentSpell.is_verbal() == false) {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+                if (newName == "yes") {
+                    currentSpell.set_verbal(true);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell verbal?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_verbal(true);
-                        }
-                        else {
-                            currentSpell.set_verbal(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nIs your spell verbal?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell verbal?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_verbal(true);
-                        }
-                        else {
-                            currentSpell.set_verbal(false);
-                        }
-                    }
+                    currentSpell.set_verbal(false);
                 }
                 break;
             }
                   //Somatic
             case 9: {
-                if (currentSpell.is_somatic() == false) {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+                if (newName == "yes") {
+                    currentSpell.set_somatic(true);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell somatic?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_somatic(true);
-                        }
-                        else {
-                            currentSpell.set_somatic(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nIs your spell somatic?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell somatic?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_somatic(true);
-                        }
-                        else {
-                            currentSpell.set_somatic(false);
-                        }
-                    }
+                    currentSpell.set_somatic(false);
                 }
                 break;
             }
                   //Material
             case 10: {
-                if (currentSpell.is_material() == false) {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+                if (newName == "yes") {
+                    currentSpell.set_material(true);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell material?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_material(true);
-                        }
-                        else {
-                            currentSpell.set_material(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nIs your spell material?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell material?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_material(true);
-                        }
-                        else {
-                            currentSpell.set_material(false);
-                        }
-                    }
+                    currentSpell.set_material(false);
                 }
                 break;
             }
                    //Ritual
             case 11: {
-                if (currentSpell.is_ritual() == false) {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+                if (newName == "yes") {
+                    currentSpell.set_ritual(true);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell ritual?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_ritual(true);
-                        }
-                        else {
-                            currentSpell.set_ritual(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nIs your spell a ritual?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nIs your spell ritual?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_ritual(true);
-                        }
-                        else {
-                            currentSpell.set_ritual(false);
-                        }
-                    }
+                    currentSpell.set_ritual(false);
                 }
                 break;
             }
                    //Attack Roll
             case 12: {
-                if (currentSpell.is_attackRoll() == false) {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+                if (newName == "yes") {
+                    currentSpell.set_attackRoll(true);
                 }
                 else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        newName = parameters.at(0);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your spell use an attack roll?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_attackRoll(true);
-                        }
-                        else {
-                            currentSpell.set_attackRoll(false);
-                        }
-                    }
-                    else {
-                        std::cout << "\nDoes your spell use an attack roll?\n";
-                        std::getline(std::cin, newName);
-                        newName = HLib::InputCheck(newName, "\nInput must be yes/no\nDoes your spell use an attack roll?\n", true, false, std::vector<std::string>{"yes", "no"});
-                        if (newName == "yes") {
-                            currentSpell.set_attackRoll(true);
-                        }
-                        else {
-                            currentSpell.set_attackRoll(false);
-                        }
-                    }
-                }
-                break;
-            }
-                   //Classes
-            case 13: {
-                if (currentSpell.get_class().empty()) {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        for (std::string i : parameters) {
-                            currentSpell.insert_class(i);
-                        }
-                    }
-                    else {
-                        std::cout << "\nWhat class can use this spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.insert_class(newName);
-                    }
+                    currentSpell.set_attackRoll(false);
                 }
                 break;
             }
                    //Range
             case 14: {
-                if (currentSpell.get_range() == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        int index{};
-                        for (std::string i : parameters) {
-                            if (index != 0) { newName += " " + parameters.at(index); }
-                            else { newName += parameters.at(index); }
-                            index++;
-                        }
-                        currentSpell.set_range(newName);
-                    }
-                    else {
-                        std::cout << "\nWhat is the range of your spell?\n";
-                        std::getline(std::cin, newName);
-                        currentSpell.set_range(newName);
-                    }
-                }
+                currentSpell.set_range(newName);
                 break;
             }
-            default:
-                break;
             }
         }
         else {
             std::cout << "\nInvalid Input\n";
         }
-
         break;
     }
     
@@ -4903,7 +3106,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
         if (parameters.empty()) {
             std::cout << "\nAre you sure?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid option\nAre you sure?\n", true, false, editOptions);
+            input = InputCheck(input, "\nInvalid option\nAre you sure?\n", editOptions, true, false);
             currentSpell = ExecuteSpellCommand(CommandCode("clear", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "clear");
         }
         else if (parameters.at(0) == "yes") {
@@ -4930,7 +3133,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
         if (parameters.empty()) {
             std::cout << "\nWhat do want to remove?\n";
             std::getline(std::cin, input);
-            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to remove?\n", true, false, editOptions);
+            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to remove?\n", editOptions, true, false);
             currentSpell = ExecuteSpellCommand(CommandCode("remove", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "remove");
         }
         else if (parameters.at(0) == "cancel") {
@@ -4942,189 +3145,102 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
             currentSpell = ExecuteSpellCommand(CommandCode("remove",GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "remove");
         }
         else if (includes_string(parameters.at(0), editOptions)) {
-            switch (CommandCode(parameters.at(0), GlobalSpellOptions))
+            std::string newName{};
+            int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+
+            if (cmdCode == 13) {
+                if (parameters.size() == 1) {
+                    std::cout << "\nWhat class do you want to remove?\n";
+                    std::getline(std::cin, newName);
+                    parameters.clear();
+                    parameters.push_back(newName);
+                }
+                else {
+                    parameters.erase(parameters.begin());
+                }
+            }
+            
+            switch (cmdCode)
             {
                 //Name
             case 0: {
-                if (currentSpell.get_name() == "") {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    currentSpell.set_name(newName);
-                }
+                currentSpell.set_name(newName);
                 break;
             }
                   //OptionPack
             case 1: {
-                if (currentSpell.get_optionPack() == "") {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    currentSpell.set_optionPack(newName);
-                }
+                currentSpell.set_optionPack(newName);
                 break;
             }
                   //Description
             case 2: {
-                if (currentSpell.get_description() == "") {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    currentSpell.set_description(newName);
-                }
+                currentSpell.set_description(newName);
                 break;
             }
                   //School
             case 3: {
-                if (currentSpell.get_school() == "") {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    currentSpell.set_school(newName);
-                }
+                currentSpell.set_school(newName);
                 break;
             }
                   //Duration
             case 4: {
-                if (currentSpell.get_duration() == "") {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    currentSpell.set_duration(newName);
-                }
+                currentSpell.set_duration(newName);
                 break;
             }
                   //Component
             case 5: {
-                if (currentSpell.get_component() == "") {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    currentSpell.set_component(newName);
-                }
+                currentSpell.set_component(newName);
                 break;
             }
                   //Casting time
             case 6: {
-                if (currentSpell.get_castingTime() == "") {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    currentSpell.set_castingTime(newName);
-                }
+                currentSpell.set_castingTime(newName);
                 break;
             }
                   //Level
             case 7: {
-                if (currentSpell.get_level() == 0) {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    currentSpell.set_level(0);
-                }
+                currentSpell.set_level(0);
                 break;
             }
                   //Verbal
             case 8: {
-                if (currentSpell.is_verbal() == false) {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    currentSpell.set_verbal(false);
-                }
+                currentSpell.set_verbal(false);
                 break;
             }
                   //Somatic
             case 9: {
-                if (currentSpell.is_somatic() == false) {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    currentSpell.set_somatic(false);
-                }
+                currentSpell.set_somatic(false);
                 break;
             }
                   //Material
             case 10: {
-                if (currentSpell.is_material() == false) {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    currentSpell.set_material(false);
-                }
+                currentSpell.set_material(false);
                 break;
             }
                    //Ritual
             case 11: {
-                if (currentSpell.is_ritual() == false) {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    currentSpell.set_ritual(false);
-                }
+                currentSpell.set_ritual(false);
                 break;
             }
                    //Attack Roll
             case 12: {
-                if (currentSpell.is_attackRoll() == false) {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    currentSpell.set_attackRoll(false);
-                }
+                currentSpell.set_attackRoll(false);
                 break;
             }
                    //Classes
             case 13: {
-                if (currentSpell.get_class().empty()) {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    if (parameters.size() > 1) {
-                        parameters.erase(parameters.begin());
-                        std::vector<std::string> newClasses{};
-
-                        for (std::string i : parameters) {
-                            if (!includes_string(i, currentSpell.get_class())) {
-                                newClasses.push_back(i);
-                            }
-                        }
-
-                        currentSpell.set_classes(newClasses);
-                    }
-                    else {
-
-                        std::vector<std::string> newClasses{};
-                        std::cout << "\nWhat class do you want to remove?\n";
-                        std::getline(std::cin, newName);
-                        
-                        for (std::string i : currentSpell.get_class()) {
-                            if (i != newName) {
-                                newClasses.push_back(i);
-                            }
-                        }
-                        currentSpell.set_classes(newClasses);
+                std::vector<std::string> newClasses{};
+                for (std::string i : currentSpell.get_class()) {
+                    if (!includes_string(i, parameters)) {
+                        newClasses.push_back(i);
                     }
                 }
+                currentSpell.set_classes(newClasses);
                 break;
             }
                    //Range
             case 14: {
-                if (currentSpell.get_range() == "") {
-                    std::cout << "\nThere is nothing to remove\n";
-                }
-                else {
-                    std::string newName{};
-                    currentSpell.set_range(newName);
-                }
+                currentSpell.set_range(newName);
                 break;
             }
             default:
@@ -5147,6 +3263,16 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
     return currentSpell;
 }
 
+void VectorToString(std::vector<std::string>& parameters, std::string& newName)
+{
+    int index{};
+    for (std::string i : parameters) {
+        if (index != 0) { newName += " " + parameters.at(index); }
+        else { newName += parameters.at(index); }
+        index++;
+    }
+}
+
 //Consoles
 void Console(std::vector<std::string> currentCommands, std::vector<std::string> currentCmdDef, HPack currentHPack) {
     GUI consoleGUI{};
@@ -5167,30 +3293,14 @@ void Console(std::vector<std::string> currentCommands, std::vector<std::string> 
         std::getline(std::cin, input);
 
         //seperates the command
-        parameter = input;
-        int parameterindex{};
-        for (char i : input) {
-            if (i != ' ') {
-                if (std::isalpha(i)) {
-                    command.push_back(std::tolower(i));
-                    parameter.erase(0, 1);
-                }
-                else {
-                    command.push_back(i);
-                    parameter.erase(0, 1);
-                }
-            }
-            else {
-                parameter.erase(0, 1);
-                break;
-            }
-        }
+        ConsoleInput(parameter, input, command);
+        std::vector<std::string> parameters{ split(parameter) };
+
         if (includes_string(command, currentCommands)) {
             if (command == "help") {
                 currentHPack = ExecuteCommand(CommandCode(command, currentCommands), currentHPack, combined);
             }
             else {
-                std::vector<std::string> parameters{ split(parameter) };
                 currentHPack = ExecuteCommand(CommandCode(command, currentCommands), currentHPack, parameters);
             }
             input = command;
@@ -5199,6 +3309,27 @@ void Console(std::vector<std::string> currentCommands, std::vector<std::string> 
             std::cout << "\nInvalid Command, use 'help' for list of commands\n";
         }
     } while (input != "exit");
+}
+void ConsoleInput(std::string& parameter, std::string& input, std::string& command)
+{
+    int parameterindex{};
+    parameter = input;
+    for (char i : input) {
+        if (i != ' ') {
+            if (std::isalpha(i)) {
+                command.push_back(std::tolower(i));
+                parameter.erase(0, 1);
+            }
+            else {
+                command.push_back(i);
+                parameter.erase(0, 1);
+            }
+        }
+        else {
+            parameter.erase(0, 1);
+            break;
+        }
+    }
 }
 Race RaceConsole(Race currentRace) {
     GUI raceGUI{};
@@ -5225,24 +3356,7 @@ Race RaceConsole(Race currentRace) {
         std::getline(std::cin, input);
 
         //seperates the command
-        parameter = input;
-        int parameterindex{};
-        for (char i : input) {
-            if (i != ' ') {
-                if (std::isalpha(i)) {
-                    command.push_back(std::tolower(i));
-                    parameter.erase(0, 1);
-                }
-                else {
-                    command.push_back(i);
-                    parameter.erase(0, 1);
-                }
-            }
-            else {
-                parameter.erase(0, 1);
-                break;
-            }
-        }
+        ConsoleInput(parameter, input, command);
         if (includes_string(command, commands)) {
             if (command == "help") {
                 if (parameter == "") {
@@ -5293,24 +3407,7 @@ Spell SpellConsole(Spell currentSpell) {
         std::getline(std::cin, input);
 
         //seperates the command
-        parameter = input;
-        int parameterindex{};
-        for (char i : input) {
-            if (i != ' ') {
-                if (std::isalpha(i)) {
-                    command.push_back(std::tolower(i));
-                    parameter.erase(0, 1);
-                }
-                else {
-                    command.push_back(i);
-                    parameter.erase(0, 1);
-                }
-            }
-            else {
-                parameter.erase(0, 1);
-                break;
-            }
-        }
+        ConsoleInput(parameter, input, command);
         if (includes_string(command, commands)) {
             if (command == "help") {
                 if (parameter == "") {
@@ -5362,24 +3459,7 @@ Trait EditTrait(Trait currentTrait) {
         std::getline(std::cin, input);
 
         //seperates the command
-        parameter = input;
-        int parameterindex{};
-        for (char i : input) {
-            if (i != ' ') {
-                if (std::isalpha(i)) {
-                    command.push_back(std::tolower(i));
-                    parameter.erase(0, 1);
-                }
-                else {
-                    command.push_back(i);
-                    parameter.erase(0, 1);
-                }
-            }
-            else {
-                parameter.erase(0, 1);
-                break;
-            }
-        }
+        ConsoleInput(parameter, input, command);
         if (includes_string(command, commands)) {
             if (command == "help") {
                 traitGUI.GenerateMenu("Trait Commands", combined,"",true,2);
@@ -5447,7 +3527,7 @@ Trait EditTrait(Trait currentTrait) {
                         std::cin.sync();
                         std::getline(std::cin, newString);
                     }
-                    newString = HLib::InputCheck(newCommand, "\nInvalid input\nEnter input:\n", true, false, std::vector<std::string>{"name", "description", "type"});
+                    newString = InputCheck(newCommand, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"name", "description", "type"}, true, false);
                     if (newString == "name") {
                         newString.clear();
                         std::cout << "\nEnter name:\n";
@@ -5471,7 +3551,7 @@ Trait EditTrait(Trait currentTrait) {
                         std::cin.sync();
                         std::getline(std::cin, newString);
                         currentTrait.set_description(newString);
-                        newString = HLib::InputCheck(newString, "\nInvalid input\nEnter input:\n", true, false, std::vector<std::string>{"action", "bonus action", "reaction", "other"});
+                        newString = InputCheck(newString, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"action", "bonus action", "reaction", "other"}, true, false);
                         if (newString == "action") {
                             currentTrait.set_type(TraitType::Action);
                         }
@@ -5512,7 +3592,7 @@ Trait EditTrait(Trait currentTrait) {
                     std::cin.clear();
                     std::cin.sync();
                     std::getline(std::cin, newString);
-                    newString = HLib::InputCheck(newString, "\nInvalid input\nEnter input:\n", true, false, std::vector<std::string>{"name", "description", "type"});
+                    newString = InputCheck(newString, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"name", "description", "type"}, true, false);
                     if (newString == "name") {
                         newString.clear();
                         currentTrait.set_name(newString);

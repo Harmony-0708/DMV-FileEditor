@@ -109,7 +109,7 @@ Somatic=false
 Material=false
 Ritual=false
 AttackRoll=false
-ClassList={"Artificer""Bard""Warlock"}
+ClassList={"artificer""bard""warlock"}
 }
 test{
 Name="Test"

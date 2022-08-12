@@ -999,7 +999,7 @@ void Orcbrew::save()
     }
 
     myfile
-        << "}}";
+        << "}";
 }
 
 //HPack Orcbrew::convert_pack_file()

@@ -599,7 +599,8 @@ void GrabObjectName(std::vector<std::string>& parameters, HPack& currentHPack, s
         std::cout << "\nWhat " << displayType << " do you want?\n";
         std::getline(std::cin, objectName);
     }
-    objectName = InputCheck(objectName, "\nWhat " + displayType + " do you want?\n", chosenType, false, false);
+    if (!chosenType.empty()) { objectName = InputCheck(objectName, "\nWhat " + displayType + " do you want?\n", chosenType, false, false); }
+    else { std::cout << "\nList empty\n"; objectName = "null"; }
 }
 
 //Object Editing
@@ -2466,6 +2467,8 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             break;
         }
         case 2: {
+            parameters.clear();
+            parameters.push_back("orcbrew");
             currentHPack = Save(currentHPack, parameters);
             break;
         }

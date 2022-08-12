@@ -14,6 +14,8 @@ namespace HLib {
 	std::string InputCheck(std::string input, std::string repeatString, bool onlyAlpha = true, bool onlyNums = false, std::vector<std::string> parameters = {});
 
 	int FindLongest(std::vector<std::string> input, int longestLen = 0);
+
+	bool StringToBool(std::string input);
 }
 
 

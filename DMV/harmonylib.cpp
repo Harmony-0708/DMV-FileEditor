@@ -210,3 +210,13 @@ int HLib::FindLongest(std::vector<std::string> input, int longestLen)
     return longestLen;
 }
 
+bool HLib::StringToBool(std::string input)
+{
+    if (input == "true" || input == "True") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+

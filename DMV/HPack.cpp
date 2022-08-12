@@ -57,7 +57,7 @@ void HPack::update_pack(Pack pack)
 	int index{};
 	for (Pack i : get_packs()) {
 		if (i.get_name() == pack.get_name()) {
-			Packs.at(index) = pack.merge(std::vector<Pack>{i, pack});
+			Packs.at(index) = pack.merge(std::vector<Pack>{pack, i});
 		}
 		index++;
 	}
@@ -171,6 +171,7 @@ void HPack::load(std::string fileName)
 		if (!emptyPack && !myfile.eof()) {
 			newPack.load_pack(outputfile);
 			add_pack(newPack);
+			outputfile.close();
 		}
 	}
 }

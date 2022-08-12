@@ -25,6 +25,26 @@ std::vector<Spell> Pack::get_spells()
 	return this->Spells;
 }
 
+Race Pack::get_race(std::string name)
+{
+	for (Race i : get_races()) {
+		if (i.get_name() == name) {
+			return i;
+		}
+	}
+	return Race();
+}
+
+Spell Pack::get_spell(std::string name)
+{
+	for (Spell i : get_spells()) {
+		if (i.get_name() == name) {
+			return i;
+		}
+	}
+	return Spell();
+}
+
 void Pack::set_name(std::string name)
 {
 	Name = name;
@@ -115,12 +135,11 @@ int Pack::load_pack(std::string packName)
 	Spell newSpell{};
 	Trait newTrait{};
 
-	
-
 	myfile.open("CustomPacks/" + Name + ".pck", std::ios::out);
 
 	std::string line;
 	int counter{};
+	bool inObject{};
 	bool inRaces{};
 	bool inSpells{};
 	bool inTraits{};
@@ -204,6 +223,7 @@ int Pack::load_pack(std::string packName)
 				}
 			}
 			else if (declared == "Name") {
+				inObject = true;
 				unsigned first = variable.find("\"");
 				unsigned last = variable.find_last_of("\"");
 				std::string variableNew = variable.substr(first+1, last - first-1);
@@ -418,16 +438,20 @@ int Pack::load_pack(std::string packName)
 			else if (declared == "Traits") {
 				inTraits = true;
 			}
-			else if (!inTraits && declared == "}") {
+			else if (inObject && !inTraits && declared == "}") {
 				if (newRace.get_name() != "") {
-				myRaces.push_back(newRace);
+					myRaces.push_back(newRace);
 				}
 				newRace.clear();
+				inObject = false;
+			}
+			else if (!inObject && declared == "}") {
 				inRaces = false;
 			}
 		}
 		else if (inSpells) {
 			if (declared == "Name") {
+				inObject = true;
 				unsigned first = variable.find("\"");
 				unsigned last = variable.find_last_of("\"");
 				std::string variableNew = variable.substr(first + 1, last - first - 1);
@@ -444,6 +468,12 @@ int Pack::load_pack(std::string packName)
 				unsigned last = variable.find_last_of("\"");
 				std::string variableNew = variable.substr(first + 1, last - first - 1);
 				newSpell.set_school(variableNew);
+			}
+			else if (declared == "Description") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_description(variableNew);
 			}
 			else if (declared == "Duration") {
 				unsigned first = variable.find("\"");
@@ -487,11 +517,26 @@ int Pack::load_pack(std::string packName)
 			else if (declared == "AttackRoll") {
 				newSpell.set_attackRoll(HLib::StringToBool(variable));
 			}
-			else if (declared == "}") {
+			else if (declared == "ClassList") {
+				std::stringstream ssvar(variable);
+				std::string segment{};
+				std::vector<std::string> vector{};
+				while (std::getline(ssvar, segment, '\"'))
+				{
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+						vector.push_back(segment);
+					}
+				}
+				newSpell.set_classes(vector);
+			}
+			else if (inObject && declared == "}") {
 				if (newSpell.get_name() != "") {
 					mySpells.push_back(newSpell);
 				}
 				newSpell.clear();
+				inObject = false;
+			}
+			else if (!inObject && declared == "}") {
 				inSpells = false;
 			}
 
@@ -516,6 +561,7 @@ Pack Pack::load_pack(std::fstream& myfile)
 
 	std::string line;
 	int counter{};
+	bool inObject{};
 	bool inRaces{};
 	bool inSpells{};
 	bool inTraits{};
@@ -816,16 +862,20 @@ Pack Pack::load_pack(std::fstream& myfile)
 			else if (declared == "Traits") {
 				inTraits = true;
 			}
-			else if (!inTraits && declared == "}") {
+			else if (inObject && !inTraits && declared == "}") {
 				if (newRace.get_name() != "") {
 					myRaces.push_back(newRace);
 				}
 				newRace.clear();
-				inRaces = false;
+				inObject = false;
+			}
+			else if (!inObject && declared == "}") {
+			inRaces = false;
 			}
 		}
 		else if (inSpells) {
 			if (declared == "Name") {
+				inObject = true;
 				unsigned first = variable.find("\"");
 				unsigned last = variable.find_last_of("\"");
 				std::string variableNew = variable.substr(first + 1, last - first - 1);
@@ -842,6 +892,12 @@ Pack Pack::load_pack(std::fstream& myfile)
 				unsigned last = variable.find_last_of("\"");
 				std::string variableNew = variable.substr(first + 1, last - first - 1);
 				newSpell.set_school(variableNew);
+			}
+			else if (declared == "Description") {
+				unsigned first = variable.find("\"");
+				unsigned last = variable.find_last_of("\"");
+				std::string variableNew = variable.substr(first + 1, last - first - 1);
+				newSpell.set_description(variableNew);
 			}
 			else if (declared == "Duration") {
 				unsigned first = variable.find("\"");
@@ -885,11 +941,26 @@ Pack Pack::load_pack(std::fstream& myfile)
 			else if (declared == "AttackRoll") {
 				newSpell.set_attackRoll(HLib::StringToBool(variable));
 			}
-			else if (declared == "}") {
+			else if (declared == "ClassList") {
+				std::stringstream ssvar(variable);
+				std::string segment{};
+				std::vector<std::string> vector{};
+				while (std::getline(ssvar, segment, '\"'))
+				{
+					if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+						vector.push_back(segment);
+					}
+				}
+				newSpell.set_classes(vector);
+			}
+			else if (inObject && declared == "}") {
 				if (newSpell.get_name() != "") {
 					mySpells.push_back(newSpell);
 				}
 				newSpell.clear();
+				inObject = false;
+			}
+			else if (!inObject && declared == "}") {
 				inSpells = false;
 			}
 
@@ -1288,7 +1359,7 @@ void Pack::save_pack(std::ofstream& myfile)
 			}
 		}
 		myfile
-			<< "\n}";
+			<< "}\n}";
 	}
 	myfile
 		<< "\n}\n";

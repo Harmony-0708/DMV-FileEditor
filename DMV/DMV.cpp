@@ -22,9 +22,18 @@ void DrawRace(Race input);
 void DrawSpell(Spell input);
 void DrawTrait(Trait input);
 void ExitProgram();
+void GrabObjectName(std::vector<std::string>& parameters, HPack& currentHPack, std::string& objectName, std::string& displayType, Pack& loadedPack);
+HPack Display(HPack currentHPack, std::vector<std::string> parameters);
 HPack Load(HPack currentHPack, std::vector<std::string> parameters);
 HPack Save(HPack currentHPack, std::vector<std::string> parameters);
 HPack Edit(HPack currentHPack, std::vector<std::string> parameters);
+HPack Add(HPack currentHPack, std::vector<std::string> parameters);
+Race RaceAdd(Race currentRace, std::vector<std::string>& parameters);
+Race RaceEdit(Race currentRace, std::vector<std::string>& parameters);
+Race RaceRemove(Race currentRace, std::vector<std::string>& parameters);
+Spell SpellAdd(Spell currentSpell, std::vector<std::string>& parameters);
+Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters);
+Spell SpellRemove(Spell currentSpell, std::vector<std::string>& parameters);
 
 void VectorToString(std::vector<std::string>& parameters, std::string& newName);
 bool includes_string(std::string input, std::vector<std::string> vInput);
@@ -244,13 +253,13 @@ std::vector<std::string> GlobalRaceOptions{
     "name", 
     "option-pack", 
     "description", 
+    "size",
     "str", 
     "dex", 
     "con", 
     "int", 
     "wis", 
     "cha", 
-    "size", 
     "speed", 
     "flying-speed", 
     "swimming-speed", 
@@ -275,14 +284,14 @@ std::vector<std::string> GlobalRaceOptions{
 std::vector<std::string> GlobalRaceDefs{ 
     "The name of your Race", 
     "The name of the pack your race is in", 
-    "The Description of your race", 
+    "The Description of your race",
+    "The size of your race",
     "Strength mod", 
     "Dexterity mod",
     "Constitution mod",
     "Intelligence mod", 
     "Wisdom mod",
     "Charisma mod", 
-    "The size of your race", 
     "Your race's speed", 
     "Your race's flying speed, 0 if none", 
     "Your race's swimming speed", 
@@ -523,89 +532,91 @@ void ExitProgram() {
         main();
     }
 }
-HPack Display(HPack currentHPack, std::vector<std::string> parameters) {
-    GUI displayGUI{};
-    std::vector<Pack> packs{ currentHPack.get_packs() };
-    std::vector<std::string> packNames{};
-    std::vector<Race> races{};
-    std::vector<std::string> raceNames{};
+void GrabObjectName(std::vector<std::string>& parameters, HPack& currentHPack, std::string& objectName, std::string& displayType, Pack& loadedPack)
+{
+    GUI gui{};
+    int index{};
+    bool foundPack{ false };
+    bool foundObject{ false };
     std::string input{};
+    std::string packName{};
+    std::vector<std::string> packs{};
+    std::vector<std::string> chosenType{};
 
-    for (Pack i : packs) {
-        for (Race j : i.get_races()) {
-            races.push_back(j);
-            raceNames.push_back(j.get_name() + " (" + j.get_optionPack() + ")");
-        }
-        packNames.push_back(i.get_name());
+    parameters.erase(std::begin(parameters));
+
+    for (Pack i : currentHPack.get_packs()) {
+        packs.push_back(i.get_name());
     }
-    if (!races.empty()) {
-        system("cls");
-        displayGUI.GenerateMenu("Loaded Races", raceNames, "Use 'filter' to filter by pack");
-        raceNames.push_back("filter");
-        std::cout << "\nEnter race:\n";
-        std::getline(std::cin, input);
-        input = InputCheck(input, "\nInvalid input\nEnter race:\n", raceNames, false, false);
-        if (input == "filter") {
-            system("cls");
-
-            input.clear();
-            displayGUI.GenerateMenu("Loaded Packs", packNames);
-            raceNames.push_back("filter");
-            std::cout << "\nEnter Pack:\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid input\nEnter Pack:\n", packNames, false, false);
-
-            Race chosenRace{};
-            Pack chosenPack{};
-            races.clear();
-            raceNames.clear();
-
-            for (Pack i : packs) {
-                if (i.get_name() == input) {
-                    chosenPack = i;
-                    for (Race j : i.get_races()) {
-                        races.push_back(j);
-                        raceNames.push_back(j.get_name());
-                    }
-                }
-            }
-
-            system("cls");
-
-            displayGUI.GenerateMenu(input + " Races", raceNames);
-            input.clear();
-            std::cout << "\nEnter race:\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid input\nEnter race:\n", raceNames, false, false);
-
-            for (Race i : chosenPack.get_races()) {
-                if ((i.get_name()) == input) {
-                    chosenRace = i;
-                    break;
-                }
-            }
-
-            system("cls");
-            DrawRace(chosenRace);
+    for (std::string i : parameters) {
+        if (index == 0) { packName += i; }
+        else { packName += " " + i; }
+        if (includes_string(packName, packs)) { foundPack = true; break; }
+        index++;
+    }
+    if (foundPack) {
+        for (int i{ -1 }; i < index; i++) {
+            parameters.erase(std::begin(parameters));
         }
-        else {
-            Race chosenRace{};
-            for (Pack i : packs) {
-                for (Race j : i.get_races()) {
-                    if ((j.get_name() + " (" + i.get_name() + ")") == input) {
-                        chosenRace = j;
-                        break;
-                    }
-                }
+        if (!parameters.empty()) {
+            int index{};
+            for (std::string i : parameters) {
+                if (index == 0) { objectName += i; }
+                else { objectName += " " + i; }
+                index++;
             }
-            system("cls");
-            DrawRace(chosenRace);
         }
     }
-    else {
-        std::cout << "You have no saved races currently" << std::endl;
+
+    if (!foundPack) {
+        gui.GenerateMenu("Packs", packs);
+        std::cout << "\nWhat pack is the " << displayType << " in?\n";
+        std::getline(std::cin, packName);
     }
-    std::cout << std::endl;
+    packName = InputCheck(packName, "\nWhat pack is the " + displayType + " in?\n", packs, false, false);
+
+    loadedPack = currentHPack.get_pack(packName);
+
+    if (displayType == "race") {
+        for (Race i : loadedPack.get_races()) {
+            if (i.get_name() == objectName) {
+                foundObject = true;
+            }
+            chosenType.push_back(i.get_name());
+        }
+    }
+    else if (displayType == "spell") {
+        for (Spell i : loadedPack.get_spells()) {
+            if (i.get_name() == objectName) {
+                foundObject = true;
+            }
+            chosenType.push_back(i.get_name());
+        }
+    }
+
+    if (!foundObject) {
+        gui.GenerateMenu("Loaded", chosenType);
+        std::cout << "\nWhat " << displayType << " do you want?\n";
+        std::getline(std::cin, objectName);
+    }
+    objectName = InputCheck(objectName, "\nWhat " + displayType + " do you want?\n", chosenType, false, false);
+}
+
+//Object Editing
+HPack Display(HPack currentHPack, std::vector<std::string> parameters) {
+    Pack loadedPack{};
+    std::string objectName{};
+    std::string displayType{ parameters.at(0) };
+
+    GrabObjectName(parameters, currentHPack, objectName, displayType, loadedPack);
+    
+    if (displayType == "race") {
+        DrawRace(loadedPack.get_race(objectName));
+    }
+    else if (displayType == "spell") {
+        DrawSpell(loadedPack.get_spell(objectName));
+    }
+    
     return currentHPack;
 }
 HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
@@ -679,7 +690,6 @@ HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
         break;
     }
     }
-    
 
     std::cout << "\nThe " << fileType << " files will be loaded in the local folder. Please ensure the files you want to load are currently in the folder then hit enter.\n";
     system("pause");
@@ -689,7 +699,7 @@ HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
         for (const auto& i : std::filesystem::directory_iterator("CustomPacks")) {
             std::string path{ i.path().string() };
             path.erase(0, 12);
-            if (path.substr(path.find(".") + 1) == fileType) {
+            if (path.substr(path.find(".") + 1) == fileType && path != "buffer.hpck") {
                 nameOfFiles.push_back(path);
             }
         }
@@ -731,6 +741,7 @@ HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
             HPack newHPack{};
             i.erase(i.size() - 5, 5);
             newHPack.load(i);
+            if (currentHPack.get_name() == "Default") { currentHPack.set_name(i); }
             currentHPack = currentHPack.merge(std::vector<HPack>{ currentHPack, newHPack});
         }
         else if (fileType == "pck") {
@@ -786,129 +797,1240 @@ HPack Save(HPack currentHPack, std::vector<std::string> parameters) {
     }
 }
 HPack Edit(HPack currentHPack, std::vector<std::string> parameters) {
-    GUI editGUI{};
-    std::string input{};
-    std::string editType{};
-    std::string packName{};
-    std::string objectName{};
-    std::vector<std::string> packs{};
-    std::vector<std::string> chosenType{};
-
     Pack loadedPack{};
-    for (Pack i : currentHPack.get_packs()) {
-        packs.push_back(i.get_name());
+    std::string objectName{};
+    std::string editType{ parameters.at(0) };
+
+    GrabObjectName(parameters, currentHPack, objectName, editType, loadedPack);
+
+    if (editType == "race") {
+        Race newRace{ RaceConsole(RaceConsole(loadedPack.get_race(objectName))) };
+        if (newRace.get_name() != "%%CANCELED%%") { loadedPack.update_race(newRace);}
     }
-    
-
-    if (parameters.size() < 2) {
-        if (parameters.at(0) == "race") {
-            editType = "race";
-        }
-        else if (parameters.at(0) == "spell") {
-            editType = "spell";
-        }
-
-        editGUI.GenerateMenu("Packs", packs);
-
-        std::cout << "\nWhat pack is the " << editType << " in?\n";
-        std::getline(std::cin, packName);
-        packName = InputCheck(packName, "\nWhat pack is the " + editType + " in?\n", packs, false, false);
-
-        loadedPack = currentHPack.get_pack(packName);
-
-        if (editType == "race") {
-            for (Race i : loadedPack.get_races()) {
-                chosenType.push_back(i.get_name());
-            }
-        }
-        else if (editType == "spell") {
-            for (Spell i : loadedPack.get_spells()) {
-                chosenType.push_back(i.get_name());
-            }
-        }
-
-        editGUI.GenerateMenu("Races", chosenType);
-
-        std::cout << "\nWhat " << editType << " do you want to edit?\n";
-        std::getline(std::cin, objectName);
-        objectName = InputCheck(objectName, "\nWhat " + editType + " do you want to edit?\n", chosenType, false, false);
+    else if (editType == "spell") {
+        Spell newSpell{ SpellConsole(loadedPack.get_spell(objectName)) };
+        if (newSpell.get_name() != "%%CANCELED%%") { loadedPack.update_spell(newSpell); };
     }
-    else {
-        if (parameters.at(0) == "race") {
-            editType = "race";
-        }
-        else if (parameters.at(0) == "spell") {
-            editType = "spell";
-        }
-
-        std::cout << "\nWhat pack is the " << editType << " in?\n";
-        std::getline(std::cin, packName);
-        packName = InputCheck(packName, "\nWhat pack is the " + editType + " in?\n", packs, false, false);
-
-        loadedPack = currentHPack.get_pack(packName);
-
-        if (editType == "race") {
-            for (Race i : loadedPack.get_races()) {
-                chosenType.push_back(i.get_name());
-            }
-        }
-        else if (editType == "spell") {
-            for (Spell i : loadedPack.get_spells()) {
-                chosenType.push_back(i.get_name());
-            }
-        }
-
-        editGUI.GenerateMenu("Races", chosenType);
-
-        std::cout << "\nWhat " << editType << " do you want to edit?\n";
-        std::getline(std::cin, objectName);
-        objectName = InputCheck(objectName, "\nWhat " + editType + " do you want to edit?\n", chosenType, false, false);
-    }
-
-
-
-    std::vector<Race> races{};
-    std::vector<std::string> raceNames{};
-    //std::string packName{};
-    std::cout << "\n";
-
-    for (Pack i : currentHPack.get_packs()) {
-        raceNames.push_back(i.get_name());
-    }
-    editGUI.GenerateMenu("Current Packs", raceNames, "", true, ((raceNames.size() > 10) ? 2 : 1));
-    std::cout << "\nWhat option pack is the race in?\n";
-    input.clear();
-    std::getline(std::cin, input);
-    input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the race in?\n", raceNames, true, false);
-    packName = input;
-
-    raceNames.clear();
-    for (Pack i : currentHPack.get_packs()) {
-        if (i.get_name() == input) {
-            races = i.get_races();
-            break;
-        }
-    }
-    for (Race i : races) {
-        raceNames.push_back(i.get_name());
-    }
-    editGUI.GenerateMenu("Current Races", raceNames, "", true, ((raceNames.size() > 10) ? 2 : 1));
-    std::cout << "\nWhat race do you want to edit?\n";
-    input.clear();
-    std::getline(std::cin, input);
-    input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat race do you want to edit?\n", raceNames, true, false);
-
-    races.at(index(input, raceNames)) = RaceConsole(races.at(index(input, raceNames)));
-    std::vector<Pack> newPacks{ currentHPack.get_packs() };
-    int index{};
-    for (Pack i : newPacks) {
-        if (i.get_name() == packName) {
-            newPacks.at(index).set_races(races);
-        }
-        index++;
-    }
-    currentHPack.set_packs(newPacks);
+    currentHPack.update_pack(loadedPack);
     return currentHPack;
+}
+HPack Add(HPack currentHPack, std::vector<std::string> parameters) {
+    std::string objectName{};
+    std::string addType{ parameters.at(0) };
+    int index{};
+    if (parameters.size() > 1) {
+        for (std::string i : parameters) {
+            if (index == 0) { objectName += i; }
+            else { objectName += " " + i; }
+            index++;
+        }
+    }
+    Pack newPack{};
+    if (addType == "race") {
+        Race newRace{};
+        if (objectName != "") {
+            newRace.set_optionPack(objectName);
+        }
+        newRace = RaceConsole(newRace);
+        if (newRace.get_name() != "%%CANCELED%%") { newPack.set_races(newRace); newPack.set_name(newPack.get_races().at(0).get_optionPack());}
+    }
+    else if (addType == "spell") {
+        Spell newSpell{};
+        if (objectName != "") {
+            newSpell.set_optionPack(objectName);
+        }
+        newSpell = SpellConsole(newSpell);
+        if (newSpell.get_name() != "%%CANCELED%%") { newPack.set_spells(newSpell);newPack.set_name(newPack.get_spells().at(0).get_optionPack()); }
+    }
+    newPack.merge(currentHPack.get_packs());
+    currentHPack.add_pack(newPack);
+    return currentHPack;
+}
+Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
+{
+    GUI addGUI{};
+    std::string newName{};
+    std::vector<std::string> compareBase{};
+    bool multi{ true };
+    int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+    switch (cmdCode)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18: {
+        currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "edit");
+        multi = false;
+        break;
+    }
+    case 19: {
+        compareBase = GlobalLanguages;
+        break;
+    }
+    case 20: {
+        compareBase = GlobalTools;
+        break;
+    }
+    case 21: {
+        compareBase = GlobalSkills;
+        break;
+    }
+    case 22: {
+        compareBase = GlobalSkills;
+        break;
+    }
+    case 23: {
+        compareBase = GlobalLanguages;
+        break;
+    }
+    case 24: {
+        compareBase = GlobalWeapons;
+        break;
+    }
+    case 25: {
+        compareBase = GlobalWeapons;
+        break;
+    }
+    case 26: {
+        compareBase = GlobalArmorType;
+        break;
+    }
+    case 27: {
+        compareBase = GlobalDamageType;
+        break;
+    }
+    case 28: {
+        compareBase = GlobalDamageType;
+        break;
+    }
+    case 29: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            for (std::string i : parameters) {
+                newName += i;
+            }
+        }
+        multi = false;
+        break;
+    }
+    }
+    if (multi) {
+        if (parameters.size() == 1) {
+            addGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
+            std::cout << "\nWhat do you want to add?\n";
+            std::getline(std::cin, newName);
+            newName = InputCheck(newName, "\nWhat do you want to add?\n", compareBase, true, false);
+            parameters.clear();
+            parameters.push_back(newName);
+        }
+        else {
+            parameters.erase(parameters.begin());
+        }
+    }
+    switch (cmdCode)
+    {
+        //Languages
+    case 19: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Tools
+    case 20: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Skill Options
+    case 21: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Skill Profs
+    case 22: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Language Options
+    case 23: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Weapon Options
+    case 24: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Weapon Profs
+    case 25: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Armor Profs
+    case 26: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Damage Res
+    case 27: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Damage Imm
+    case 28: {
+        int index{};
+        for (std::string i : parameters) {
+            if (includes_string(i, compareBase)) {
+                currentRace.insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Traits
+    case 29: {
+        Trait newTrait{};
+        newTrait.set_name(newName);
+        newTrait = EditTrait(newTrait);
+        if (newTrait.get_name() != "%%CANCELED%%") {
+            currentRace.insert_trait(newTrait);
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return currentRace;
+}
+Race RaceEdit(Race currentRace, std::vector<std::string>& parameters)
+{
+    GUI editGUI{};
+    std::string newName{};
+    std::vector<std::string> traitNames{};
+    for (Trait i : currentRace.get_trait()) {
+        traitNames.push_back(i.get_name());
+    }
+    int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+    switch (cmdCode)
+    {
+    case 0:
+    case 1:
+    case 2: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        break;
+    }
+    case 3: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"small", "medium", "large"}, true, false);
+        break;
+    }
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
+        break;
+    }
+    case 17:
+    case 18: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
+        break;
+    }
+    case 19:
+    case 20:
+    case 21:
+    case 22:
+    case 23:
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+    case 28: {
+        currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "edit");
+        break;
+    }
+    case 29: {
+        parameters.erase(parameters.begin());
+        if (parameters.size() == 0) {
+            std::cout << "\nWhich trait do you want to edit?\n";
+            std::getline(std::cin, newName);
+            newName = InputCheck(newName, "\nWhich trait do you want to edit?\n", traitNames, true, false);
+        }
+        else {
+            int index{};
+            for (std::string i : parameters) {
+                if (index == 0) { newName += i; }
+                else { newName += " " + i; }
+                index++;
+            }
+        }
+
+
+        break;
+    }
+    }
+    switch (cmdCode)
+    {
+        //Name
+    case 0: {
+        currentRace.set_name(newName);
+        break;
+    }
+          //OptionPack
+    case 1: {
+        currentRace.set_optionPack(newName);
+        break;
+    }
+          //Description
+    case 2: {
+        currentRace.set_description(newName);
+        break;
+    }
+          //Size
+    case 3: {
+        if (newName == "small") {
+            currentRace.set_size(SizeEnum::small);
+        }
+        else if (newName == "medium") {
+            currentRace.set_size(SizeEnum::medium);
+        }
+        else if (newName == "large") {
+            currentRace.set_size(SizeEnum::large);
+        }
+        break;
+    }
+          //Str
+    case 4: {
+        currentRace.set_str(std::stoi(newName));
+        break;
+    }
+          //Dex
+    case 5: {
+        currentRace.set_dex(std::stoi(newName));
+        break;
+    }
+          //Con
+    case 6: {
+        currentRace.set_con(std::stoi(newName));
+        break;
+    }
+          //Int
+    case 7: {
+        currentRace.set_int(std::stoi(newName));
+        break;
+    }
+          //Wis
+    case 8: {
+        currentRace.set_wis(std::stoi(newName));
+        break;
+    }
+          //Cha
+    case 9: {
+        currentRace.set_cha(std::stoi(newName));
+        break;
+    }
+          //Speed
+    case 10: {
+        currentRace.set_speed(std::stoi(newName));
+        break;
+    }
+           //FlyingSpeed
+    case 11: {
+        currentRace.set_flySpeed(std::stoi(newName));
+        break;
+    }
+           //SwimmingSpeed
+    case 12: {
+        currentRace.set_swimSpeed(std::stoi(newName));
+        break;
+    }
+           //Dark vision
+    case 13: {
+        currentRace.set_darkVision(std::stoi(newName));
+        break;
+    }
+           //Skill Options Count
+    case 14: {
+        currentRace.set_skillOptionsCount(std::stoi(newName));
+        break;
+    }
+           //Language Options Count
+    case 15: {
+        currentRace.set_languageOptionsCount(std::stoi(newName));
+        break;
+    }
+           //Weapon Options Count
+    case 16: {
+        currentRace.set_weaponOptionsCount(std::stoi(newName));
+        break;
+    }
+           //LizFolkAC
+    case 17: {
+        if (newName == "yes") {
+            currentRace.set_lizFolkAC(true);
+        }
+        else {
+            currentRace.set_lizFolkAC(false);
+        }
+        break;
+    }
+           //TortAC
+    case 18: {
+        if (newName == "yes") {
+            currentRace.set_tortAC(true);
+        }
+        else {
+            currentRace.set_tortAC(false);
+        }
+        break;
+    }
+           //Traits
+    case 29: {
+        Trait newTrait{};
+        std::vector<Trait> allTraits{ currentRace.get_trait() };
+        int index{};
+        for (Trait i : allTraits) {
+            if (i.get_name() == newName) {
+                newTrait = i;
+            }
+            index++;
+        }
+        allTraits.at(index) = EditTrait(newTrait);
+        currentRace.insert_trait(allTraits);
+        break;
+    }
+    default:
+        break;
+    }
+    return currentRace;
+}
+Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
+{
+    GUI removeGUI{};
+    std::string newName{};
+    std::vector<std::string> compareBase{};
+    bool multi{ true };
+    int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+    switch (cmdCode)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18: {
+        multi = false;
+        break;
+    }
+    case 19: {
+        compareBase = currentRace.get_language();
+        break;
+    }
+    case 20: {
+        compareBase = currentRace.get_tool();
+        break;
+    }
+    case 21: {
+        compareBase = currentRace.get_skillOption();
+        break;
+    }
+    case 22: {
+        compareBase = currentRace.get_skillProf();
+        break;
+    }
+    case 23: {
+        compareBase = currentRace.get_languageOption();
+        break;
+    }
+    case 24: {
+        compareBase = currentRace.get_weaponOption();
+        break;
+    }
+    case 25: {
+        compareBase = currentRace.get_weaponProf();
+        break;
+    }
+    case 26: {
+        compareBase = currentRace.get_armorProf();
+        break;
+    }
+    case 27: {
+        compareBase = currentRace.get_damageRes();
+        break;
+    }
+    case 28: {
+        compareBase = currentRace.get_damageImmun();
+        break;
+    }
+    case 29: {
+        currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "remove");
+        multi = false;
+        break;
+    }
+    }
+    if (multi) {
+        if (parameters.size() == 1) {
+            removeGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
+            std::cout << "\nWhat do you want to remove?\n";
+            std::getline(std::cin, newName);
+            newName = InputCheck(newName, "\nWhat do you want to remove?\n", compareBase, true, false);
+            parameters.clear();
+            parameters.push_back(newName);
+        }
+        else {
+            parameters.erase(parameters.begin());
+        }
+    }
+    switch (cmdCode)
+    {
+        //Name
+    case 0: {
+        if (currentRace.get_name() == "") {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_name("");
+        }
+        break;
+    }
+          //OptionPack
+    case 1: {
+        if (currentRace.get_optionPack() == "") {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_optionPack("");
+        }
+        break;
+    }
+          //Description
+    case 2: {
+        if (currentRace.get_description() == "") {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_description("");
+        }
+        break;
+    }
+          //Size
+    case 3: {
+        if (currentRace.get_sizename() == "Small") {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_size(SizeEnum::small);
+        }
+        break;
+    }
+          //Str
+    case 4: {
+        if (currentRace.get_str() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_str(0);
+        }
+        break;
+    }
+          //Dex
+    case 5: {
+        if (currentRace.get_dex() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+
+        }
+        else {
+            currentRace.set_dex(0);
+        }
+        break;
+    }
+          //Con
+    case 6: {
+        if (currentRace.get_con() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_con(0);
+        }
+        break;
+    }
+          //Int
+    case 7: {
+        if (currentRace.get_int() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_int(0);
+        }
+        break;
+    }
+          //Wis
+    case 8: {
+        if (currentRace.get_wis() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_wis(0);
+        }
+        break;
+    }
+          //Cha
+    case 9: {
+        if (currentRace.get_cha() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_cha(0);
+        }
+        break;
+    }
+          //Speed
+    case 10: {
+        if (currentRace.get_speed() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_speed(0);
+        }
+        break;
+    }
+           //FlyingSpeed
+    case 11: {
+        if (currentRace.get_flySpeed() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_flySpeed(0);
+        }
+        break;
+    }
+           //SwimmingSpeed
+    case 12: {
+        if (currentRace.get_swimSpeed() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_swimSpeed(0);
+        }
+        break;
+    }
+           //Dark vision
+    case 13: {
+        if (currentRace.get_darkVision() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_darkVision(0);
+        }
+        break;
+    }
+           //Skill Options Count
+    case 14: {
+        if (currentRace.get_skillOptionsCount() == 1) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_skillOptionsCount(0);
+        }
+        break;
+    }
+           //Language Options Count
+    case 15: {
+        if (currentRace.get_languageOptionsCount() == 1) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_languageOptionsCount(0);
+        }
+        break;
+    }
+           //Weapon Options Count
+    case 16: {
+        if (currentRace.get_weaponOptionsCount() == 1) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_weaponOptionsCount(0);
+        }
+        break;
+    }
+           //LizFolkAC
+    case 17: {
+        if (currentRace.get_lizFolkAC() == false) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_lizFolkAC(false);
+        }
+        break;
+    }
+           //TortAC
+    case 18: {
+        if (currentRace.get_tortAC() == false) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            currentRace.set_tortAC(false);
+        }
+        break;
+    }
+           //Languages
+    case 19: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_language()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_language(newInsert);
+        break;
+    }
+           //Tools
+    case 20: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_tool()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_tool(newInsert);
+        break;
+    }
+           //Skill Options
+    case 21: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_skillOption()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_skillOption(newInsert);
+        break;
+    }
+           //Skill Profs
+    case 22: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_skillProf()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_skillProf(newInsert);
+        break;
+    }
+           //Language Options
+    case 23: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_languageOption()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_languageOption(newInsert);
+        break;
+    }
+           //Weapon Options
+    case 24: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_weaponOption()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_weaponOption(newInsert);
+        break;
+    }
+           //Weapon Profs
+    case 25: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_weaponProf()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_weaponProf(newInsert);
+        break;
+    }
+           //Armor Profs
+    case 26: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_armorProf()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_armorProf(newInsert);
+        break;
+    }
+           //Damage Res
+    case 27: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_damageRes()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_damageRes(newInsert);
+        break;
+    }
+           //Damage Imm
+    case 28: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : currentRace.get_damageImmun()) {
+            if (!includes_string(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        currentRace.insert_damageImmun(newInsert);
+        break;
+    }
+    }
+    return currentRace;
+}
+Spell SpellAdd(Spell currentSpell, std::vector<std::string>& parameters)
+{
+    GUI addGUI{};
+    std::string newName{};
+    int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+    switch (cmdCode)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12: {
+        currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
+        break;
+    }
+    case 13: {
+        if (parameters.size() == 1) {
+            std::cout << "\nWhat class do you want to add?\n";
+            std::getline(std::cin, newName);
+            parameters.clear();
+            parameters.push_back(newName);
+        }
+        else {
+            parameters.erase(parameters.begin());
+        }
+        break;
+    }
+    case 14: {
+        currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
+        break;
+    }
+    }
+    switch (cmdCode)
+    {
+        //Classes
+    case 13: {
+        for (std::string i : parameters) {
+            currentSpell.insert_class(i);
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return currentSpell;
+}
+Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters)
+{
+    GUI editGUI{};
+    std::string newName{};
+    int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+    switch (cmdCode)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        break;
+    }
+    case 7: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
+        break;
+    }
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
+        break;
+    }
+    case 13: {
+        currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+        break;
+    }
+    case 14: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        break;
+    }
+    }
+    switch (cmdCode)
+    {
+        //Name
+    case 0: {
+        currentSpell.set_name(newName);
+        break;
+    }
+          //OptionPack
+    case 1: {
+        currentSpell.set_optionPack(newName);
+        break;
+    }
+          //Description
+    case 2: {
+        currentSpell.set_description(newName);
+        break;
+    }
+          //School
+    case 3: {
+        currentSpell.set_school(newName);
+        break;
+    }
+          //Duration
+    case 4: {
+        currentSpell.set_duration(newName);
+        break;
+    }
+          //Component
+    case 5: {
+        currentSpell.set_component(newName);
+        break;
+    }
+          //Casting time
+    case 6: {
+        currentSpell.set_castingTime(newName);
+        break;
+    }
+          //Level
+    case 7: {
+        currentSpell.set_level(std::stoi(newName));
+        break;
+    }
+          //Verbal
+    case 8: {
+        if (newName == "yes") {
+            currentSpell.set_verbal(true);
+        }
+        else {
+            currentSpell.set_verbal(false);
+        }
+        break;
+    }
+          //Somatic
+    case 9: {
+        if (newName == "yes") {
+            currentSpell.set_somatic(true);
+        }
+        else {
+            currentSpell.set_somatic(false);
+        }
+        break;
+    }
+          //Material
+    case 10: {
+        if (newName == "yes") {
+            currentSpell.set_material(true);
+        }
+        else {
+            currentSpell.set_material(false);
+        }
+        break;
+    }
+           //Ritual
+    case 11: {
+        if (newName == "yes") {
+            currentSpell.set_ritual(true);
+        }
+        else {
+            currentSpell.set_ritual(false);
+        }
+        break;
+    }
+           //Attack Roll
+    case 12: {
+        if (newName == "yes") {
+            currentSpell.set_attackRoll(true);
+        }
+        else {
+            currentSpell.set_attackRoll(false);
+        }
+        break;
+    }
+           //Range
+    case 14: {
+        currentSpell.set_range(newName);
+        break;
+    }
+    }
+    return currentSpell;
+}
+Spell SpellRemove(Spell currentSpell, std::vector<std::string>& parameters)
+{
+    std::string newName{};
+    int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+    GUI editGUI{};
+    if (cmdCode == 13) {
+        if (parameters.size() == 1) {
+            std::cout << "\nWhat class do you want to remove?\n";
+            std::getline(std::cin, newName);
+            parameters.clear();
+            parameters.push_back(newName);
+        }
+        else {
+            parameters.erase(parameters.begin());
+        }
+    }
+    switch (cmdCode)
+    {
+        //Name
+    case 0: {
+        currentSpell.set_name(newName);
+        break;
+    }
+          //OptionPack
+    case 1: {
+        currentSpell.set_optionPack(newName);
+        break;
+    }
+          //Description
+    case 2: {
+        currentSpell.set_description(newName);
+        break;
+    }
+          //School
+    case 3: {
+        currentSpell.set_school(newName);
+        break;
+    }
+          //Duration
+    case 4: {
+        currentSpell.set_duration(newName);
+        break;
+    }
+          //Component
+    case 5: {
+        currentSpell.set_component(newName);
+        break;
+    }
+          //Casting time
+    case 6: {
+        currentSpell.set_castingTime(newName);
+        break;
+    }
+          //Level
+    case 7: {
+        currentSpell.set_level(0);
+        break;
+    }
+          //Verbal
+    case 8: {
+        currentSpell.set_verbal(false);
+        break;
+    }
+          //Somatic
+    case 9: {
+        currentSpell.set_somatic(false);
+        break;
+    }
+          //Material
+    case 10: {
+        currentSpell.set_material(false);
+        break;
+    }
+           //Ritual
+    case 11: {
+        currentSpell.set_ritual(false);
+        break;
+    }
+           //Attack Roll
+    case 12: {
+        currentSpell.set_attackRoll(false);
+        break;
+    }
+           //Classes
+    case 13: {
+        std::vector<std::string> newClasses{};
+        for (std::string i : currentSpell.get_class()) {
+            if (!includes_string(i, parameters)) {
+                newClasses.push_back(i);
+            }
+        }
+        currentSpell.set_classes(newClasses);
+        break;
+    }
+           //Range
+    case 14: {
+        currentSpell.set_range(newName);
+        break;
+    }
+    default:
+        break;
+    }
+    return currentSpell;
 }
 
 //Functional
@@ -919,6 +2041,15 @@ bool includes_string(std::string input, std::vector<std::string> vInput) {
         }
     }
     return false;
+}
+void VectorToString(std::vector<std::string>& parameters, std::string& newName)
+{
+    int index{};
+    for (std::string i : parameters) {
+        if (index != 0) { newName += " " + parameters.at(index); }
+        else { newName += parameters.at(index); }
+        index++;
+    }
 }
 std::string InputCheck(std::string input, std::string repeatString, std::vector<std::string> parameters, bool onlyAlpha, bool onlyNums) {
 	bool check{};
@@ -1064,9 +2195,9 @@ std::vector<std::string> selection(std::vector<std::string> parameters) {
                 if (parameter != "all") {
                     bool found{ false };
                     for (std::string i : selected) {
-                        if (i == parameter) {
-                            found = true;
-                        }
+if (i == parameter) {
+    found = true;
+}
                     }
                     if (!found) {
                         selected.push_back(parameter);
@@ -1076,41 +2207,41 @@ std::vector<std::string> selection(std::vector<std::string> parameters) {
                     }
                 }
                 else {
-                    selected.clear();
-                    for (std::string i : parameters) {
-                        selected.push_back(i);
-                    }
+                selected.clear();
+                for (std::string i : parameters) {
+                    selected.push_back(i);
+                }
                 }
             }
             else if (command == "remove") {
-                int index{-1};
-                bool found{false};
-                for (std::string i : selected) {
-                    index++;
-                    if (i == parameter) {
-                        selected.erase(selected.begin() + index);
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    std::cout << "\nItem was not found\n";
+            int index{ -1 };
+            bool found{ false };
+            for (std::string i : selected) {
+                index++;
+                if (i == parameter) {
+                    selected.erase(selected.begin() + index);
+                    found = true;
                 }
             }
+            if (!found) {
+                std::cout << "\nItem was not found\n";
+            }
+            }
             else if (command == "clear") {
-                std::cout << "\nAre you sure you want to clear your selection?\n";
-                input.clear();
-                std::cin.clear();
-                std::cin.sync();
-                std::getline(std::cin, input);
-                input = InputCheck(input, "\nYes/No\nAre you sure you want to clear your selection?\n", { "Yes","No","yes","no" }, true, false);
-                if (input == "yes" || input == "Yes") {
-                    selected.clear();
-                }
+            std::cout << "\nAre you sure you want to clear your selection?\n";
+            input.clear();
+            std::cin.clear();
+            std::cin.sync();
+            std::getline(std::cin, input);
+            input = InputCheck(input, "\nYes/No\nAre you sure you want to clear your selection?\n", { "Yes","No","yes","no" }, true, false);
+            if (input == "yes" || input == "Yes") {
+                selected.clear();
+            }
             }
             input = command;
         }
         else {
-            std::cout << "\nInvalid Command, use 'help' for list of commands\n";
+        std::cout << "\nInvalid Command, use 'help' for list of commands\n";
         }
 
     } while (input != "done");
@@ -1146,13 +2277,44 @@ Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packN
     return foundRace;
 }
 
-//Command Codes
-int CommandCode(std::string command,std::vector<std::string> commands) {
+//Command stuff
+int CommandCode(std::string command, std::vector<std::string> commands) {
     if (includes_string(command, commands)) {
         return index(command, commands);
     }
     else {
         return -1;
+    }
+}
+int ValidateCommand(std::string prompt,std::vector<std::string> cmds, std::vector<std::string> cmdDefs, std::vector<std::string>& parameters) {
+    GUI gui{};
+    std::vector<std::string> options{ "options","cancel" };
+    std::vector<std::string> optionDefs{ "Displays options","Cancels action" };
+    options.insert(std::end(options), std::begin(cmds), std::end(cmds));
+    optionDefs.insert(std::end(optionDefs), std::begin(cmdDefs), std::end(cmdDefs));
+    std::string input{};
+
+    if (parameters.empty()) {
+        std::cout << "\n" << prompt << "\n";
+        std::getline(std::cin, input);
+        parameters = split(input);
+        return 0;
+    }
+    else if (parameters.at(0) == "options"){
+        gui.GenerateMenu("Options", merge_ordered(options,optionDefs),"",true,2);
+        std::cout << "\n" << prompt << "\n";
+        std::getline(std::cin, input);
+        parameters = split(input);
+        return 0;
+    }
+    else if (parameters.at(0) == "cancel"){
+        return 1;
+    }
+    else if (includes_string(parameters.at(0), options)) {
+        return 2;
+    }
+    else {
+        return 3;
     }
 }
 
@@ -1183,360 +2345,135 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
 
     //Display
     case 2: {
-        GUI menuGUI{};
-        std::vector<std::string> options{"all", "options", "enable", "disable","races","spells"};
-        std::vector<std::string> option_desc{ "Displays everything", "Shows Parameters", "Enables fancy GUI", "Disables fancy GUI", "Displays Races"};
-        std::vector<Race> savedRaces{};
-        std::vector<Pack> savedPacks{};
-        Orcbrew SaveOrcbrew{};
+        std::vector<std::string> options{ "race" , "spell" };
+        std::vector<std::string> optionDefs{ "Displays a race", "Displays a spell" };
 
-        std::vector<std::string> namesOfPacks{};
-        std::vector<std::string> namesOfRaces{};
-
-        std::cout << std::endl;
-        if (parameters.empty() || parameters.at(0) == options.at(0)) {
-            std::cout << std::endl;
-            menuGUI.GenerateMenu("Display Options", options);
+        switch (ValidateCommand("What would you like to display?", options, optionDefs, parameters))
+        {
+        case 0: {
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
+            break;
         }
-        else if (parameters.at(0) == "help") {
-            currentHPack = ExecuteCommand(CommandCode("help",GlobalCommands), currentHPack, merge_ordered(options, option_desc));
+        case 1: {
+            break;
         }
-        else if (parameters.at(0) == options.at(1)) {
-            //menuGUI.GenerateMenu("Display Options", options);
-            currentHPack = ExecuteCommand(CommandCode("display",GlobalCommands), currentHPack, std::vector<std::string>{}, "display");
+        case 2: {
+            currentHPack = Display(currentHPack, parameters);
+            break;
         }
-        else if (parameters.at(0) == options.at(2)) {
-            std::cout << "\nFancy GUI enabled.\n";
-        }
-        else if (parameters.at(0) == options.at(3)) {
-            std::cout << "\nFancy GUI disabled.\n";
-        }
-        else if (parameters.at(0) == options.at(4)) {
-            system("cls");
-            
-            std::vector<Pack> packs{ currentHPack.get_packs() };
-            std::vector<std::string> packNames{};
-            std::vector<Race> races{};
-            std::vector<std::string> raceNames{};
-            std::string input{};
-
-            for (Pack i : packs) {
-                for (Race j : i.get_races()) {
-                    races.push_back(j);
-                    raceNames.push_back(j.get_name() + " (" + j.get_optionPack() + ")");
-                }
-                packNames.push_back(i.get_name());
-			}
-			if (!races.empty()) {
-				system("cls");
-				menuGUI.GenerateMenu("Loaded Races", raceNames, "Use 'filter' to filter by pack");
-                raceNames.push_back("filter");
-				std::cout << "\nEnter race:\n";
-				std::getline(std::cin, input);
-                input = InputCheck(input, "\nInvalid input\nEnter race:\n", raceNames, false, false);
-                if (input == "filter") {
-                    system("cls");
-
-                    input.clear();
-                    menuGUI.GenerateMenu("Loaded Packs", packNames);
-                    raceNames.push_back("filter");
-                    std::cout << "\nEnter Pack:\n";
-                    std::getline(std::cin, input);
-                    input = InputCheck(input, "\nInvalid input\nEnter Pack:\n", packNames, false, false);
-
-                    Race chosenRace{};
-                    Pack chosenPack{};
-                    races.clear();
-                    raceNames.clear();
-
-                    for (Pack i : packs) {
-                        if (i.get_name() == input) {
-                            chosenPack = i;
-                            for (Race j : i.get_races()) {
-                                races.push_back(j);
-                                raceNames.push_back(j.get_name());
-                            }
-                        }
-                    }
-
-                    system("cls");
-
-                    menuGUI.GenerateMenu(input + " Races", raceNames);
-                    input.clear();
-                    std::cout << "\nEnter race:\n";
-                    std::getline(std::cin, input);
-					input = InputCheck(input, "\nInvalid input\nEnter race:\n", raceNames, false, false);
-
-					for (Race i : chosenPack.get_races()) {
-						if ((i.get_name()) == input) {
-							chosenRace = i;
-							break;
-						}
-					}
-
-					system("cls");
-                    DrawRace(chosenRace);
-                }
-                else {
-                    Race chosenRace{};
-                    for (Pack i : packs) {
-                        for (Race j : i.get_races()) {
-                            if ((j.get_name() + " (" + i.get_name() + ")") == input) {
-                                chosenRace = j;
-                                break;
-                            }
-                        }
-                    }
-                    system("cls");
-                    DrawRace(chosenRace);
-                }
-			}
-            else {
-                std::cout << "You have no saved races currently" << std::endl;
-            }
-            std::cout << std::endl;
-        }
-        else if (parameters.at(0) == options.at(5)) {
-            system("cls");
-            
-            bool spellPack{};
-            std::vector<Pack> packs{ currentHPack.get_packs() };
-            std::vector<std::string> packNames{};
-            std::vector<Spell> spells{};
-            std::vector<std::string> spellNames{};
-            std::string input{};
-
-            for (Pack i : packs) {
-                for (Spell j : i.get_spells()) {
-                    spells.push_back(j);
-                    spellNames.push_back(j.get_name() + " (" + j.get_optionPack() + ")");
-                    spellPack = true;
-                }
-                if (spellPack) {
-                    packNames.push_back(i.get_name());
-                    spellPack = false;
-                }
-			}
-
-			if (!spells.empty()) {
-				system("cls");
-				menuGUI.GenerateMenu("Loaded Spells", spellNames, "Use 'filter' to filter by pack");
-                spellNames.push_back("filter");
-				std::cout << "\nEnter spell:\n";
-				std::getline(std::cin, input);
-                input = InputCheck(input, "\nInvalid input\nEnter spell:\n", spellNames, false, false);
-                if (input == "filter") {
-                    system("cls");
-
-                    input.clear();
-                    menuGUI.GenerateMenu("Loaded Packs", packNames);
-                    spellNames.push_back("filter");
-                    std::cout << "\nEnter Pack:\n";
-                    std::getline(std::cin, input);
-                    input = InputCheck(input, "\nInvalid input\nEnter Pack:\n", packNames, false, false);
-
-                    Spell chosenSpell{};
-                    Pack chosenPack{};
-                    spells.clear();
-                    spellNames.clear();
-
-                    for (Pack i : packs) {
-                        if (i.get_name() == input) {
-                            chosenPack = i;
-                            for (Spell j : i.get_spells()) {
-                                spells.push_back(j);
-                                spellNames.push_back(j.get_name());
-                            }
-                        }
-                    }
-
-                    system("cls");
-
-                    menuGUI.GenerateMenu(input + " Spells", spellNames);
-                    input.clear();
-                    std::cout << "\nEnter spell:\n";
-                    std::getline(std::cin, input);
-					input = InputCheck(input, "\nInvalid input\nEnter spell:\n", spellNames, false, false);
-
-					for (Spell i : chosenPack.get_spells()) {
-						if ((i.get_name()) == input) {
-							chosenSpell = i;
-							break;
-						}
-					}
-
-					system("cls");
-                    DrawSpell(chosenSpell);
-                }
-                else {
-                    Spell chosenSpell{};
-                    for (Pack i : packs) {
-                        for (Spell j : i.get_spells()) {
-                            if ((j.get_name() + " (" + i.get_name() + ")") == input) {
-                                chosenSpell = j;
-                                break;
-                            }
-                        }
-                    }
-                    system("cls");
-                    DrawSpell(chosenSpell);
-                }
-			}
-            else {
-                std::cout << "You have no saved spells currently" << std::endl;
-            }
-            std::cout << std::endl;
-        }
-        else {
+        case 3: {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("display",GlobalCommands), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
+        }
         }
         break;
     }
     
     //Add
     case 3: {
-        GUI addGUI{};
-        std::vector<std::string> addOptions{ "cancel","options","race", "spell"};
-        std::string input{};
+        std::vector<std::string> options{ "race", "spell"};
+        std::vector<std::string> optionDefs{ "Add race", "Add spell"};
 
-        if (parameters.empty()) {
-            std::cout << "\nWhat would you like to add?\n";
-            std::getline(std::cin, input);
-            addOptions.push_back("options");
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat would you like to add?\n", addOptions, true, false);
-            currentHPack = ExecuteCommand(CommandCode("add",GlobalCommands), currentHPack, std::vector<std::string>{input}, "add");
-        }
-        else if (parameters.at(0) == "options") {
-            addGUI.GenerateMenu("Add Options", addOptions);
-            std::cout << std::endl;
-            currentHPack =  ExecuteCommand(CommandCode("add", GlobalCommands), currentHPack, std::vector<std::string>{}, "add");
-        }
-        else if (parameters.at(0) == addOptions.at(0)) {
+        switch (ValidateCommand("What would you like to add?",options,optionDefs,parameters))
+        {
+        case 0: {
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == addOptions.at(2)) {
-            Pack newPack{};
-            Race newRace{};
-            newRace = RaceConsole();
-            if (newRace.get_name() != "%%CANCELED%%") {
-                newPack.set_races(newRace);
-                newPack.set_name(newPack.get_races().at(0).get_optionPack());
-                newPack.merge(currentHPack.get_packs());
-                currentHPack.add_pack(newPack);
-            }
-            else {
-                std::cout << "\nRace creation canceled\n";
-            }
+        case 1: {
+            break;
         }
-        else if (parameters.at(0) == addOptions.at(3)) {
-            Pack newPack{};
-            Spell newSpell{};
-            newSpell = SpellConsole();
-            if (newSpell.get_name() != "%%CANCELED%%") {
-                newPack.set_spells(newSpell);
-                newPack.set_name(newPack.get_spells().at(0).get_optionPack());
-                newPack.merge(currentHPack.get_packs());
-                currentHPack.add_pack(newPack);
-            }
-            else {
-                std::cout << "\nSpell creation canceled\n";
-            }
+        case 2: {
+            currentHPack = Add(currentHPack, parameters);
+            break;
         }
-        else {
+        case 3: {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("add", GlobalCommands), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
+        }
         }
         break;
     }
     
     //Load
     case 4: {
-        GUI loadGUI{};
-        std::vector<std::string> loadOptions{ "cancel","options","all","single","multi"};
-        std::vector<std::string> fileTypes{ "hpck","pck","orcbrew" };
-        std::string input{};
+        std::vector<std::string> options{ "all","single","multi" };
+        std::vector<std::string> optionDefs{ "Load all", "Load a single file", "Load multiple files"};
 
-        if (parameters.empty()) {
-            std::cout << "\nHow many packs do you want to load?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nHow many packs do you want to load?\n", loadOptions, true, false);
-            currentHPack = ExecuteCommand(CommandCode("load", GlobalCommands), currentHPack,std::vector<std::string>{input}, "load");
-        }
-        else if (parameters.at(0) == "options") {
-            loadGUI.GenerateMenu("Load Options", loadOptions);
-            std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("load", GlobalCommands), currentHPack, std::vector<std::string>{}, "load");
-        }
-        else if (parameters.at(0) == loadOptions.at(0)) {
+        switch (ValidateCommand("How many packs do you want to load?", options, optionDefs, parameters))
+        {
+        case 0: {
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == loadOptions.at(2) ||parameters.at(0) == loadOptions.at(3) ||parameters.at(0) == loadOptions.at(4)) {
-            currentHPack = Load(currentHPack, parameters);
+        case 1: {
+            break;
         }
-        else {
-        std::cout << "\nInvalid parameter\n";
-        currentHPack = ExecuteCommand(CommandCode("load", GlobalCommands), currentHPack, std::vector<std::string>{});
+        case 2: {
+            currentHPack = Load(currentHPack, parameters);
+            break;
+        }
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
+        }
         }
         break;
     }
 
     //Save
     case 5: {
-        GUI saveGUI{};
-        std::vector<std::string> saveOptions{ "cancel","options","hpck","pck"};
-        std::string input{};
+        std::vector<std::string> options{ "hpck","pck" };
+        std::vector<std::string> optionDefs{ "Saves all packs into one pack", "Save a single pack"};
 
-        if (parameters.empty()) {
-            std::cout << "\nHow do you want to save your packs?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nHow do you want to save your packs?\n", saveOptions, true, false);
-            currentHPack = ExecuteCommand(CommandCode("save", GlobalCommands), currentHPack, std::vector<std::string>{input}, "save");
-        }
-        else if (parameters.at(0) == "cancel") {
+        switch (ValidateCommand("How do you want to save your packs?", options, optionDefs, parameters))
+        {
+        case 0: {
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            saveGUI.GenerateMenu("Save Options", saveOptions);
-            std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("save", GlobalCommands), currentHPack, std::vector<std::string>{}, "save");
+        case 1: {
+            break;
         }
-        else if (parameters.at(0) == saveOptions.at(2) || parameters.at(0) == saveOptions.at(3)) {
+        case 2: {
             currentHPack = Save(currentHPack, parameters);
+            break;
         }
-        else {
+        case 3: {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("save", GlobalCommands), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
+        }
         }
         break;
     }
 
     //Export
     case 6: {
-        GUI exportGUI{};
-        std::vector<std::string> exportOptions{ "cancel","options", "no", "yes"};
-        std::string input{};
+        std::vector<std::string> options{ "yes","no" };
+        std::vector<std::string> optionDefs{ "", "" };
 
-        if (parameters.empty()) {
-            std::cout << "\nAre you sure you want to export your packs to orcbrew format? WARNING: Any orcbrew file with the same name as your current HPack will be overwritten\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nAre you sure you want to export your packs to orcbrew format?\n", exportOptions, true, false);
-            currentHPack = ExecuteCommand(CommandCode("export", GlobalCommands), currentHPack, std::vector<std::string>{input}, "export");
-        }
-        else if (parameters.at(0) == "cancel" || parameters.at(0) == exportOptions.at(2)) {
+        switch (ValidateCommand("Are you sure you want to export your packs to orcbrew format? WARNING: Any orcbrew file with the same name as your current HPack will be overwritten", options, optionDefs, parameters))
+        {
+        case 0: {
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            exportGUI.GenerateMenu("Export Options", exportOptions);
-            std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("export", GlobalCommands), currentHPack, std::vector<std::string>{}, "export");
+        case 1: {
+            break;
         }
-        else if (parameters.at(0) == exportOptions.at(3)) {
+        case 2: {
             currentHPack = Save(currentHPack, parameters);
+            break;
         }
-        else {
+        case 3: {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("export", GlobalCommands), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
+        }
         }
         break;
     }
@@ -1592,120 +2529,32 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
     
     //Edit
     case 8: {
-        GUI editGUI{};
-        std::vector<std::string> editOptions{ "cancel", "options","race","spell"};
-        std::string input{};
+        std::vector<std::string> options{ "race", "spell" };
+        std::vector<std::string> optionDefs{ "Edit a race", "Edit a spell" };
 
-        if (parameters.empty()) {
-            std::cout << "\nWhat do you want to edit?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to edit?\n", editOptions, true, false);
-            currentHPack = ExecuteCommand(CommandCode("edit", GlobalCommands), currentHPack, std::vector<std::string>{input}, "edit");
-        }
-        else if (parameters.at(0) == "cancel") {
+        switch (ValidateCommand("What would you like to edit?", options, optionDefs, parameters))
+        {
+        case 0: {
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            editGUI.GenerateMenu("Edit Options", editOptions);
-            std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("edit", GlobalCommands), currentHPack, std::vector<std::string>{}, "edit");
+        case 1: {
+            break;
         }
-        else if (parameters.at(0) == editOptions.at(2)) {
-            std::vector<Race> races{};
-            std::vector<std::string> raceNames{};
-            std::string packName{};
-            std::cout << "\n";
-            
-            for (Pack i : currentHPack.get_packs()) {
-                raceNames.push_back(i.get_name());
-            }
-            editGUI.GenerateMenu("Current Packs", raceNames, "", true, ((raceNames.size() > 10) ? 2 : 1));
-            std::cout << "\nWhat option pack is the race in?\n";
-            input.clear();
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the race in?\n", raceNames, true, false);
-            packName = input;
-
-            raceNames.clear();
-            for (Pack i : currentHPack.get_packs()) {
-                if (i.get_name() == input) {
-                    races = i.get_races();
-                    break;
-                }
-            }
-            for (Race i : races) {
-                raceNames.push_back(i.get_name());
-            }
-            editGUI.GenerateMenu("Current Races", raceNames, "", true, ((raceNames.size() > 10) ? 2 : 1));
-            std::cout << "\nWhat race do you want to edit?\n";
-            input.clear();
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat race do you want to edit?\n", raceNames, true, false);
-
-            races.at(index(input, raceNames)) = RaceConsole(races.at(index(input, raceNames)));
-            std::vector<Pack> newPacks{currentHPack.get_packs()};
-            int index{};
-            for (Pack i : newPacks){
-                if (i.get_name() == packName) {
-                    newPacks.at(index).set_races(races);
-                }
-                index++;
-            }
-            currentHPack.set_packs(newPacks);
+        case 2: {
+            currentHPack = Edit(currentHPack, parameters);
+            break;
         }
-        else if (parameters.at(0) == editOptions.at(3)) {
-            std::vector<Spell> spells{};
-            std::vector<std::string> spellNames{};
-            std::string packName{};
-            std::cout << "\n";
-            
-            for (Pack i : currentHPack.get_packs()) {
-                spellNames.push_back(i.get_name());
-            }
-            editGUI.GenerateMenu("Current Packs", spellNames, "", true, ((spellNames.size() > 10) ? 2 : 1));
-            std::cout << "\nWhat option pack is the spell in?\n";
-            input.clear();
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat option pack is the spell in?\n", spellNames, true, false);
-            packName = input;
-
-            spellNames.clear();
-            for (Pack i : currentHPack.get_packs()) {
-                if (i.get_name() == input) {
-                    spells = i.get_spells();
-                    break;
-                }
-            }
-            for (Spell i : spells) {
-                spellNames.push_back(i.get_name());
-            }
-            editGUI.GenerateMenu("Current Spells", spellNames, "", true, ((spellNames.size() > 10) ? 2 : 1));
-            std::cout << "\nWhat spell do you want to edit?\n";
-            input.clear();
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat spell do you want to edit?\n", spellNames, true, false);
-
-            spells.at(index(input, spellNames)) = SpellConsole(spells.at(index(input, spellNames)));
-            std::vector<Pack> newPacks{currentHPack.get_packs()};
-            int index{};
-            for (Pack i : newPacks){
-                if (i.get_name() == packName) {
-                    newPacks.at(index).set_spells(spells);
-                }
-                index++;
-            }
-            currentHPack.set_packs(newPacks);
-        }
-        else {
+        case 3: {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("edit", GlobalCommands), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(cmdCode, currentHPack, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
         }
-
+        }
         break;
     }
     default:
         std::cout << "\n\nAn error has occured, write down what you did and report it to the dev\n";
-        system("pause");
         break;
     }
     if (context == "") {
@@ -1729,13 +2578,6 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
         std::string input{};
 
         if (parameters.empty()) {
-
-            //Can't happen, Help always gets parameters
-
-            //std::cout << "\nWhat do you need help with?\n";
-            //std::getline(std::cin, input);
-            //input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you need help with?\n", true, false, GlobalRaceOptions);
-            //currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{input}, "load");
         }
 		else {
 			std::vector<std::string> selection{};
@@ -1778,973 +2620,101 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
     
     //Add
     case 3: {
-        GUI addGUI{};
-        std::vector<std::string> addOptions{"cancel","options"};
-        std::vector<std::string> addDefs{ "Cancels add", "Lists all possible options" };
-        addDefs.insert(std::end(addDefs), std::begin(GlobalRaceDefs), std::end(GlobalRaceDefs));
-        addOptions.insert(std::end(addOptions), std::begin(GlobalRaceOptions), std::end(GlobalRaceOptions));
-        std::string input{};
-
-        if (parameters.empty()) {
-            std::cout << "\nWhat do want to add?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to add?\n", addOptions, true, false);
-            currentRace = ExecuteRaceCommand(CommandCode("add",GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "add");
-        }
-        else if (parameters.at(0) == "cancel") {
+        switch (ValidateCommand("What would you like to add?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+        {
+        case 0: {
+            currentRace = ExecuteRaceCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            addOptions = merge_ordered(addOptions, addDefs);
-            addGUI.GenerateMenu("Add Commands", addOptions, "", true, 2);
-            currentRace = ExecuteRaceCommand(CommandCode("add", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "add");
+        case 1: {
+            break;
         }
-        else if (includes_string(parameters.at(0),addOptions)) {
-            std::string newName{};
-            std::vector<std::string> compareBase{};
-            bool multi{ true };
-            int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
-
-            switch (cmdCode)
-            {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7: 
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-            case 17: 
-            case 18: {
-                currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "edit");
-                multi = false;
-                break;
-            }
-            case 19: {
-                compareBase = GlobalLanguages;
-                break;
-            }
-            case 20: {
-                compareBase = GlobalTools;
-                break;
-            }
-            case 21: {
-                compareBase = GlobalSkills;
-                break;
-            }
-            case 22: {
-                compareBase = GlobalSkills;
-                break;
-            }
-            case 23: {
-                compareBase = GlobalLanguages;
-                break;
-            }
-            case 24: {
-                compareBase = GlobalWeapons;
-                break;
-            }
-            case 25: {
-                compareBase = GlobalWeapons;
-                break;
-            }
-            case 26: {
-                compareBase = GlobalArmorType;
-                break;
-            }
-            case 27: {
-                compareBase = GlobalDamageType;
-                break;
-            }
-            case 28: {
-                compareBase = GlobalDamageType;
-                break;
-            }
-            case 29: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    for (std::string i : parameters) {
-                        newName += i;
-                    }
-                }
-                multi = false;
-                break;
-            }
-            }
-
-            if (multi) {
-                if (parameters.size() == 1) {
-                    addGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
-                    std::cout << "\nWhat do you want to add?\n";
-                    std::getline(std::cin, newName);
-                    newName = InputCheck(newName, "\nWhat do you want to add?\n", compareBase, true, false);
-                    parameters.clear();
-                    parameters.push_back(newName);
-                }
-                else {
-                    parameters.erase(parameters.begin());
-                }
-            }
-
-            switch (cmdCode)
-            {
-				   //Languages
-			case 19: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Tools
-			case 20: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Skill Options
-			case 21: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Skill Profs
-			case 22: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Language Options
-			case 23: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Weapon Options
-			case 24: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Weapon Profs
-			case 25: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Armor Profs
-			case 26: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Damage Res
-			case 27: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Damage Imm
-			case 28: {
-                int index{};
-                for (std::string i : parameters) {
-                    if (includes_string(i, compareBase)) {
-                        currentRace.insert_language(i);
-                    }
-                    index++;
-                }
-				break;
-			}
-				   //Traits
-			case 29: {
-				Trait newTrait{};
-				newTrait.set_name(newName);
-                newTrait = EditTrait(newTrait);
-                if (newTrait.get_name() != "%%CANCELED%%") {
-                    currentRace.insert_trait(newTrait);
-                }
-				break;
-            }
-            default:
-                break;
-            }
+        case 2: {
+            currentRace = RaceAdd(currentRace, parameters);
+            break;
         }
-        else {
-            std::cout << "\nInvalid Input\n";
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentRace = ExecuteRaceCommand(cmdCode, currentRace, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
         }
-
+        }
         break;
     }
     
     //Edit
     case 4: {
-        GUI editGUI{};
-        std::vector<std::string> editOptions{ "cancel","options" };
-        std::vector<std::string> editDefs{ "Cancels edit", "Lists all possible options" };
-        editDefs.insert(std::end(editDefs), std::begin(GlobalRaceDefs), std::end(GlobalRaceDefs));
-        editOptions.insert(std::end(editOptions), std::begin(GlobalRaceOptions), std::end(GlobalRaceOptions));
-        std::string input{};
-
-        if (parameters.empty()) {
-            std::cout << "\nWhat do want to edit?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to edit?\n", editOptions, true, false);
-            currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "edit");
-        }
-        else if (parameters.at(0) == "cancel") {
+        switch (ValidateCommand("What would you like to edit?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+        {
+        case 0: {
+            currentRace = ExecuteRaceCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            editOptions = merge_ordered(editOptions, editDefs);
-            editGUI.GenerateMenu("Remove Commands", editOptions, "", true, 2);
-            currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "edit");
+        case 1: {
+            break;
         }
-        else if (includes_string(parameters.at(0), editOptions)) {
-            std::string newName{};
-            std::vector<std::string> traitNames{};
-            for (Trait i : currentRace.get_trait()) {
-                traitNames.push_back(i.get_name());
-            }
-            int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
-
-            switch (cmdCode)
-            {
-            case 0:
-            case 1:
-            case 2: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    VectorToString(parameters, newName);
-                }
-                else {
-                    std::cout << "\nEnter new value:\n";
-                    std::getline(std::cin, newName);
-                }
-                break;
-            }
-            case 3: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    VectorToString(parameters, newName);
-                }
-                else {
-                    std::cout << "\nEnter new value:\n";
-                    std::getline(std::cin, newName);
-                }
-                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"small", "medium", "large"}, true, false);
-                break;
-            }
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    VectorToString(parameters, newName);
-                }
-                else {
-                    std::cout << "\nEnter new value:\n";
-                    std::getline(std::cin, newName);
-                }
-                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
-                break;
-            }
-            case 17:
-            case 18: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    VectorToString(parameters, newName);
-                }
-                else {
-                    std::cout << "\nEnter new value:\n";
-                    std::getline(std::cin, newName);
-                }
-                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
-                break;
-            }
-            case 19:
-            case 20:
-            case 21:
-            case 22:
-            case 23:
-            case 24:
-            case 25:
-            case 26: 
-            case 27:
-            case 28: {
-                currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "edit");
-                break;
-            }
-            case 29: {
-                parameters.erase(parameters.begin());
-                if (parameters.size() == 0) {
-                    std::cout << "\nWhich trait do you want to edit?\n";
-                    std::getline(std::cin, newName);
-                    newName = InputCheck(newName, "\nWhich trait do you want to edit?\n", traitNames, true, false);
-                }
-                else {
-                    int index{};
-                    for (std::string i : parameters) {
-                        if(index==0){ newName += i; }
-                        else { newName += " " + i; }
-                        index++;
-                    }
-                }
-
-
-                break;
-            }
-            }
-            
-            switch (cmdCode)
-            {
-                    //Name
-            case 0: {
-                currentRace.set_name(newName);
-                break;
-            }
-                  //OptionPack
-            case 1: {
-                currentRace.set_optionPack(newName);
-                break;
-            }
-                  //Description
-            case 2: {
-                currentRace.set_description(newName);
-                break;
-            }
-                  //Size
-            case 3: {
-                if (newName == "small") {
-                    currentRace.set_size(SizeEnum::small);
-                }
-                else if (newName == "medium") {
-                    currentRace.set_size(SizeEnum::medium);
-                }
-                else if (newName == "large") {
-                    currentRace.set_size(SizeEnum::large);
-                }
-                break;
-            }
-                  //Str
-            case 4: {
-                currentRace.set_str(std::stoi(newName));
-                break;
-            }
-                  //Dex
-            case 5: {
-                currentRace.set_dex(std::stoi(newName));
-                break;
-            }
-                  //Con
-            case 6: {
-                currentRace.set_con(std::stoi(newName));
-                break;
-            }
-                  //Int
-            case 7: {
-                currentRace.set_int(std::stoi(newName));
-                break;
-            }
-                  //Wis
-            case 8: {
-                currentRace.set_wis(std::stoi(newName));
-                break;
-            }
-                  //Cha
-            case 9: {
-                currentRace.set_cha(std::stoi(newName));
-                break;
-            }
-                  //Speed
-            case 10: {
-                currentRace.set_speed(std::stoi(newName));
-                break;
-            }
-                   //FlyingSpeed
-            case 11: {
-                currentRace.set_flySpeed(std::stoi(newName));
-                break;
-            }
-                   //SwimmingSpeed
-            case 12: {
-                currentRace.set_swimSpeed(std::stoi(newName));
-                break;
-            }
-                   //Dark vision
-            case 13: {
-                currentRace.set_darkVision(std::stoi(newName));
-                break;
-            }
-                   //Skill Options Count
-            case 14: {
-                currentRace.set_skillOptionsCount(std::stoi(newName));
-                break;
-            }
-                   //Language Options Count
-            case 15: {
-                currentRace.set_languageOptionsCount(std::stoi(newName));
-                break;
-            }
-                   //Weapon Options Count
-            case 16: {
-                currentRace.set_weaponOptionsCount(std::stoi(newName));
-                break;
-            }
-                   //LizFolkAC
-            case 17: {
-                if (newName == "yes") {
-                    currentRace.set_lizFolkAC(true);
-                }
-                else {
-                    currentRace.set_lizFolkAC(false);
-                }
-                break;
-            }
-                   //TortAC
-            case 18: {
-                if (newName == "yes") {
-                    currentRace.set_tortAC(true);
-                }
-                else {
-                    currentRace.set_tortAC(false);
-                }
-                break;
-            }
-                   //Traits
-            case 29: {
-                Trait newTrait{};
-                std::vector<Trait> allTraits{ currentRace.get_trait() };
-                int index{};
-                for (Trait i : allTraits) {
-                    if (i.get_name() == newName) {
-                        newTrait = i;
-                    }
-                    index++;
-                }
-                allTraits.at(index) = EditTrait(newTrait);
-                currentRace.insert_trait(allTraits);
-                break;
-            }
-            default:
-                break;
-            }
+        case 2: {
+            currentRace = RaceEdit(currentRace, parameters);
+            break;
         }
-        else {
-            std::cout << "\nInvalid Input\n";
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentRace = ExecuteRaceCommand(cmdCode, currentRace, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
         }
-
+        }
         break;
     }
     
     //Clear
     case 5: {
-        GUI editGUI{};
-        std::vector<std::string> editOptions{ "yes", "no"};
-        std::string input{};
+        std::vector<std::string> options{ "yes", "no" };
+        std::vector<std::string> optionDefs{ "", "" };
 
-        if (parameters.empty()) {
-            std::cout << "\nAre you sure?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid option\nAre you sure?\n", editOptions, true, false);
-            currentRace = ExecuteRaceCommand(CommandCode("clear", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "clear");
+        switch (ValidateCommand("Are you sure?", options, optionDefs, parameters))
+        {
+        case 0: {
+            currentRace = ExecuteRaceCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
+            break;
         }
-        else if (parameters.at(0) == "yes") {
+        case 1: {
+            break;
+        }
+        case 2: {
             Race newRace{};
             currentRace = newRace;
             break;
         }
-        else {
-            std::cout << "\nCanceled\n";
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentRace = ExecuteRaceCommand(cmdCode, currentRace, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
+        }
         }
         break;
     }
     
     //Remove
     case 6: {
-        GUI removeGUI{};
-        std::vector<std::string> removeOptions{ "cancel","options" };
-        std::vector<std::string> removeDefs{ "Cancels remove", "Lists all possible options" };
-        removeDefs.insert(std::end(removeDefs), std::begin(GlobalRaceDefs), std::end(GlobalRaceDefs));
-        removeOptions.insert(std::end(removeOptions), std::begin(GlobalRaceOptions), std::end(GlobalRaceOptions));
-        std::string input{};
-
-        if (parameters.empty()) {
-            std::cout << "\nWhat do want to remove?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to remove?\n", removeOptions, true, false);
-            currentRace = ExecuteRaceCommand(CommandCode("remove", GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "remove");
-        }
-        else if (parameters.at(0) == "cancel") {
+        switch (ValidateCommand("What would you like to remove?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+        {
+        case 0: {
+            currentRace = ExecuteRaceCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            removeOptions = merge_ordered(removeOptions, removeDefs);
-            removeGUI.GenerateMenu("Remove Commands", removeDefs, "", true, 2);
-            currentRace = ExecuteRaceCommand(CommandCode("remove",GlobalRaceCommands), currentRace, std::vector<std::string>{input}, "remove");
+        case 1: {
+            break;
         }
-        else if (includes_string(parameters.at(0), removeOptions)) {
-            std::string newName{};
-            std::vector<std::string> compareBase{};
-            bool multi{ true };
-            int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
-
-            switch (cmdCode)
-            {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 18: {
-                multi = false;
-                break;
-            }
-            case 19: {
-                compareBase = currentRace.get_language();
-                break;
-            }
-            case 20: {
-                compareBase = currentRace.get_tool();
-                break;
-            }
-            case 21: {
-                compareBase = currentRace.get_skillOption();
-                break;
-            }
-            case 22: {
-                compareBase = currentRace.get_skillProf();
-                break;
-            }
-            case 23: {
-                compareBase = currentRace.get_languageOption();
-                break;
-            }
-            case 24: {
-                compareBase = currentRace.get_weaponOption();
-                break;
-            }
-            case 25: {
-                compareBase = currentRace.get_weaponProf();
-                break;
-            }
-            case 26: {
-                compareBase = currentRace.get_armorProf();
-                break;
-            }
-            case 27: {
-                compareBase = currentRace.get_damageRes();
-                break;
-            }
-            case 28: {
-                compareBase = currentRace.get_damageImmun();
-                break;
-            }
-            case 29: {
-                currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "remove");
-                multi = false;
-                break;
-            }
-            }
-
-            if (multi) {
-                if (parameters.size() == 1) {
-                    removeGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
-                    std::cout << "\nWhat do you want to remove?\n";
-                    std::getline(std::cin, newName);
-                    newName = InputCheck(newName, "\nWhat do you want to remove?\n", compareBase, true, false);
-                    parameters.clear();
-                    parameters.push_back(newName);
-                }
-                else {
-                    parameters.erase(parameters.begin());
-                }
-            }
-
-            switch (cmdCode)
-            {
-                    //Name
-            case 0: {
-                if (currentRace.get_name() == "") {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_name("");
-                }
-                break;
-            }
-                  //OptionPack
-            case 1: {
-                if (currentRace.get_optionPack() == "") {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_optionPack("");
-                }
-                break;
-            }
-                  //Description
-            case 2: {
-                if (currentRace.get_description() == "") {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_description("");
-                }
-                break;
-            }
-                  //Size
-            case 3: {
-                if (currentRace.get_sizename() == "Small") {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_size(SizeEnum::small);
-                }
-                break;
-            }
-                  //Str
-            case 4: {
-                if (currentRace.get_str() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_str(0);
-                }
-                break;
-            }
-                  //Dex
-            case 5: {
-                if (currentRace.get_dex() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-
-                }
-                else {
-                    currentRace.set_dex(0);
-                }
-                break;
-            }
-                  //Con
-            case 6: {
-                if (currentRace.get_con() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_con(0);
-                }
-                break;
-            }
-                  //Int
-            case 7: {
-                if (currentRace.get_int() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_int(0);
-                }
-                break;
-            }
-                  //Wis
-            case 8: {
-                if (currentRace.get_wis() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_wis(0);
-                }
-                break;
-            }
-                  //Cha
-            case 9: {
-                if (currentRace.get_cha() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_cha(0);
-                }
-                break;
-            }
-                  //Speed
-            case 10: {
-                if (currentRace.get_speed() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_speed(0);
-                }
-                break;
-            }
-                   //FlyingSpeed
-            case 11: {
-                if (currentRace.get_flySpeed() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_flySpeed(0);
-                }
-                break;
-            }
-                   //SwimmingSpeed
-            case 12: {
-                if (currentRace.get_swimSpeed() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_swimSpeed(0);
-                }
-                break;
-            }
-                   //Dark vision
-            case 13: {
-                if (currentRace.get_darkVision() == 0) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_darkVision(0);
-                }
-                break;
-            }
-                   //Skill Options Count
-            case 14: {
-                if (currentRace.get_skillOptionsCount() == 1) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_skillOptionsCount(0);
-                }
-                break;
-            }
-                   //Language Options Count
-            case 15: {
-                if (currentRace.get_languageOptionsCount() == 1) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_languageOptionsCount(0);
-                }
-                break;
-            }
-                   //Weapon Options Count
-            case 16: {
-                if (currentRace.get_weaponOptionsCount() == 1) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_weaponOptionsCount(0);
-                }
-                break;
-            }
-                   //LizFolkAC
-            case 17: {
-                if (currentRace.get_lizFolkAC() == false) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_lizFolkAC(false);
-                }
-                break;
-            }
-                   //TortAC
-            case 18: {
-                if (currentRace.get_tortAC() == false) {
-                    std::cout << "\nNothing to remove\n"; break;
-                }
-                else {
-                    currentRace.set_tortAC(false);
-                }
-                break;
-            }
-                   //Languages
-            case 19: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_language()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_language(newInsert);
-                break;
-            }
-                   //Tools
-            case 20: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_tool()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_tool(newInsert);
-                break;
-            }
-                   //Skill Options
-            case 21: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_skillOption()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_skillOption(newInsert);
-                break;
-            }
-                   //Skill Profs
-            case 22: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_skillProf()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_skillProf(newInsert);
-                break;
-            }
-                   //Language Options
-            case 23: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_languageOption()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_languageOption(newInsert);
-                break;
-            }
-                   //Weapon Options
-            case 24: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_weaponOption()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_weaponOption(newInsert);
-                break;
-            }
-                   //Weapon Profs
-            case 25: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_weaponProf()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_weaponProf(newInsert);
-                break;
-            }
-                   //Armor Profs
-            case 26: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_armorProf()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_armorProf(newInsert);
-                break;
-            }
-                   //Damage Res
-            case 27: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_damageRes()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_damageRes(newInsert);
-                break;
-            }
-                   //Damage Imm
-            case 28: {
-                std::vector<std::string> newInsert{};
-                for (std::string i : currentRace.get_damageImmun()) {
-                    if (!includes_string(i, parameters)) {
-                        newInsert.push_back(i);
-                    }
-                }
-                currentRace.insert_damageImmun(newInsert);
-                break;
-            }
-            }
+        case 2: {
+            currentRace = RaceRemove(currentRace, parameters);
+            break;
         }
-        else {
-            std::cout << "\nInvalid Input\n";
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentRace = ExecuteRaceCommand(cmdCode, currentRace, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
         }
-
+        }
         break;
     }
     default:
@@ -2771,13 +2741,6 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
         std::string input{};
 
         if (parameters.empty()) {
-
-            //Can't happen, Help always gets parameters
-
-            //std::cout << "\nWhat do you need help with?\n";
-            //std::getline(std::cin, input);
-            //input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you need help with?\n", true, false, GlobalSpellOptions);
-            //currentHPack = ExecuteCommand(CommandCode("load"), currentHPack, std::vector<std::string>{input}, "load");
         }
 		else {
 			std::vector<std::string> selection{};
@@ -2820,437 +2783,101 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
     
     //Add
     case 3: {
-        GUI addGUI{};
-        std::vector<std::string> addOptions{"cancel","options"};
-        std::vector<std::string> addDefs{ "Cancels add", "Lists all possible options" };
-        addDefs.insert(std::end(addDefs), std::begin(GlobalSpellDefs), std::end(GlobalSpellDefs));
-        addOptions.insert(std::end(addOptions), std::begin(GlobalSpellOptions), std::end(GlobalSpellOptions));
-        std::string input{};
-
-        if (parameters.empty()) {
-            std::cout << "\nWhat do want to add?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to add?\n", addOptions, true, false);
-            currentSpell = ExecuteSpellCommand(CommandCode("add",GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "add");
-        }
-        else if (parameters.at(0) == "cancel") {
+        switch (ValidateCommand("What would you like to add?", GlobalSpellOptions, GlobalSpellDefs, parameters))
+        {
+        case 0: {
+            currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            addOptions = merge_ordered(addOptions, addDefs);
-            addGUI.GenerateMenu("Add Commands", addOptions, "", true, 2);
-            currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "add");
+        case 1: {
+            break;
         }
-        else if (includes_string(parameters.at(0),addOptions)) {
-            std::string newName{};
-            int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
-
-            switch (cmdCode)
-            {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12: {
-                currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                break;
-            }
-            case 13: {
-                if (parameters.size() == 1) {
-                    std::cout << "\nWhat class do you want to add?\n";
-                    std::getline(std::cin, newName);
-                    parameters.clear();
-                    parameters.push_back(newName);
-                }
-                else {
-                    parameters.erase(parameters.begin());
-                }
-                break;
-            }
-            case 14: {
-                currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
-                break;
-            }
-            }
-
-            switch (CommandCode(parameters.at(0), GlobalSpellOptions))
-            {
-            //Classes
-            case 13: {
-                for (std::string i : parameters) {
-                    currentSpell.insert_class(i);
-                }
-                break;
-            }
-            default:
-                break;
-            }
+        case 2: {
+            currentSpell = SpellAdd(currentSpell, parameters);
+            break;
         }
-        else {
-            std::cout << "\nInvalid Input\n";
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
         }
-
+        }
         break;
     }
     
     //Edit
     case 4: {
-        GUI editGUI{};
-        std::vector<std::string> editOptions{ "cancel","options" };
-        std::vector<std::string> editDefs{ "Cancels edit", "Lists all possible options" };
-        editDefs.insert(std::end(editDefs), std::begin(GlobalSpellDefs), std::end(GlobalSpellDefs));
-        editOptions.insert(std::end(editOptions), std::begin(GlobalSpellOptions), std::end(GlobalSpellOptions));
-        std::string input{};
-
-        if (parameters.empty()) {
-            std::cout << "\nWhat do want to edit?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to edit?\n", editOptions, true, false);
-            currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "edit");
-        }
-        else if (parameters.at(0) == "cancel") {
+        switch (ValidateCommand("What would you like to edit?", GlobalSpellOptions, GlobalSpellDefs, parameters))
+        {
+        case 0: {
+            currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            editOptions = merge_ordered(editOptions, editDefs);
-            editGUI.GenerateMenu("Remove Commands", editOptions, "", true, 2);
-            currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "edit");
+        case 1: {
+            break;
         }
-        else if (includes_string(parameters.at(0), editOptions)) {
-            std::string newName{};
-            int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
-
-            switch (cmdCode)
-            {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    VectorToString(parameters, newName);
-                }
-                else {
-                    std::cout << "\nEnter new value:\n";
-                    std::getline(std::cin, newName);
-                }
-                break;
-            }
-            case 7: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    VectorToString(parameters, newName);
-                }
-                else {
-                    std::cout << "\nEnter new value:\n";
-                    std::getline(std::cin, newName);
-                }
-                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
-                break;
-            }
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    VectorToString(parameters, newName);
-                }
-                else {
-                    std::cout << "\nEnter new value:\n";
-                    std::getline(std::cin, newName);
-                }
-                newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
-                break;
-            }
-            case 13: {
-                currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
-                break;
-            }
-            case 14: {
-                if (parameters.size() > 1) {
-                    parameters.erase(parameters.begin());
-                    VectorToString(parameters, newName);
-                }
-                else {
-                    std::cout << "\nEnter new value:\n";
-                    std::getline(std::cin, newName);
-                }
-                break;
-            }
-            }
-
-            switch (cmdCode)
-            {
-                    //Name
-            case 0: {
-                currentSpell.set_name(newName);
-                break;
-            }
-                  //OptionPack
-            case 1: {
-                currentSpell.set_optionPack(newName);
-                break;
-            }
-                  //Description
-            case 2: {
-                currentSpell.set_description(newName);
-                break;
-            }
-                  //School
-            case 3: {
-                currentSpell.set_school(newName);
-                break;
-            }
-                  //Duration
-            case 4: {
-                currentSpell.set_duration(newName);
-                break;
-            }
-                  //Component
-            case 5: {
-                currentSpell.set_component(newName);
-                break;
-            }
-                  //Casting time
-            case 6: {
-                currentSpell.set_castingTime(newName);
-                break;
-            }
-                  //Level
-            case 7: {
-                currentSpell.set_level(std::stoi(newName));
-                break;
-            }
-                  //Verbal
-            case 8: {
-                if (newName == "yes") {
-                    currentSpell.set_verbal(true);
-                }
-                else {
-                    currentSpell.set_verbal(false);
-                }
-                break;
-            }
-                  //Somatic
-            case 9: {
-                if (newName == "yes") {
-                    currentSpell.set_somatic(true);
-                }
-                else {
-                    currentSpell.set_somatic(false);
-                }
-                break;
-            }
-                  //Material
-            case 10: {
-                if (newName == "yes") {
-                    currentSpell.set_material(true);
-                }
-                else {
-                    currentSpell.set_material(false);
-                }
-                break;
-            }
-                   //Ritual
-            case 11: {
-                if (newName == "yes") {
-                    currentSpell.set_ritual(true);
-                }
-                else {
-                    currentSpell.set_ritual(false);
-                }
-                break;
-            }
-                   //Attack Roll
-            case 12: {
-                if (newName == "yes") {
-                    currentSpell.set_attackRoll(true);
-                }
-                else {
-                    currentSpell.set_attackRoll(false);
-                }
-                break;
-            }
-                   //Range
-            case 14: {
-                currentSpell.set_range(newName);
-                break;
-            }
-            }
+        case 2: {
+            currentSpell = SpellEdit(currentSpell, parameters);
+            break;
         }
-        else {
-            std::cout << "\nInvalid Input\n";
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
+        }
         }
         break;
     }
     
     //Clear
     case 5: {
-        GUI editGUI{};
-        std::vector<std::string> editOptions{ "yes", "no"};
-        std::string input{};
+        std::vector<std::string> options{ "yes", "no" };
+        std::vector<std::string> optionDefs{ "", "" };
 
-        if (parameters.empty()) {
-            std::cout << "\nAre you sure?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid option\nAre you sure?\n", editOptions, true, false);
-            currentSpell = ExecuteSpellCommand(CommandCode("clear", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "clear");
+        switch (ValidateCommand("Are you sure?", options, optionDefs, parameters))
+        {
+        case 0: {
+            currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, parameters, std::to_string(cmdCode));
+            break;
         }
-        else if (parameters.at(0) == "yes") {
-            std::vector<std::string> empty{};
+        case 1: {
+            break;
+        }
+        case 2: {
             Spell newSpell{};
             currentSpell = newSpell;
             break;
         }
-        else {
-            std::cout << "\nCanceled\n";
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
+        }
         }
         break;
     }
     
     //Remove
     case 6: {
-        GUI editGUI{};
-        std::vector<std::string> editOptions{ "cancel","options" };
-        std::vector<std::string> editDefs{ "Cancels remove", "Lists all possible options" };
-        editDefs.insert(std::end(editDefs), std::begin(GlobalSpellDefs), std::end(GlobalSpellDefs));
-        editOptions.insert(std::end(editOptions), std::begin(GlobalSpellOptions), std::end(GlobalSpellOptions));
-        std::string input{};
-
-        if (parameters.empty()) {
-            std::cout << "\nWhat do want to remove?\n";
-            std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do want to remove?\n", editOptions, true, false);
-            currentSpell = ExecuteSpellCommand(CommandCode("remove", GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "remove");
-        }
-        else if (parameters.at(0) == "cancel") {
+        switch (ValidateCommand("What would you like to remove?", GlobalSpellOptions, GlobalSpellDefs, parameters))
+        {
+        case 0: {
+            currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, parameters, std::to_string(cmdCode));
             break;
         }
-        else if (parameters.at(0) == "options") {
-            editOptions = merge_ordered(editOptions, editDefs);
-            editGUI.GenerateMenu("Remove Commands", editOptions, "", true, 2);
-            currentSpell = ExecuteSpellCommand(CommandCode("remove",GlobalSpellCommands), currentSpell, std::vector<std::string>{input}, "remove");
+        case 1: {
+            break;
         }
-        else if (includes_string(parameters.at(0), editOptions)) {
-            std::string newName{};
-            int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
-
-            if (cmdCode == 13) {
-                if (parameters.size() == 1) {
-                    std::cout << "\nWhat class do you want to remove?\n";
-                    std::getline(std::cin, newName);
-                    parameters.clear();
-                    parameters.push_back(newName);
-                }
-                else {
-                    parameters.erase(parameters.begin());
-                }
-            }
-            
-            switch (cmdCode)
-            {
-                //Name
-            case 0: {
-                currentSpell.set_name(newName);
-                break;
-            }
-                  //OptionPack
-            case 1: {
-                currentSpell.set_optionPack(newName);
-                break;
-            }
-                  //Description
-            case 2: {
-                currentSpell.set_description(newName);
-                break;
-            }
-                  //School
-            case 3: {
-                currentSpell.set_school(newName);
-                break;
-            }
-                  //Duration
-            case 4: {
-                currentSpell.set_duration(newName);
-                break;
-            }
-                  //Component
-            case 5: {
-                currentSpell.set_component(newName);
-                break;
-            }
-                  //Casting time
-            case 6: {
-                currentSpell.set_castingTime(newName);
-                break;
-            }
-                  //Level
-            case 7: {
-                currentSpell.set_level(0);
-                break;
-            }
-                  //Verbal
-            case 8: {
-                currentSpell.set_verbal(false);
-                break;
-            }
-                  //Somatic
-            case 9: {
-                currentSpell.set_somatic(false);
-                break;
-            }
-                  //Material
-            case 10: {
-                currentSpell.set_material(false);
-                break;
-            }
-                   //Ritual
-            case 11: {
-                currentSpell.set_ritual(false);
-                break;
-            }
-                   //Attack Roll
-            case 12: {
-                currentSpell.set_attackRoll(false);
-                break;
-            }
-                   //Classes
-            case 13: {
-                std::vector<std::string> newClasses{};
-                for (std::string i : currentSpell.get_class()) {
-                    if (!includes_string(i, parameters)) {
-                        newClasses.push_back(i);
-                    }
-                }
-                currentSpell.set_classes(newClasses);
-                break;
-            }
-                   //Range
-            case 14: {
-                currentSpell.set_range(newName);
-                break;
-            }
-            default:
-                break;
-            }
+        case 2: {
+            currentSpell = SpellRemove(currentSpell, parameters);
+            break;
         }
-        else {
-            std::cout << "\nInvalid Input\n";
+        case 3: {
+            std::cout << "\nInvalid parameter\n";
+            currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, std::vector<std::string>{}, std::to_string(cmdCode));
+            break;
         }
-
+        }
         break;
     }
     default:
@@ -3261,16 +2888,6 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
         system("cls");
     }
     return currentSpell;
-}
-
-void VectorToString(std::vector<std::string>& parameters, std::string& newName)
-{
-    int index{};
-    for (std::string i : parameters) {
-        if (index != 0) { newName += " " + parameters.at(index); }
-        else { newName += parameters.at(index); }
-        index++;
-    }
 }
 
 //Consoles

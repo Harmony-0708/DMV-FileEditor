@@ -648,6 +648,7 @@ Pack Pack::load_pack(std::fstream& myfile)
 				}
 			}
 			else if (declared == "Name") {
+				inObject = true;
 				unsigned first = variable.find("\"");
 				unsigned last = variable.find_last_of("\"");
 				std::string variableNew = variable.substr(first + 1, last - first - 1);
@@ -1469,7 +1470,6 @@ void Pack::print_pack(bool multi, std::ofstream& outputfile) {
 			outputfile
 				<< "\n :orcpub.dnd.e5.character/cha " << i.get_cha();
 		}
-
 		outputfile
 			<< "\n},\n :languages \n#{\n";
 		if (i.get_language().size() > 0) {
@@ -1737,7 +1737,8 @@ void Pack::print_pack(bool multi, std::ofstream& outputfile) {
 		outputfile
 			<< "\n}\n},\n";
 	}
-
+	outputfile
+		<< "\n},\n";
 	if (!multi) {
 		outputfile
 			<< "\n}\n}\n}";

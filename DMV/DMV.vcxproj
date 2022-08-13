@@ -150,10 +150,19 @@
     <ClInclude Include="Orcbrew.h" />
     <ClInclude Include="Pack.h" />
     <ClInclude Include="Race.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="SizeEnum.h" />
     <ClInclude Include="Spell.h" />
     <ClInclude Include="Trait.h" />
     <ClInclude Include="TraitType.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="20-sided-dice.ico" />
+    <Image Include="20-sided-dice.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DMV.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

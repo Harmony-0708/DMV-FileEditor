@@ -195,7 +195,33 @@ void HPack::save()
 	}
 }
 
-//Orcbrew HPack::convert_pack_file()
-//{
-//	return Orcbrew();
-//}
+CommandObject* HPack::ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters, std::string context)
+{
+	return object;
+}
+
+void HPack::Display()
+{
+}
+
+std::string HPack::get_title()
+{
+	return std::string();
+}
+
+bool HPack::IsDone(std::string input)
+{
+	return false;
+}
+
+std::vector<std::string> HPack::get_commands()
+{
+	return std::vector<std::string>();
+}
+
+std::vector<std::string> HPack::get_command_defs()
+{
+	return std::vector<std::string>();
+}
+
+

@@ -129,6 +129,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CommandObject.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="DMV.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="harmonylib.cpp" />
@@ -138,10 +140,13 @@
     <ClCompile Include="Pack.cpp" />
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Spell.cpp" />
+    <ClCompile Include="TestObject.cpp" />
     <ClCompile Include="Trait.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbilityScore.h" />
+    <ClInclude Include="CommandObject.h" />
+    <ClInclude Include="Console.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="harmonylib.h" />
     <ClInclude Include="HPack.h" />
@@ -154,6 +159,7 @@
     <ClInclude Include="resource1.h" />
     <ClInclude Include="SizeEnum.h" />
     <ClInclude Include="Spell.h" />
+    <ClInclude Include="TestObject.h" />
     <ClInclude Include="Trait.h" />
     <ClInclude Include="TraitType.h" />
   </ItemGroup>

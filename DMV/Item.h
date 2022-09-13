@@ -1,5 +1,7 @@
 #pragma once
-class Item
+#include "CommandObject.h"
+class Item :
+    public CommandObject
 {
 };
 

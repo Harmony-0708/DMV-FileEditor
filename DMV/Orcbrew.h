@@ -17,8 +17,10 @@
 #include "harmonylib.h"
 #include "Pack.h"
 #include "HPack.h"
+#include "CommandObject.h"
 
-class Orcbrew
+class Orcbrew :
+	public CommandObject
 {
 private:
 	std::string Name{};
@@ -39,6 +41,15 @@ public:
 	HPack load(std::string fileName);
 	void save();
 	//HPack convert_pack_file();
+
+	//Virtual Overrides
+	CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
+	void Display();
+	std::string get_title();
+	bool IsDone(std::string input);
+	std::vector<std::string> get_commands();
+	std::vector<std::string> get_command_defs();
+
 
 };
 

@@ -1,9 +1,10 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "CommandObject.h"
 
-
-class Spell
+class Spell :
+	public CommandObject
 {
 
 private:
@@ -74,5 +75,11 @@ public:
 	//Clear
 	void clear();
 
-	//Prints
+	//Virtual Overrides
+	CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
+	void Display();
+	std::string get_title();
+	bool IsDone(std::string input);
+	std::vector<std::string> get_commands();
+	std::vector<std::string> get_command_defs();
 };

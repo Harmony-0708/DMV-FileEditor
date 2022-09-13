@@ -12,7 +12,10 @@
 #include "Trait.h"
 #include "GUI.h"
 #include "harmonylib.h"
-class Race
+#include "CommandObject.h"
+
+class Race :
+	public CommandObject
 {
 private:
 
@@ -164,5 +167,12 @@ public:
 	//Gets all info on race, for display reasons
 	void display_info();
 
+	//Virtual Overrides
+	CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
+	void Display();
+	std::string get_title();
+	bool IsDone(std::string input);
+	std::vector<std::string> get_commands();
+	std::vector<std::string> get_command_defs();
 };
 

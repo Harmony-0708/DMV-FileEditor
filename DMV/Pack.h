@@ -20,8 +20,10 @@
 #include "Trait.h"
 #include "Item.h"
 #include "Spell.h"
+#include "CommandObject.h"
 
-class Pack
+class Pack :
+	public CommandObject
 {
 private:
 	std::string Name{};
@@ -66,6 +68,13 @@ public:
 	void print_pack();
 	void print_pack(bool multi, std::ofstream& outputfile);
 
+	//Virtual Overrides
+	CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
+	void Display();
+	std::string get_title();
+	bool IsDone(std::string input);
+	std::vector<std::string> get_commands();
+	std::vector<std::string> get_command_defs();
 
 };
 

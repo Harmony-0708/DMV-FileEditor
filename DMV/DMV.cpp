@@ -17,11 +17,11 @@
 #include "Pack.h"
 #include "HPack.h"
 #include "Orcbrew.h"
+#include "CommandObject.h"
 
 void DrawRace(Race input);
 void DrawSpell(Spell input);
 void DrawTrait(Trait input);
-void ExitProgram();
 void GrabObjectName(std::vector<std::string>& parameters, HPack& currentHPack, std::string& objectName, std::string& displayType, Pack& loadedPack);
 HPack Display(HPack currentHPack, std::vector<std::string> parameters);
 HPack Load(HPack currentHPack, std::vector<std::string> parameters);
@@ -35,17 +35,11 @@ Spell SpellAdd(Spell currentSpell, std::vector<std::string>& parameters);
 Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters);
 Spell SpellRemove(Spell currentSpell, std::vector<std::string>& parameters);
 
-void VectorToString(std::vector<std::string>& parameters, std::string& newName);
-bool includes_string(std::string input, std::vector<std::string> vInput);
-std::string InputCheck(std::string input, std::string repeatString = {""}, std::vector<std::string> parameters = {}, bool onlyAlpha = true, bool onlyNums = false);
 std::vector<Trait> remove(std::vector<Trait> input, int index);
 std::vector<Spell> remove(std::vector<Spell> input, int index);
 std::vector<std::string> remove(std::vector<std::string> input, int index);
-std::vector<std::string> merge_ordered(std::vector<std::string> command, std::vector<std::string> description);
-std::vector<std::string> split(std::string input);
 std::vector<std::string> selection(std::vector<std::string>);
 
-int index(std::string input, std::vector<std::string> inputVector);
 Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packName = "");
 
 int CommandCode(std::string command, std::vector<std::string> commands);
@@ -54,7 +48,6 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
 Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> parameters = {}, std::string context = {});
 Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::string> parameters, std::string context = {});
 
-void VectorToString(std::vector<std::string>& parameters, std::string& newName);
 
 void ConsoleInput(std::string& parameter, std::string& input, std::string& command);
 void Console(std::vector<std::string> currentCommands = {}, std::vector<std::string> currentCmdDef = {}, HPack currentHPack = {});
@@ -515,23 +508,6 @@ void DrawTrait(Trait input) {
         drawGUI.GenerateMenu("Description", std::vector<std::string>{input.get_description()});
     }
 }
-void ExitProgram() {
-    std::string input{};
-    std::cout << "\nAre you sure you want to exit?\n";
-    std::getline(std::cin, input);
-    input = InputCheck(input, "\nInput incorrect format\nAre you sure you want to exit?\n", std::vector<std::string>{"yes", "no", "y", "n"}, true, false);
-    if (input == "yes" || input == "y") {
-        std::cout << "\n\nGoodbye!\n";
-        system("pause");
-        exit(0);
-    }
-    else {
-        std::cout << "\n\nReturning to console...\n";
-        system("pause");
-        system("cls");
-        main();
-    }
-}
 void GrabObjectName(std::vector<std::string>& parameters, HPack& currentHPack, std::string& objectName, std::string& displayType, Pack& loadedPack)
 {
     GUI gui{};
@@ -551,7 +527,7 @@ void GrabObjectName(std::vector<std::string>& parameters, HPack& currentHPack, s
     for (std::string i : parameters) {
         if (index == 0) { packName += i; }
         else { packName += " " + i; }
-        if (includes_string(packName, packs)) { foundPack = true; break; }
+        if (HLib::IncludesString(packName, packs)) { foundPack = true; break; }
         index++;
     }
     if (foundPack) {
@@ -573,7 +549,7 @@ void GrabObjectName(std::vector<std::string>& parameters, HPack& currentHPack, s
         std::cout << "\nWhat pack is the " << displayType << " in?\n";
         std::getline(std::cin, packName);
     }
-    packName = InputCheck(packName, "\nWhat pack is the " + displayType + " in?\n", packs, false, false);
+    packName = HLib::InputCheck(packName, "\nWhat pack is the " + displayType + " in?\n", packs, false, false);
 
     loadedPack = currentHPack.get_pack(packName);
 
@@ -599,7 +575,7 @@ void GrabObjectName(std::vector<std::string>& parameters, HPack& currentHPack, s
         std::cout << "\nWhat " << displayType << " do you want?\n";
         std::getline(std::cin, objectName);
     }
-    if (!chosenType.empty()) { objectName = InputCheck(objectName, "\nWhat " + displayType + " do you want?\n", chosenType, false, false); }
+    if (!chosenType.empty()) { objectName = HLib::InputCheck(objectName, "\nWhat " + displayType + " do you want?\n", chosenType, false, false); }
     else { std::cout << "\nList empty\n"; objectName = "null"; }
 }
 
@@ -638,44 +614,44 @@ HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
         //Count
         std::cout << "\nHow many files do you want to load?\n";
         std::getline(std::cin, countFiles);
-        countFiles = InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions), true, false;
+        countFiles = HLib::InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions), true, false;
 
         //File Type
         std::cout << "\nWhat type of file do you want to load?\n";
         std::getline(std::cin, fileType);
-        fileType = InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
+        fileType = HLib::InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
 
         break;
     }
     case 1: {
         //Count
         countFiles = parameters.at(0);
-        countFiles = InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions, true, false);
+        countFiles = HLib::InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions, true, false);
 
         //File Type
         std::cout << "\nWhat type of file do you want to load?\n";
         std::getline(std::cin, fileType);
-        fileType = InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
+        fileType = HLib::InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
         break;
     }
     case 2: {
         //Count
         countFiles = parameters.at(0);
-        countFiles = InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions, true, false);
+        countFiles = HLib::InputCheck(countFiles, "\nInvalid Item\nHow many files do you want to load?\n", countOptions, true, false);
 
         //File Type
         fileType = parameters.at(1);
-        fileType = InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
+        fileType = HLib::InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
         break;
     }
     default: {
         //Count
         countFiles = parameters.at(0);
-        countFiles = InputCheck(countFiles, "\nInvalid Item\nLoad by filename must be single\n", std::vector<std::string>{"single"} , true, false);
+        countFiles = HLib::InputCheck(countFiles, "\nInvalid Item\nLoad by filename must be single\n", std::vector<std::string>{"single"} , true, false);
 
         //File Type
         fileType = parameters.at(1);
-        fileType = InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
+        fileType = HLib::InputCheck(fileType, "\nInvalid Item\nWhat type of file do you want to load?\n", fileTypes, true, false);
 
         int index{ 0 };
         for (std::string i : parameters) {
@@ -724,13 +700,13 @@ HPack Load(HPack currentHPack, std::vector<std::string> parameters) {
 
             std::cout << "\nWhat is the name of your file?\n";
             std::getline(std::cin, fileName);
-            fileName = InputCheck(fileName, "\nInvalid Item\nWhat is the name of your file?\n", nameOfFiles, false, false);
+            fileName = HLib::InputCheck(fileName, "\nInvalid Item\nWhat is the name of your file?\n", nameOfFiles, false, false);
 
             nameOfFiles.clear();
             nameOfFiles.push_back(fileName);
         }
         else {
-            fileName = InputCheck(fileName, "\nInvalid Item\nWhat is the name of your file?\n", nameOfFiles, false, false);
+            fileName = HLib::InputCheck(fileName, "\nInvalid Item\nWhat is the name of your file?\n", nameOfFiles, false, false);
             nameOfFiles.clear();
             nameOfFiles.push_back(fileName);
         }
@@ -777,7 +753,7 @@ HPack Save(HPack currentHPack, std::vector<std::string> parameters) {
         }
         std::cout << "\nWhich pack do you want to save?\n";
         std::getline(std::cin, packName);
-        packName = InputCheck(packName, "\nInvalid Item, use options to find valid items\nWhich pack do you want to save?\n", packNames, true, false);
+        packName = HLib::InputCheck(packName, "\nInvalid Item, use options to find valid items\nWhich pack do you want to save?\n", packNames, true, false);
         for (Pack i : currentHPack.get_packs()) {
             if (i.get_name() == packName) {
                 i.save_pack();
@@ -935,7 +911,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
             addGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
             std::cout << "\nWhat do you want to add?\n";
             std::getline(std::cin, newName);
-            newName = InputCheck(newName, "\nWhat do you want to add?\n", compareBase, true, false);
+            newName = HLib::InputCheck(newName, "\nWhat do you want to add?\n", compareBase, true, false);
             parameters.clear();
             parameters.push_back(newName);
         }
@@ -949,7 +925,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 19: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -960,7 +936,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 20: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -971,7 +947,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 21: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -982,7 +958,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 22: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -993,7 +969,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 23: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -1004,7 +980,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 24: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -1015,7 +991,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 25: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -1026,7 +1002,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 26: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -1037,7 +1013,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 27: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -1048,7 +1024,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 28: {
         int index{};
         for (std::string i : parameters) {
-            if (includes_string(i, compareBase)) {
+            if (HLib::IncludesString(i, compareBase)) {
                 currentRace.insert_language(i);
             }
             index++;
@@ -1086,7 +1062,7 @@ Race RaceEdit(Race currentRace, std::vector<std::string>& parameters)
     case 2: {
         if (parameters.size() > 1) {
             parameters.erase(parameters.begin());
-            VectorToString(parameters, newName);
+            HLib::VectorToString(parameters, newName);
         }
         else {
             std::cout << "\nEnter new value:\n";
@@ -1097,13 +1073,13 @@ Race RaceEdit(Race currentRace, std::vector<std::string>& parameters)
     case 3: {
         if (parameters.size() > 1) {
             parameters.erase(parameters.begin());
-            VectorToString(parameters, newName);
+            HLib::VectorToString(parameters, newName);
         }
         else {
             std::cout << "\nEnter new value:\n";
             std::getline(std::cin, newName);
         }
-        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"small", "medium", "large"}, true, false);
+        newName = HLib::InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"small", "medium", "large"}, true, false);
         break;
     }
     case 4:
@@ -1121,26 +1097,26 @@ Race RaceEdit(Race currentRace, std::vector<std::string>& parameters)
     case 16: {
         if (parameters.size() > 1) {
             parameters.erase(parameters.begin());
-            VectorToString(parameters, newName);
+            HLib::VectorToString(parameters, newName);
         }
         else {
             std::cout << "\nEnter new value:\n";
             std::getline(std::cin, newName);
         }
-        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
+        newName = HLib::InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
         break;
     }
     case 17:
     case 18: {
         if (parameters.size() > 1) {
             parameters.erase(parameters.begin());
-            VectorToString(parameters, newName);
+            HLib::VectorToString(parameters, newName);
         }
         else {
             std::cout << "\nEnter new value:\n";
             std::getline(std::cin, newName);
         }
-        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
+        newName = HLib::InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
         break;
     }
     case 19:
@@ -1161,7 +1137,7 @@ Race RaceEdit(Race currentRace, std::vector<std::string>& parameters)
         if (parameters.size() == 0) {
             std::cout << "\nWhich trait do you want to edit?\n";
             std::getline(std::cin, newName);
-            newName = InputCheck(newName, "\nWhich trait do you want to edit?\n", traitNames, true, false);
+            newName = HLib::InputCheck(newName, "\nWhich trait do you want to edit?\n", traitNames, true, false);
         }
         else {
             int index{};
@@ -1393,7 +1369,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
             removeGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
             std::cout << "\nWhat do you want to remove?\n";
             std::getline(std::cin, newName);
-            newName = InputCheck(newName, "\nWhat do you want to remove?\n", compareBase, true, false);
+            newName = HLib::InputCheck(newName, "\nWhat do you want to remove?\n", compareBase, true, false);
             parameters.clear();
             parameters.push_back(newName);
         }
@@ -1598,7 +1574,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 19: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_language()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1609,7 +1585,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 20: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_tool()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1620,7 +1596,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 21: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_skillOption()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1631,7 +1607,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 22: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_skillProf()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1642,7 +1618,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 23: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_languageOption()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1653,7 +1629,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 24: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_weaponOption()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1664,7 +1640,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 25: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_weaponProf()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1675,7 +1651,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 26: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_armorProf()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1686,7 +1662,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 27: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_damageRes()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1697,7 +1673,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     case 28: {
         std::vector<std::string> newInsert{};
         for (std::string i : currentRace.get_damageImmun()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newInsert.push_back(i);
             }
         }
@@ -1777,7 +1753,7 @@ Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters)
     case 6: {
         if (parameters.size() > 1) {
             parameters.erase(parameters.begin());
-            VectorToString(parameters, newName);
+            HLib::VectorToString(parameters, newName);
         }
         else {
             std::cout << "\nEnter new value:\n";
@@ -1788,13 +1764,13 @@ Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters)
     case 7: {
         if (parameters.size() > 1) {
             parameters.erase(parameters.begin());
-            VectorToString(parameters, newName);
+            HLib::VectorToString(parameters, newName);
         }
         else {
             std::cout << "\nEnter new value:\n";
             std::getline(std::cin, newName);
         }
-        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
+        newName = HLib::InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
         break;
     }
     case 8:
@@ -1804,13 +1780,13 @@ Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters)
     case 12: {
         if (parameters.size() > 1) {
             parameters.erase(parameters.begin());
-            VectorToString(parameters, newName);
+            HLib::VectorToString(parameters, newName);
         }
         else {
             std::cout << "\nEnter new value:\n";
             std::getline(std::cin, newName);
         }
-        newName = InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
+        newName = HLib::InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
         break;
     }
     case 13: {
@@ -1820,7 +1796,7 @@ Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters)
     case 14: {
         if (parameters.size() > 1) {
             parameters.erase(parameters.begin());
-            VectorToString(parameters, newName);
+            HLib::VectorToString(parameters, newName);
         }
         else {
             std::cout << "\nEnter new value:\n";
@@ -2016,7 +1992,7 @@ Spell SpellRemove(Spell currentSpell, std::vector<std::string>& parameters)
     case 13: {
         std::vector<std::string> newClasses{};
         for (std::string i : currentSpell.get_class()) {
-            if (!includes_string(i, parameters)) {
+            if (!HLib::IncludesString(i, parameters)) {
                 newClasses.push_back(i);
             }
         }
@@ -2035,68 +2011,6 @@ Spell SpellRemove(Spell currentSpell, std::vector<std::string>& parameters)
 }
 
 //Functional
-bool includes_string(std::string input, std::vector<std::string> vInput) {
-    for (std::string i : vInput) {
-        if (i == input) {
-            return true;
-        }
-    }
-    return false;
-}
-void VectorToString(std::vector<std::string>& parameters, std::string& newName)
-{
-    int index{};
-    for (std::string i : parameters) {
-        if (index != 0) { newName += " " + parameters.at(index); }
-        else { newName += parameters.at(index); }
-        index++;
-    }
-}
-std::string InputCheck(std::string input, std::string repeatString, std::vector<std::string> parameters, bool onlyAlpha, bool onlyNums) {
-	bool check{};
-    if (onlyAlpha && onlyNums) {
-        onlyNums = false;
-    }
-	do {
-		bool alphacheck{ false };
-		bool numcheck{ false };
-		std::string lowerInput{};
-		for (char i : input) {
-			if (isalpha(i)) {
-				lowerInput += tolower(i);
-				alphacheck = true;
-			}
-			else if (!isdigit(i)) {
-				lowerInput += i;
-				alphacheck = true;
-			}
-			else {
-				lowerInput += i;
-				numcheck = true;
-			}
-		}
-        if (onlyAlpha && numcheck) {
-            onlyAlpha = false;
-        }
-        else if (onlyNums && alphacheck) {
-            onlyNums = false;
-        }
-        else if (!onlyNums && !onlyAlpha) {
-            onlyAlpha = true;
-            onlyNums = true;
-        }
-  		if ((input == "") || (!onlyAlpha && !onlyNums) || (!parameters.empty() && (!includes_string(input, parameters)))) {
-			std::cout << "\nInvalid input\n" << repeatString;
-			std::cin.clear();
-			std::cin.sync();
-			std::getline(std::cin, input);
-		}
-		else {
-			check = true;
-		}
-	} while (check != true);
-    return input;
-}
 std::vector<Trait> remove(std::vector<Trait> input, int index) {
     std::vector<Trait> newVector{};
     int counter{};
@@ -2118,34 +2032,6 @@ std::vector<Spell> remove(std::vector<Spell> input, int index) {
         counter++;
     }
     return newVector;
-}
-std::vector<std::string> remove(std::vector<std::string> input, int index) {
-    std::vector<std::string> newVector{};
-    int counter{};
-    for (std::string i : input) {
-        if (counter != index) {
-            newVector.push_back(i);
-        }
-        counter++;
-    }
-    return newVector;
-}
-std::vector<std::string> merge_ordered(std::vector<std::string> command, std::vector<std::string> description) {
-    int index{};
-    std::vector<std::string> combined{};
-    for (std::string i : command) {
-        combined.push_back(i);
-        combined.push_back(description.at(index));
-        index++;
-    }
-    return combined;
-}
-std::vector<std::string> split(std::string s){
-    std::stringstream ss(s);
-    std::istream_iterator<std::string> begin(ss);
-    std::istream_iterator<std::string> end;
-    std::vector<std::string> vstrings(begin, end);
-    return vstrings;
 }
 std::vector<std::string> selection(std::vector<std::string> parameters) {
     GUI selectionGUI{};
@@ -2191,14 +2077,14 @@ std::vector<std::string> selection(std::vector<std::string> parameters) {
             }
         }
 
-        if (includes_string(command, commands)) {
+        if (HLib::IncludesString(command, commands)) {
             if (command == "add") {
                 if (parameter != "all") {
                     bool found{ false };
                     for (std::string i : selected) {
-if (i == parameter) {
-    found = true;
-}
+                        if (i == parameter) {
+                            found = true;
+                        }
                     }
                     if (!found) {
                         selected.push_back(parameter);
@@ -2234,7 +2120,7 @@ if (i == parameter) {
             std::cin.clear();
             std::cin.sync();
             std::getline(std::cin, input);
-            input = InputCheck(input, "\nYes/No\nAre you sure you want to clear your selection?\n", { "Yes","No","yes","no" }, true, false);
+            input = HLib::InputCheck(input, "\nYes/No\nAre you sure you want to clear your selection?\n", { "Yes","No","yes","no" }, true, false);
             if (input == "yes" || input == "Yes") {
                 selected.clear();
             }
@@ -2246,15 +2132,10 @@ if (i == parameter) {
         }
 
     } while (input != "done");
-
-
     return selected;
 }
 
 //Indexes
-int index(std::string input, std::vector<std::string> inputVector) {
-    return (std::distance(inputVector.begin(), std::find(inputVector.begin(), inputVector.end(), input)));
-}
 Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packName) {
     Race foundRace{};
     for (Pack i : packSet) {
@@ -2279,45 +2160,6 @@ Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packN
 }
 
 //Command stuff
-int CommandCode(std::string command, std::vector<std::string> commands) {
-    if (includes_string(command, commands)) {
-        return index(command, commands);
-    }
-    else {
-        return -1;
-    }
-}
-int ValidateCommand(std::string prompt,std::vector<std::string> cmds, std::vector<std::string> cmdDefs, std::vector<std::string>& parameters) {
-    GUI gui{};
-    std::vector<std::string> options{ "options","cancel" };
-    std::vector<std::string> optionDefs{ "Displays options","Cancels action" };
-    options.insert(std::end(options), std::begin(cmds), std::end(cmds));
-    optionDefs.insert(std::end(optionDefs), std::begin(cmdDefs), std::end(cmdDefs));
-    std::string input{};
-
-    if (parameters.empty()) {
-        std::cout << "\n" << prompt << "\n";
-        std::getline(std::cin, input);
-        parameters = split(input);
-        return 0;
-    }
-    else if (parameters.at(0) == "options"){
-        gui.GenerateMenu("Options", merge_ordered(options,optionDefs),"",true,2);
-        std::cout << "\n" << prompt << "\n";
-        std::getline(std::cin, input);
-        parameters = split(input);
-        return 0;
-    }
-    else if (parameters.at(0) == "cancel"){
-        return 1;
-    }
-    else if (includes_string(parameters.at(0), options)) {
-        return 2;
-    }
-    else {
-        return 3;
-    }
-}
 
 //Execute commands
 HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> parameters, std::string context) {
@@ -2325,7 +2167,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
     {
     //Exit
     case 0: {
-        ExitProgram();
+        HLib::ExitProgram();
         break;
     }
     
@@ -2490,7 +2332,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         if (parameters.empty()) {
             std::cout << "\nWhat do you want to rename?\n";
             std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to rename?\n", nameOptions, true, false);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to rename?\n", nameOptions, true, false);
             currentHPack = ExecuteCommand(CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{input}, "name");
         }
         else if (parameters.at(0) == "cancel") {
@@ -2516,7 +2358,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << std::endl;
             std::cout << "\nWhich pack do you want to rename?\n";
             std::getline(std::cin, input);
-            input = InputCheck(input, "\nInvalid Item, use options to find valid items\nWhich pack do you want to rename?\n", packNames, true, false);
+            input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhich pack do you want to rename?\n", packNames, true, false);
             std::string newName{};
             std::cout << "\nWhat do you want to rename the pack to?\n";
             std::getline(std::cin, newName);
@@ -2587,7 +2429,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
 			int index{};
 			if (parameters.at(0) == "all") {
 				parameters.clear();
-				parameters = merge_ordered(GlobalRaceOptions, GlobalRaceDefs);
+				parameters = HLib::MergeOrdered(GlobalRaceOptions, GlobalRaceDefs);
 			}
 			if (context != "console") {
 				for (std::string i : GlobalRaceOptions) {
@@ -2750,7 +2592,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
 			int index{};
 			if (parameters.at(0) == "all") {
 				parameters.clear();
-				parameters = merge_ordered(GlobalSpellOptions, GlobalSpellDefs);
+				parameters = HLib::MergeOrdered(GlobalSpellOptions, GlobalSpellDefs);
 			}
 			if (context != "console") {
 				for (std::string i : GlobalSpellOptions) {
@@ -2897,7 +2739,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
 void Console(std::vector<std::string> currentCommands, std::vector<std::string> currentCmdDef, HPack currentHPack) {
     GUI consoleGUI{};
     std::string input{};
-    std::vector<std::string> combined{merge_ordered(currentCommands,currentCmdDef)};
+    std::vector<std::string> combined{HLib::MergeOrdered(currentCommands,currentCmdDef)};
     int index{};
     
     do {
@@ -2914,9 +2756,9 @@ void Console(std::vector<std::string> currentCommands, std::vector<std::string> 
 
         //seperates the command
         ConsoleInput(parameter, input, command);
-        std::vector<std::string> parameters{ split(parameter) };
+        std::vector<std::string> parameters{ HLib::Split(parameter) };
 
-        if (includes_string(command, currentCommands)) {
+        if (HLib::IncludesString(command, currentCommands)) {
             if (command == "help") {
                 currentHPack = ExecuteCommand(CommandCode(command, currentCommands), currentHPack, combined);
             }
@@ -2955,7 +2797,7 @@ Race RaceConsole(Race currentRace) {
     GUI raceGUI{};
     std::vector<std::string> commands{"done","help","cancel","add","edit","clear","remove"};
     std::vector<std::string> commandsDef{"Finishes Race","Get help on command","Cancels current action","Add an aspect of race","Edit aspect","Clears race","Remove element"};
-    std::vector<std::string> combined{merge_ordered(commands,commandsDef)};
+    std::vector<std::string> combined{HLib::MergeOrdered(commands,commandsDef)};
     std::string input{};
     
     system("cls");
@@ -2976,19 +2818,36 @@ Race RaceConsole(Race currentRace) {
         std::getline(std::cin, input);
 
         //seperates the command
-        ConsoleInput(parameter, input, command);
-        if (includes_string(command, commands)) {
+        int parameterindex{};
+        parameter = input;
+        for (char i : input) {
+            if (i != ' ') {
+                if (std::isalpha(i)) {
+                    command.push_back(std::tolower(i));
+                    parameter.erase(0, 1);
+                }
+                else {
+                    command.push_back(i);
+                    parameter.erase(0, 1);
+                }
+            }
+            else {
+                parameter.erase(0, 1);
+                break;
+            }
+        }
+        if (HLib::IncludesString(command, commands)) {
             if (command == "help") {
                 if (parameter == "") {
                     currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, combined,"console");
                 }
                 else {
-                    std::vector<std::string> parameters{ split(parameter) };
+                    std::vector<std::string> parameters{ HLib::Split(parameter) };
                     currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, parameters);
                 }
             }
             else {
-                std::vector<std::string> parameters{ split(parameter) };
+                std::vector<std::string> parameters{ HLib::Split(parameter) };
                 currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, parameters);
             }
             input = command;
@@ -3006,7 +2865,7 @@ Spell SpellConsole(Spell currentSpell) {
     GUI spellGUI{};
     std::vector<std::string> commands{ GlobalSpellCommands };
     std::vector<std::string> commandsDef{ GlobalSpellCommandDefs };
-    std::vector<std::string> combined{merge_ordered(commands,commandsDef)};
+    std::vector<std::string> combined{HLib::MergeOrdered(commands,commandsDef)};
     std::string input{};
     
     system("cls");
@@ -3028,18 +2887,18 @@ Spell SpellConsole(Spell currentSpell) {
 
         //seperates the command
         ConsoleInput(parameter, input, command);
-        if (includes_string(command, commands)) {
+        if (HLib::IncludesString(command, commands)) {
             if (command == "help") {
                 if (parameter == "") {
                     currentSpell = ExecuteSpellCommand(CommandCode(command,GlobalSpellCommands), currentSpell, combined,"console");
                 }
                 else {
-                    std::vector<std::string> parameters{ split(parameter) };
+                    std::vector<std::string> parameters{ HLib::Split(parameter) };
                     currentSpell = ExecuteSpellCommand(CommandCode(command, GlobalSpellCommands), currentSpell, parameters);
                 }
             }
             else {
-                std::vector<std::string> parameters{ split(parameter) };
+                std::vector<std::string> parameters{ HLib::Split(parameter) };
                 currentSpell = ExecuteSpellCommand(CommandCode(command, GlobalSpellCommands), currentSpell, parameters);
             }
             input = command;
@@ -3058,7 +2917,7 @@ Trait EditTrait(Trait currentTrait) {
     Trait bufferTrait{};
     std::vector<std::string> commands{ "done","help","cancel","edit","remove" };
     std::vector<std::string> commandsDef{ "Finishes Trait","Lists commands","Cancels trait","Edit aspect","Remove element" };
-    std::vector<std::string> combined{ merge_ordered(commands,commandsDef) };
+    std::vector<std::string> combined{ HLib::MergeOrdered(commands,commandsDef) };
     std::string input{};
 
     system("cls");
@@ -3080,7 +2939,7 @@ Trait EditTrait(Trait currentTrait) {
 
         //seperates the command
         ConsoleInput(parameter, input, command);
-        if (includes_string(command, commands)) {
+        if (HLib::IncludesString(command, commands)) {
             if (command == "help") {
                 traitGUI.GenerateMenu("Trait Commands", combined,"",true,2);
                 system("pause");
@@ -3095,7 +2954,7 @@ Trait EditTrait(Trait currentTrait) {
                 currentTrait.set_name("%%CANCELED%%");
             }
             else if (command == "edit") {
-                std::vector<std::string> parameters{split(parameter)};
+                std::vector<std::string> parameters{HLib::Split(parameter)};
                 std::string newCommand{};
                 if (!parameters.empty()) {
                     newCommand = parameters.at(0);
@@ -3147,7 +3006,7 @@ Trait EditTrait(Trait currentTrait) {
                         std::cin.sync();
                         std::getline(std::cin, newString);
                     }
-                    newString = InputCheck(newCommand, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"name", "description", "type"}, true, false);
+                    newString = HLib::InputCheck(newCommand, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"name", "description", "type"}, true, false);
                     if (newString == "name") {
                         newString.clear();
                         std::cout << "\nEnter name:\n";
@@ -3171,7 +3030,7 @@ Trait EditTrait(Trait currentTrait) {
                         std::cin.sync();
                         std::getline(std::cin, newString);
                         currentTrait.set_description(newString);
-                        newString = InputCheck(newString, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"action", "bonus action", "reaction", "other"}, true, false);
+                        newString = HLib::InputCheck(newString, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"action", "bonus action", "reaction", "other"}, true, false);
                         if (newString == "action") {
                             currentTrait.set_type(TraitType::Action);
                         }
@@ -3189,7 +3048,7 @@ Trait EditTrait(Trait currentTrait) {
                 system("pause");
             }
             else if (command == "remove") {
-                std::vector<std::string> parameters{ split(parameter) };
+                std::vector<std::string> parameters{ HLib::Split(parameter) };
                 std::string newString{};
                 if (parameters.size() > 1) {
                     if (parameters.at(0) == "name") {
@@ -3212,7 +3071,7 @@ Trait EditTrait(Trait currentTrait) {
                     std::cin.clear();
                     std::cin.sync();
                     std::getline(std::cin, newString);
-                    newString = InputCheck(newString, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"name", "description", "type"}, true, false);
+                    newString = HLib::InputCheck(newString, "\nInvalid input\nEnter input:\n", std::vector<std::string>{"name", "description", "type"}, true, false);
                     if (newString == "name") {
                         newString.clear();
                         currentTrait.set_name(newString);

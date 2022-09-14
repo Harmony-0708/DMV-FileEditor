@@ -1,5 +1,9 @@
 #include "Console.h"
 
+Console::Console()
+{
+}
+
 int Console::Run(CommandObject* object)
 {
     GUI gui{};
@@ -45,11 +49,11 @@ int Console::Run(CommandObject* object)
         }
         if (HLib::IncludesString(command, commands)) {
             if (command == "help" && parameter == "") {
-                object = object->ExecuteCommand(CommandCode(command, object->get_commands()), object, combined, "console");
+                object = object->ExecuteCommand(CommandCode(command, commands), object, combined, "console");
             }
             else {
                 std::vector<std::string> parameters{ HLib::Split(parameter) };
-                object = object->ExecuteCommand(CommandCode(command, object->get_commands()), object, parameters);
+                object = object->ExecuteCommand(CommandCode(command, commands), object, parameters);
             }
             input = command;
         }
@@ -60,7 +64,6 @@ int Console::Run(CommandObject* object)
 
     return 0;
 }
-
 
 int Console::ValidateCommand(std::string prompt, std::vector<std::string> cmds, std::vector<std::string> cmdDefs, std::vector<std::string>& parameters) {
     GUI gui{};

@@ -25,6 +25,8 @@ namespace HLib {
 
 	std::vector<std::string> Split(std::string s);
 
+	std::vector<std::string> Selection(std::vector<std::string> parameters);
+
 	void VectorToString(std::vector<std::string>& parameters, std::string& newName);
 
 	bool IncludesString(std::string input, std::vector<std::string> vInput);

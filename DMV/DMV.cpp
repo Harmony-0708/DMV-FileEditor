@@ -18,6 +18,7 @@
 #include "HPack.h"
 #include "Orcbrew.h"
 #include "CommandObject.h"
+#include "Console.h"
 
 void DrawRace(Race input);
 void DrawSpell(Spell input);
@@ -42,7 +43,7 @@ std::vector<std::string> selection(std::vector<std::string>);
 
 Race FindRace(std::string raceName, std::vector<Pack> packSet, std::string packName = "");
 
-int CommandCode(std::string command, std::vector<std::string> commands);
+//int newConsole.CommandCode(std::string command, std::vector<std::string> commands);
 
 HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> parameters = {}, std::string context = {});
 Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> parameters = {}, std::string context = {});
@@ -50,13 +51,14 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
 
 
 void ConsoleInput(std::string& parameter, std::string& input, std::string& command);
-void Console(std::vector<std::string> currentCommands = {}, std::vector<std::string> currentCmdDef = {}, HPack currentHPack = {});
+void Console1(std::vector<std::string> currentCommands = {}, std::vector<std::string> currentCmdDef = {}, HPack currentHPack = {});
 void ConsoleInput(std::string& parameter, std::string& input, std::string& command);
 Race RaceConsole(Race currentRace = {});
 Spell SpellConsole(Spell currentSpell = {});
 Trait EditTrait(Trait currentTrait = {});
 
 //Globals
+Console newConsole{};
 HPack GlobalPack{};
 std::vector<std::string> GlobalLanguages{
     "Giant", 
@@ -364,7 +366,9 @@ std::vector<std::string> GlobalSpellDefs{
 
 int main()
 {
-    Console(GlobalCommands,GlobalCommandDefs, GlobalPack);
+    Spell newRace{};
+
+    newConsole.Run(&newRace);
     return 0;
 }
 
@@ -829,7 +833,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     std::string newName{};
     std::vector<std::string> compareBase{};
     bool multi{ true };
-    int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+    int cmdCode{ newConsole.CommandCode(parameters.at(0), GlobalRaceOptions) };
     switch (cmdCode)
     {
     case 0:
@@ -851,7 +855,7 @@ Race RaceAdd(Race currentRace, std::vector<std::string>& parameters)
     case 16:
     case 17:
     case 18: {
-        currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "edit");
+        currentRace = ExecuteRaceCommand(newConsole.CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "edit");
         multi = false;
         break;
     }
@@ -1054,7 +1058,7 @@ Race RaceEdit(Race currentRace, std::vector<std::string>& parameters)
     for (Trait i : currentRace.get_trait()) {
         traitNames.push_back(i.get_name());
     }
-    int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+    int cmdCode{ newConsole.CommandCode(parameters.at(0), GlobalRaceOptions) };
     switch (cmdCode)
     {
     case 0:
@@ -1129,7 +1133,7 @@ Race RaceEdit(Race currentRace, std::vector<std::string>& parameters)
     case 26:
     case 27:
     case 28: {
-        currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "edit");
+        currentRace = ExecuteRaceCommand(newConsole.CommandCode("edit", GlobalRaceCommands), currentRace, std::vector<std::string>{}, "edit");
         break;
     }
     case 29: {
@@ -1293,7 +1297,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
     std::string newName{};
     std::vector<std::string> compareBase{};
     bool multi{ true };
-    int cmdCode{ CommandCode(parameters.at(0), GlobalRaceOptions) };
+    int cmdCode{ newConsole.CommandCode(parameters.at(0), GlobalRaceOptions) };
     switch (cmdCode)
     {
     case 0:
@@ -1359,7 +1363,7 @@ Race RaceRemove(Race currentRace, std::vector<std::string>& parameters)
         break;
     }
     case 29: {
-        currentRace = ExecuteRaceCommand(CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "remove");
+        currentRace = ExecuteRaceCommand(newConsole.CommandCode("edit", GlobalRaceCommands), currentRace, parameters, "remove");
         multi = false;
         break;
     }
@@ -1687,7 +1691,7 @@ Spell SpellAdd(Spell currentSpell, std::vector<std::string>& parameters)
 {
     GUI addGUI{};
     std::string newName{};
-    int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+    int cmdCode{ newConsole.CommandCode(parameters.at(0), GlobalSpellOptions) };
     switch (cmdCode)
     {
     case 0:
@@ -1703,7 +1707,7 @@ Spell SpellAdd(Spell currentSpell, std::vector<std::string>& parameters)
     case 10:
     case 11:
     case 12: {
-        currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
+        currentSpell = ExecuteSpellCommand(newConsole.CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
         break;
     }
     case 13: {
@@ -1719,7 +1723,7 @@ Spell SpellAdd(Spell currentSpell, std::vector<std::string>& parameters)
         break;
     }
     case 14: {
-        currentSpell = ExecuteSpellCommand(CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
+        currentSpell = ExecuteSpellCommand(newConsole.CommandCode("edit", GlobalSpellCommands), currentSpell, parameters, "add");
         break;
     }
     }
@@ -1741,7 +1745,7 @@ Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters)
 {
     GUI editGUI{};
     std::string newName{};
-    int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+    int cmdCode{ newConsole.CommandCode(parameters.at(0), GlobalSpellOptions) };
     switch (cmdCode)
     {
     case 0:
@@ -1790,7 +1794,7 @@ Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters)
         break;
     }
     case 13: {
-        currentSpell = ExecuteSpellCommand(CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
+        currentSpell = ExecuteSpellCommand(newConsole.CommandCode("add", GlobalSpellCommands), currentSpell, parameters, "edit");
         break;
     }
     case 14: {
@@ -1908,7 +1912,7 @@ Spell SpellEdit(Spell currentSpell, std::vector<std::string>& parameters)
 Spell SpellRemove(Spell currentSpell, std::vector<std::string>& parameters)
 {
     std::string newName{};
-    int cmdCode{ CommandCode(parameters.at(0), GlobalSpellOptions) };
+    int cmdCode{ newConsole.CommandCode(parameters.at(0), GlobalSpellOptions) };
     GUI editGUI{};
     if (cmdCode == 13) {
         if (parameters.size() == 1) {
@@ -2191,7 +2195,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         std::vector<std::string> options{ "race" , "spell" };
         std::vector<std::string> optionDefs{ "Displays a race", "Displays a spell" };
 
-        switch (ValidateCommand("What would you like to display?", options, optionDefs, parameters))
+        switch (newConsole.ValidateCommand("What would you like to display?", options, optionDefs, parameters))
         {
         case 0: {
             currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
@@ -2218,7 +2222,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         std::vector<std::string> options{ "race", "spell"};
         std::vector<std::string> optionDefs{ "Add race", "Add spell"};
 
-        switch (ValidateCommand("What would you like to add?",options,optionDefs,parameters))
+        switch (newConsole.ValidateCommand("What would you like to add?",options,optionDefs,parameters))
         {
         case 0: {
             currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
@@ -2245,7 +2249,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         std::vector<std::string> options{ "all","single","multi" };
         std::vector<std::string> optionDefs{ "Load all", "Load a single file", "Load multiple files"};
 
-        switch (ValidateCommand("How many packs do you want to load?", options, optionDefs, parameters))
+        switch (newConsole.ValidateCommand("How many packs do you want to load?", options, optionDefs, parameters))
         {
         case 0: {
             currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
@@ -2272,7 +2276,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         std::vector<std::string> options{ "hpck","pck" };
         std::vector<std::string> optionDefs{ "Saves all packs into one pack", "Save a single pack"};
 
-        switch (ValidateCommand("How do you want to save your packs?", options, optionDefs, parameters))
+        switch (newConsole.ValidateCommand("How do you want to save your packs?", options, optionDefs, parameters))
         {
         case 0: {
             currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
@@ -2299,7 +2303,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         std::vector<std::string> options{ "yes","no" };
         std::vector<std::string> optionDefs{ "", "" };
 
-        switch (ValidateCommand("Are you sure you want to export your packs to orcbrew format? WARNING: Any orcbrew file with the same name as your current HPack will be overwritten", options, optionDefs, parameters))
+        switch (newConsole.ValidateCommand("Are you sure you want to export your packs to orcbrew format? WARNING: Any orcbrew file with the same name as your current HPack will be overwritten", options, optionDefs, parameters))
         {
         case 0: {
             currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
@@ -2333,7 +2337,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
             std::cout << "\nWhat do you want to rename?\n";
             std::getline(std::cin, input);
             input = HLib::InputCheck(input, "\nInvalid Item, use options to find valid items\nWhat do you want to rename?\n", nameOptions, true, false);
-            currentHPack = ExecuteCommand(CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{input}, "name");
+            currentHPack = ExecuteCommand(newConsole.CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{input}, "name");
         }
         else if (parameters.at(0) == "cancel") {
             break;
@@ -2341,7 +2345,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         else if (parameters.at(0) == "options") {
             nameGUI.GenerateMenu("Name Options", nameOptions);
             std::cout << std::endl;
-            currentHPack = ExecuteCommand(CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{}, "name");
+            currentHPack = ExecuteCommand(newConsole.CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{}, "name");
         }
         else if (parameters.at(0) == nameOptions.at(2)) {
             std::cout << "\nWhat do you want to rename the pack to?\n";
@@ -2366,7 +2370,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         }
         else {
             std::cout << "\nInvalid parameter\n";
-            currentHPack = ExecuteCommand(CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{});
+            currentHPack = ExecuteCommand(newConsole.CommandCode("name", GlobalCommands), currentHPack, std::vector<std::string>{});
         }
 
         break;
@@ -2377,7 +2381,7 @@ HPack ExecuteCommand(int cmdCode, HPack currentHPack, std::vector<std::string> p
         std::vector<std::string> options{ "race", "spell" };
         std::vector<std::string> optionDefs{ "Edit a race", "Edit a spell" };
 
-        switch (ValidateCommand("What would you like to edit?", options, optionDefs, parameters))
+        switch (newConsole.ValidateCommand("What would you like to edit?", options, optionDefs, parameters))
         {
         case 0: {
             currentHPack = ExecuteCommand(cmdCode, currentHPack, parameters, std::to_string(cmdCode));
@@ -2465,7 +2469,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
     
     //Add
     case 3: {
-        switch (ValidateCommand("What would you like to add?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+        switch (newConsole.ValidateCommand("What would you like to add?", GlobalRaceOptions, GlobalRaceDefs, parameters))
         {
         case 0: {
             currentRace = ExecuteRaceCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
@@ -2489,7 +2493,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
     
     //Edit
     case 4: {
-        switch (ValidateCommand("What would you like to edit?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+        switch (newConsole.ValidateCommand("What would you like to edit?", GlobalRaceOptions, GlobalRaceDefs, parameters))
         {
         case 0: {
             currentRace = ExecuteRaceCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
@@ -2516,7 +2520,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
         std::vector<std::string> options{ "yes", "no" };
         std::vector<std::string> optionDefs{ "", "" };
 
-        switch (ValidateCommand("Are you sure?", options, optionDefs, parameters))
+        switch (newConsole.ValidateCommand("Are you sure?", options, optionDefs, parameters))
         {
         case 0: {
             currentRace = ExecuteRaceCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
@@ -2541,7 +2545,7 @@ Race ExecuteRaceCommand(int cmdCode, Race currentRace, std::vector<std::string> 
     
     //Remove
     case 6: {
-        switch (ValidateCommand("What would you like to remove?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+        switch (newConsole.ValidateCommand("What would you like to remove?", GlobalRaceOptions, GlobalRaceDefs, parameters))
         {
         case 0: {
             currentRace = ExecuteRaceCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
@@ -2628,7 +2632,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
     
     //Add
     case 3: {
-        switch (ValidateCommand("What would you like to add?", GlobalSpellOptions, GlobalSpellDefs, parameters))
+        switch (newConsole.ValidateCommand("What would you like to add?", GlobalSpellOptions, GlobalSpellDefs, parameters))
         {
         case 0: {
             currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, parameters, std::to_string(cmdCode));
@@ -2652,7 +2656,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
     
     //Edit
     case 4: {
-        switch (ValidateCommand("What would you like to edit?", GlobalSpellOptions, GlobalSpellDefs, parameters))
+        switch (newConsole.ValidateCommand("What would you like to edit?", GlobalSpellOptions, GlobalSpellDefs, parameters))
         {
         case 0: {
             currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, parameters, std::to_string(cmdCode));
@@ -2679,7 +2683,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
         std::vector<std::string> options{ "yes", "no" };
         std::vector<std::string> optionDefs{ "", "" };
 
-        switch (ValidateCommand("Are you sure?", options, optionDefs, parameters))
+        switch (newConsole.ValidateCommand("Are you sure?", options, optionDefs, parameters))
         {
         case 0: {
             currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, parameters, std::to_string(cmdCode));
@@ -2704,7 +2708,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
     
     //Remove
     case 6: {
-        switch (ValidateCommand("What would you like to remove?", GlobalSpellOptions, GlobalSpellDefs, parameters))
+        switch (newConsole.ValidateCommand("What would you like to remove?", GlobalSpellOptions, GlobalSpellDefs, parameters))
         {
         case 0: {
             currentSpell = ExecuteSpellCommand(cmdCode, currentSpell, parameters, std::to_string(cmdCode));
@@ -2736,7 +2740,7 @@ Spell ExecuteSpellCommand(int cmdCode, Spell currentSpell, std::vector<std::stri
 }
 
 //Consoles
-void Console(std::vector<std::string> currentCommands, std::vector<std::string> currentCmdDef, HPack currentHPack) {
+void Console1(std::vector<std::string> currentCommands, std::vector<std::string> currentCmdDef, HPack currentHPack) {
     GUI consoleGUI{};
     std::string input{};
     std::vector<std::string> combined{HLib::MergeOrdered(currentCommands,currentCmdDef)};
@@ -2760,10 +2764,10 @@ void Console(std::vector<std::string> currentCommands, std::vector<std::string> 
 
         if (HLib::IncludesString(command, currentCommands)) {
             if (command == "help") {
-                currentHPack = ExecuteCommand(CommandCode(command, currentCommands), currentHPack, combined);
+                currentHPack = ExecuteCommand(newConsole.CommandCode(command, currentCommands), currentHPack, combined);
             }
             else {
-                currentHPack = ExecuteCommand(CommandCode(command, currentCommands), currentHPack, parameters);
+                currentHPack = ExecuteCommand(newConsole.CommandCode(command, currentCommands), currentHPack, parameters);
             }
             input = command;
         }
@@ -2839,16 +2843,16 @@ Race RaceConsole(Race currentRace) {
         if (HLib::IncludesString(command, commands)) {
             if (command == "help") {
                 if (parameter == "") {
-                    currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, combined,"console");
+                    currentRace = ExecuteRaceCommand(newConsole.CommandCode(command, GlobalRaceCommands), currentRace, combined,"console");
                 }
                 else {
                     std::vector<std::string> parameters{ HLib::Split(parameter) };
-                    currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, parameters);
+                    currentRace = ExecuteRaceCommand(newConsole.CommandCode(command, GlobalRaceCommands), currentRace, parameters);
                 }
             }
             else {
                 std::vector<std::string> parameters{ HLib::Split(parameter) };
-                currentRace = ExecuteRaceCommand(CommandCode(command, GlobalRaceCommands), currentRace, parameters);
+                currentRace = ExecuteRaceCommand(newConsole.CommandCode(command, GlobalRaceCommands), currentRace, parameters);
             }
             input = command;
         }
@@ -2890,16 +2894,16 @@ Spell SpellConsole(Spell currentSpell) {
         if (HLib::IncludesString(command, commands)) {
             if (command == "help") {
                 if (parameter == "") {
-                    currentSpell = ExecuteSpellCommand(CommandCode(command,GlobalSpellCommands), currentSpell, combined,"console");
+                    currentSpell = ExecuteSpellCommand(newConsole.CommandCode(command,GlobalSpellCommands), currentSpell, combined,"console");
                 }
                 else {
                     std::vector<std::string> parameters{ HLib::Split(parameter) };
-                    currentSpell = ExecuteSpellCommand(CommandCode(command, GlobalSpellCommands), currentSpell, parameters);
+                    currentSpell = ExecuteSpellCommand(newConsole.CommandCode(command, GlobalSpellCommands), currentSpell, parameters);
                 }
             }
             else {
                 std::vector<std::string> parameters{ HLib::Split(parameter) };
-                currentSpell = ExecuteSpellCommand(CommandCode(command, GlobalSpellCommands), currentSpell, parameters);
+                currentSpell = ExecuteSpellCommand(newConsole.CommandCode(command, GlobalSpellCommands), currentSpell, parameters);
             }
             input = command;
         }

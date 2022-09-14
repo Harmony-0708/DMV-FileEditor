@@ -10,8 +10,7 @@
 #include "harmonylib.h"
 #include "CommandObject.h"
 
-class Trait :
-	public CommandObject
+class Trait
 {
 private:
 	std::string Name{};
@@ -35,11 +34,11 @@ public:
 	Trait create_trait(std::string name = "", std::string description = "", std::string type = "");
 
 	//Virtual Overrides
-	CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
+	/*CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
 	void Display();
 	std::string get_title();
 	bool IsDone(std::string input);
 	std::vector<std::string> get_commands();
-	std::vector<std::string> get_command_defs();
+	std::vector<std::string> get_command_defs();*/
 };
 

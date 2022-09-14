@@ -1,19 +1,5 @@
 ﻿  DMV.cpp
-C:\Users\arhea\source\repos\DMV\DMV\DMV.cpp(2257,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
-  GUI.cpp
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(31,36): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(58,26): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(356,73): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(357,39): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(468,25): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(474,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(554,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(559,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(639,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(644,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\GUI.cpp(728,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   HPack.cpp
-  Item.cpp
   Orcbrew.cpp
 C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(344,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(474,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
@@ -77,13 +63,9 @@ C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(922,41): warning C4267: 'initializi
 C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(923,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
   Race.cpp
   Spell.cpp
-  Trait.cpp
-  harmonylib.cpp
-C:\Users\arhea\source\repos\DMV\DMV\harmonylib.cpp(207,36): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   Generating code
-  Previous IPDB was built with incompatible compiler, fall back to full compilation.
-C:\Users\arhea\source\repos\DMV\DMV\Race.cpp(128): warning C4715: 'Race::get_sizename': not all control paths return a value
-C:\Users\arhea\source\repos\DMV\DMV\Trait.cpp(41): warning C4715: 'Trait::get_typename': not all control paths return a value
-  All 1602 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  240 of 603 functions (39.8%) were compiled, the rest were copied from previous compilation.
+    9 functions were new in current compilation
+    88 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Release\DMV.exe

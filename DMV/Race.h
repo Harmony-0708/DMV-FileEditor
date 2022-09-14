@@ -13,6 +13,7 @@
 #include "GUI.h"
 #include "harmonylib.h"
 #include "CommandObject.h"
+#include "Console.h"
 
 class Race :
 	public CommandObject
@@ -52,11 +53,103 @@ private:
 	std::vector<std::string> DamageImmun{};
 	std::vector<Trait> Traits{};
 	std::vector<std::vector<Spell>> Spells{};
+
+	Console RaceConsole{};
+
+	//Virtual 
+
+	std::string Title{"Race"};
+	std::string DoneVariable{};
+	std::vector<std::string> Commands{
+		"done",
+		"help",
+		"cancel",
+		"add",
+		"edit",
+		"clear",
+		"remove"
+	};
+	std::vector<std::string> CommandDefs{
+		"Finishes Race",
+		"Get help on command",
+		"Cancels current action",
+		"Add an aspect of race",
+		"Edit aspect",
+		"Clears race",
+		"Remove element"
+	};
+	std::vector<std::string> GlobalRaceOptions{
+		"name",
+		"option-pack",
+		"description",
+		"size",
+		"str",
+		"dex",
+		"con",
+		"int",
+		"wis",
+		"cha",
+		"speed",
+		"flying-speed",
+		"swimming-speed",
+		"dark-vision",
+		"skill-opscount",
+		"lang-opscount",
+		"weapon-opscount",
+		"lizard-ac",
+		"tortle-ac",
+		"languages",
+		"tools",
+		"skill-ops",
+		"skill-profs",
+		"language-ops",
+		"weapon-ops",
+		"Weapon-profs",
+		"armor-profs",
+		"damage-res",
+		"damage-imm",
+		"trait"
+	};
+	std::vector<std::string> GlobalRaceDefs{
+		"The name of your Race",
+		"The name of the pack your race is in",
+		"The Description of your race",
+		"The size of your race",
+		"Strength mod",
+		"Dexterity mod",
+		"Constitution mod",
+		"Intelligence mod",
+		"Wisdom mod",
+		"Charisma mod",
+		"Your race's speed",
+		"Your race's flying speed, 0 if none",
+		"Your race's swimming speed",
+		"Your race's dark vision",
+		"The ammount of skill options you have, Min 1",
+		"The ammount of language options you have, Min 1",
+		"The ammount of weapon options you have, Min 1",
+		"Whether or no your race has lizardfolk AC",
+		"Whether or no your race has tortle AC",
+		"The languages your race knows",
+		"The tools your race is proficent in",
+		"Your race's skill options",
+		"Your race's skill proficencies",
+		"Your race's language options",
+		"Your race's weapon options",
+		"Your race's weapon proficiencies",
+		"Your race's armor proficiencies",
+		"Types of damage your race is resistance to",
+		"Types of damage your race is immune to",
+		"The specific traits of your race"
+	};
+
 public:
 
 	//Constructors
 	Race();
 	Race(std::string);
+
+
 
 	//Clear
 	void clear();
@@ -166,6 +259,12 @@ public:
 
 	//Gets all info on race, for display reasons
 	void display_info();
+
+	CommandObject* Add(CommandObject* currentRace, std::vector<std::string>& parameters);
+
+	CommandObject* Edit(CommandObject* currentRace, std::vector<std::string>& parameters);
+
+	CommandObject* Remove(CommandObject* currentRace, std::vector<std::string>& parameters);
 
 	//Virtual Overrides
 	CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});

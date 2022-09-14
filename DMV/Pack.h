@@ -22,8 +22,7 @@
 #include "Spell.h"
 #include "CommandObject.h"
 
-class Pack :
-	public CommandObject
+class Pack
 {
 private:
 	std::string Name{};
@@ -69,12 +68,12 @@ public:
 	void print_pack(bool multi, std::ofstream& outputfile);
 
 	//Virtual Overrides
-	CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
+	/*CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
 	void Display();
 	std::string get_title();
 	bool IsDone(std::string input);
 	std::vector<std::string> get_commands();
-	std::vector<std::string> get_command_defs();
+	std::vector<std::string> get_command_defs();*/
 
 };
 

@@ -784,7 +784,6 @@ void Race::insert_spell(std::vector<std::vector<Spell>> spellList)
 
 
 //Display
-
 /// <summary>
 /// Displays the race and all of it's features
 /// </summary>
@@ -842,4 +841,1060 @@ void Race::display_info()
 	std::cout << std::endl;
 }
 
+CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& parameters)
+{
+    GUI addGUI{};
+    std::string newName{};
+    std::vector<std::string> compareBase{};
+    bool multi{ true };
+    int cmdCode{ RaceConsole.CommandCode(parameters.at(0), GlobalRaceOptions) };
+    switch (cmdCode)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18: {
+        currentRace = ExecuteCommand(RaceConsole.CommandCode("edit", Commands), currentRace, parameters, "edit");
+        multi = false;
+        break;
+    }
+    case 19: {
+        compareBase = GlobalLanguages;
+        break;
+    }
+    case 20: {
+        compareBase = GlobalTools;
+        break;
+    }
+    case 21: {
+        compareBase = GlobalSkills;
+        break;
+    }
+    case 22: {
+        compareBase = GlobalSkills;
+        break;
+    }
+    case 23: {
+        compareBase = GlobalLanguages;
+        break;
+    }
+    case 24: {
+        compareBase = GlobalWeapons;
+        break;
+    }
+    case 25: {
+        compareBase = GlobalWeapons;
+        break;
+    }
+    case 26: {
+        compareBase = GlobalArmorType;
+        break;
+    }
+    case 27: {
+        compareBase = GlobalDamageType;
+        break;
+    }
+    case 28: {
+        compareBase = GlobalDamageType;
+        break;
+    }
+    case 29: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            for (std::string i : parameters) {
+                newName += i;
+            }
+        }
+        multi = false;
+        break;
+    }
+    }
+    if (multi) {
+        if (parameters.size() == 1) {
+            addGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
+            std::cout << "\nWhat do you want to add?\n";
+            std::getline(std::cin, newName);
+            newName = HLib::InputCheck(newName, "\nWhat do you want to add?\n", compareBase, true, false);
+            parameters.clear();
+            parameters.push_back(newName);
+        }
+        else {
+            parameters.erase(parameters.begin());
+        }
+    }
+    switch (cmdCode)
+    {
+        //Languages
+    case 19: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Tools
+    case 20: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Skill Options
+    case 21: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Skill Profs
+    case 22: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Language Options
+    case 23: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Weapon Options
+    case 24: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Weapon Profs
+    case 25: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Armor Profs
+    case 26: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Damage Res
+    case 27: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Damage Imm
+    case 28: {
+        int index{};
+        for (std::string i : parameters) {
+            if (HLib::IncludesString(i, compareBase)) {
+                this->insert_language(i);
+            }
+            index++;
+        }
+        break;
+    }
+           //Traits
+    case 29: {
+        Trait newTrait{};
+        newTrait.set_name(newName);
+        //newTrait = EditTrait(newTrait);
+        if (newTrait.get_name() != "%%CANCELED%%") {
+            this->insert_trait(newTrait);
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return currentRace;
+}
+CommandObject* Race::Edit(CommandObject* currentRace, std::vector<std::string>& parameters)
+{
+    GUI editGUI{};
+    std::string newName{};
+    std::vector<std::string> traitNames{};
+    /*for (Trait i : this->get_trait()) {
+        traitNames.push_back(i.get_name());
+    }*/
+    int cmdCode{ RaceConsole.CommandCode(parameters.at(0), GlobalRaceOptions) };
+    switch (cmdCode)
+    {
+    case 0:
+    case 1:
+    case 2: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            HLib::VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        break;
+    }
+    case 3: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            HLib::VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        newName = HLib::InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"small", "medium", "large"}, true, false);
+        break;
+    }
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            HLib::VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        newName = HLib::InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{}, false, true);
+        break;
+    }
+    case 17:
+    case 18: {
+        if (parameters.size() > 1) {
+            parameters.erase(parameters.begin());
+            HLib::VectorToString(parameters, newName);
+        }
+        else {
+            std::cout << "\nEnter new value:\n";
+            std::getline(std::cin, newName);
+        }
+        newName = HLib::InputCheck(newName, "\nEnter new value\n", std::vector<std::string>{"yes", "no"}, true, false);
+        break;
+    }
+    case 19:
+    case 20:
+    case 21:
+    case 22:
+    case 23:
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+    case 28: {
+        currentRace = ExecuteCommand(RaceConsole.CommandCode("edit", Commands), currentRace, std::vector<std::string>{}, "edit");
+        break;
+    }
+    case 29: {
+        parameters.erase(parameters.begin());
+        if (parameters.size() == 0) {
+            std::cout << "\nWhich trait do you want to edit?\n";
+            std::getline(std::cin, newName);
+            newName = HLib::InputCheck(newName, "\nWhich trait do you want to edit?\n", traitNames, true, false);
+        }
+        else {
+            int index{};
+            for (std::string i : parameters) {
+                if (index == 0) { newName += i; }
+                else { newName += " " + i; }
+                index++;
+            }
+        }
+
+
+        break;
+    }
+    }
+    switch (cmdCode)
+    {
+        //Name
+    case 0: {
+        this->set_name(newName);
+        break;
+    }
+          //OptionPack
+    case 1: {
+        this->set_optionPack(newName);
+        break;
+    }
+          //Description
+    case 2: {
+        this->set_description(newName);
+        break;
+    }
+          //Size
+    case 3: {
+        if (newName == "small") {
+            this->set_size(SizeEnum::small);
+        }
+        else if (newName == "medium") {
+            this->set_size(SizeEnum::medium);
+        }
+        else if (newName == "large") {
+            this->set_size(SizeEnum::large);
+        }
+        break;
+    }
+          //Str
+    case 4: {
+        this->set_str(std::stoi(newName));
+        break;
+    }
+          //Dex
+    case 5: {
+        this->set_dex(std::stoi(newName));
+        break;
+    }
+          //Con
+    case 6: {
+        this->set_con(std::stoi(newName));
+        break;
+    }
+          //Int
+    case 7: {
+        this->set_int(std::stoi(newName));
+        break;
+    }
+          //Wis
+    case 8: {
+        this->set_wis(std::stoi(newName));
+        break;
+    }
+          //Cha
+    case 9: {
+        this->set_cha(std::stoi(newName));
+        break;
+    }
+          //Speed
+    case 10: {
+        this->set_speed(std::stoi(newName));
+        break;
+    }
+           //FlyingSpeed
+    case 11: {
+        this->set_flySpeed(std::stoi(newName));
+        break;
+    }
+           //SwimmingSpeed
+    case 12: {
+        this->set_swimSpeed(std::stoi(newName));
+        break;
+    }
+           //Dark vision
+    case 13: {
+        this->set_darkVision(std::stoi(newName));
+        break;
+    }
+           //Skill Options Count
+    case 14: {
+        this->set_skillOptionsCount(std::stoi(newName));
+        break;
+    }
+           //Language Options Count
+    case 15: {
+        this->set_languageOptionsCount(std::stoi(newName));
+        break;
+    }
+           //Weapon Options Count
+    case 16: {
+        this->set_weaponOptionsCount(std::stoi(newName));
+        break;
+    }
+           //LizFolkAC
+    case 17: {
+        if (newName == "yes") {
+            this->set_lizFolkAC(true);
+        }
+        else {
+            this->set_lizFolkAC(false);
+        }
+        break;
+    }
+           //TortAC
+    case 18: {
+        if (newName == "yes") {
+            this->set_tortAC(true);
+        }
+        else {
+            this->set_tortAC(false);
+        }
+        break;
+    }
+           //Traits
+    case 29: {
+        Trait newTrait{};
+        std::vector<Trait> allTraits{ this->get_trait() };
+        int index{};
+        for (Trait i : allTraits) {
+            if (i.get_name() == newName) {
+                newTrait = i;
+            }
+            index++;
+        }
+        //allTraits.at(index) = EditTrait(newTrait);
+        this->insert_trait(allTraits);
+        break;
+    }
+    default:
+        break;
+    }
+    return currentRace;
+}
+CommandObject* Race::Remove(CommandObject* currentRace, std::vector<std::string>& parameters)
+{
+    GUI removeGUI{};
+    std::string newName{};
+    std::vector<std::string> compareBase{};
+    bool multi{ true };
+    int cmdCode{ RaceConsole.CommandCode(parameters.at(0), this->GlobalRaceOptions) };
+    switch (cmdCode)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18: {
+        multi = false;
+        break;
+    }
+    case 19: {
+        compareBase = this->get_language();
+        break;
+    }
+    case 20: {
+        compareBase = this->get_tool();
+        break;
+    }
+    case 21: {
+        compareBase = this->get_skillOption();
+        break;
+    }
+    case 22: {
+        compareBase = this->get_skillProf();
+        break;
+    }
+    case 23: {
+        compareBase = this->get_languageOption();
+        break;
+    }
+    case 24: {
+        compareBase = this->get_weaponOption();
+        break;
+    }
+    case 25: {
+        compareBase = this->get_weaponProf();
+        break;
+    }
+    case 26: {
+        compareBase = this->get_armorProf();
+        break;
+    }
+    case 27: {
+        compareBase = this->get_damageRes();
+        break;
+    }
+    case 28: {
+        compareBase = this->get_damageImmun();
+        break;
+    }
+    case 29: {
+        currentRace = ExecuteCommand(RaceConsole.CommandCode("edit", Commands), currentRace, parameters, "remove");
+        multi = false;
+        break;
+    }
+    }
+    if (multi) {
+        if (parameters.size() == 1) {
+            removeGUI.GenerateMenu("Loaded", compareBase, "", true, 4);
+            std::cout << "\nWhat do you want to remove?\n";
+            std::getline(std::cin, newName);
+            newName = HLib::InputCheck(newName, "\nWhat do you want to remove?\n", compareBase, true, false);
+            parameters.clear();
+            parameters.push_back(newName);
+        }
+        else {
+            parameters.erase(parameters.begin());
+        }
+    }
+    switch (cmdCode)
+    {
+        //Name
+    case 0: {
+        if (this->get_name() == "") {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_name("");
+        }
+        break;
+    }
+          //OptionPack
+    case 1: {
+        if (this->get_optionPack() == "") {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_optionPack("");
+        }
+        break;
+    }
+          //Description
+    case 2: {
+        if (this->get_description() == "") {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_description("");
+        }
+        break;
+    }
+          //Size
+    case 3: {
+        if (this->get_sizename() == "Small") {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_size(SizeEnum::small);
+        }
+        break;
+    }
+          //Str
+    case 4: {
+        if (this->get_str() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_str(0);
+        }
+        break;
+    }
+          //Dex
+    case 5: {
+        if (this->get_dex() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+
+        }
+        else {
+            this->set_dex(0);
+        }
+        break;
+    }
+          //Con
+    case 6: {
+        if (this->get_con() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_con(0);
+        }
+        break;
+    }
+          //Int
+    case 7: {
+        if (this->get_int() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_int(0);
+        }
+        break;
+    }
+          //Wis
+    case 8: {
+        if (this->get_wis() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_wis(0);
+        }
+        break;
+    }
+          //Cha
+    case 9: {
+        if (this->get_cha() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_cha(0);
+        }
+        break;
+    }
+          //Speed
+    case 10: {
+        if (this->get_speed() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_speed(0);
+        }
+        break;
+    }
+           //FlyingSpeed
+    case 11: {
+        if (this->get_flySpeed() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_flySpeed(0);
+        }
+        break;
+    }
+           //SwimmingSpeed
+    case 12: {
+        if (this->get_swimSpeed() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_swimSpeed(0);
+        }
+        break;
+    }
+           //Dark vision
+    case 13: {
+        if (this->get_darkVision() == 0) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_darkVision(0);
+        }
+        break;
+    }
+           //Skill Options Count
+    case 14: {
+        if (this->get_skillOptionsCount() == 1) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_skillOptionsCount(0);
+        }
+        break;
+    }
+           //Language Options Count
+    case 15: {
+        if (this->get_languageOptionsCount() == 1) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_languageOptionsCount(0);
+        }
+        break;
+    }
+           //Weapon Options Count
+    case 16: {
+        if (this->get_weaponOptionsCount() == 1) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_weaponOptionsCount(0);
+        }
+        break;
+    }
+           //LizFolkAC
+    case 17: {
+        if (this->get_lizFolkAC() == false) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_lizFolkAC(false);
+        }
+        break;
+    }
+           //TortAC
+    case 18: {
+        if (this->get_tortAC() == false) {
+            std::cout << "\nNothing to remove\n"; break;
+        }
+        else {
+            this->set_tortAC(false);
+        }
+        break;
+    }
+           //Languages
+    case 19: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_language()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_language(newInsert);
+        break;
+    }
+           //Tools
+    case 20: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_tool()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_tool(newInsert);
+        break;
+    }
+           //Skill Options
+    case 21: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_skillOption()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_skillOption(newInsert);
+        break;
+    }
+           //Skill Profs
+    case 22: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_skillProf()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_skillProf(newInsert);
+        break;
+    }
+           //Language Options
+    case 23: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_languageOption()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_languageOption(newInsert);
+        break;
+    }
+           //Weapon Options
+    case 24: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_weaponOption()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_weaponOption(newInsert);
+        break;
+    }
+           //Weapon Profs
+    case 25: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_weaponProf()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_weaponProf(newInsert);
+        break;
+    }
+           //Armor Profs
+    case 26: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_armorProf()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_armorProf(newInsert);
+        break;
+    }
+           //Damage Res
+    case 27: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_damageRes()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_damageRes(newInsert);
+        break;
+    }
+           //Damage Imm
+    case 28: {
+        std::vector<std::string> newInsert{};
+        for (std::string i : this->get_damageImmun()) {
+            if (!HLib::IncludesString(i, parameters)) {
+                newInsert.push_back(i);
+            }
+        }
+        this->insert_damageImmun(newInsert);
+        break;
+    }
+    }
+    return currentRace;
+}
+
+//Virtual 
+CommandObject* Race::ExecuteCommand(int cmdCode, CommandObject* currentRace, std::vector<std::string> parameters, std::string context)
+{
+	switch (cmdCode)
+	{
+		//Done
+	case 0: {
+		break;
+	}
+
+		  //Help
+	case 1: {
+		GUI helpGUI{};
+		std::vector<std::string> helpOptions{};
+		std::string input{};
+
+		if (parameters.empty()) {
+		}
+		else {
+			std::vector<std::string> selection{};
+			int index{};
+			if (parameters.at(0) == "all") {
+				parameters.clear();
+				parameters = HLib::MergeOrdered(GlobalRaceOptions, GlobalRaceDefs);
+			}
+			if (context != "console") {
+				for (std::string i : GlobalRaceOptions) {
+					for (std::string k : parameters) {
+						if (i == k) {
+							selection.push_back(i);
+							selection.push_back(GlobalRaceDefs.at(index));
+						}
+					}
+					index++;
+				}
+			}
+			else {
+				context = "";
+				selection = parameters;
+			}
+			if (selection.empty()) {
+				std::cout << "\nInput not found, try again\n";
+			}
+			else {
+				helpGUI.GenerateMenu("Command - Definition", selection, "", true, 2);
+			}
+		}
+		break;
+	}
+
+		  //Cancel
+	case 2: {
+		Race cancelRace{ "%%CANCELED%%" };
+		currentRace = &cancelRace;
+		break;
+	}
+
+		  //Add
+	case 3: {
+		switch (RaceConsole.ValidateCommand("What would you like to add?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+		{
+		case 0: {
+			currentRace = ExecuteCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
+			break;
+		}
+		case 1: {
+			break;
+		}
+		case 2: {
+			currentRace = Add(currentRace, parameters);
+			break;
+		}
+		case 3: {
+			std::cout << "\nInvalid parameter\n";
+			currentRace = ExecuteCommand(cmdCode, currentRace, std::vector<std::string>{}, std::to_string(cmdCode));
+			break;
+		}
+		}
+		break;
+	}
+
+		  //Edit
+	case 4: {
+		switch (RaceConsole.ValidateCommand("What would you like to edit?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+		{
+		case 0: {
+			currentRace = ExecuteCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
+			break;
+		}
+		case 1: {
+			break;
+		}
+		case 2: {
+			currentRace = Edit(currentRace, parameters);
+			break;
+		}
+		case 3: {
+			std::cout << "\nInvalid parameter\n";
+			currentRace = ExecuteCommand(cmdCode, currentRace, std::vector<std::string>{}, std::to_string(cmdCode));
+			break;
+		}
+		}
+		break;
+	}
+
+		  //Clear
+	case 5: {
+		std::vector<std::string> options{ "yes", "no" };
+		std::vector<std::string> optionDefs{ "", "" };
+
+		switch (RaceConsole.ValidateCommand("Are you sure?", options, optionDefs, parameters))
+		{
+		case 0: {
+			currentRace = ExecuteCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
+			break;
+		}
+		case 1: {
+			break;
+		}
+		case 2: {
+			Race newRace{};
+			currentRace = &newRace;
+			break;
+		}
+		case 3: {
+			std::cout << "\nInvalid parameter\n";
+			currentRace = ExecuteCommand(cmdCode, currentRace, std::vector<std::string>{}, std::to_string(cmdCode));
+			break;
+		}
+		}
+		break;
+	}
+
+		  //Remove
+	case 6: {
+		switch (RaceConsole.ValidateCommand("What would you like to remove?", GlobalRaceOptions, GlobalRaceDefs, parameters))
+		{
+		case 0: {
+			currentRace = ExecuteCommand(cmdCode, currentRace, parameters, std::to_string(cmdCode));
+			break;
+		}
+		case 1: {
+			break;
+		}
+		case 2: {
+			currentRace = Remove(currentRace, parameters);
+			break;
+		}
+		case 3: {
+			std::cout << "\nInvalid parameter\n";
+			currentRace = ExecuteCommand(cmdCode, currentRace, std::vector<std::string>{}, std::to_string(cmdCode));
+			break;
+		}
+		}
+		break;
+	}
+	default:
+		break;
+	}
+	if (context == "") {
+		system("pause");
+		system("cls");
+	}
+	return currentRace;
+}
+
+void Race::Display()
+{
+	display_info();
+}
+
+std::string Race::get_title()
+{
+	return this->Title;
+}
+
+bool Race::IsDone(std::string input)
+{
+	if (input == "done" || input == "exit" || this->get_name() == "%%CANCELED%%") {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
+std::vector<std::string> Race::get_commands()
+{
+	return this->Commands;
+}
+
+std::vector<std::string> Race::get_command_defs()
+{
+	return this->CommandDefs;
+}
 

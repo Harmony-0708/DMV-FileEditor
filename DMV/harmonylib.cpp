@@ -211,3 +211,105 @@ std::vector<std::string> HLib::Split(std::string s) {
     std::vector<std::string> vstrings(begin, end);
     return vstrings;
 }
+
+std::vector<std::string> HLib::Selection(std::vector<std::string> parameters) {
+    GUI selectionGUI{};
+    std::vector<std::string> selected{};
+    std::string input{};
+    std::vector<std::string> commands{ "add","remove","clear","done" };
+
+    do {
+        system("cls");
+
+        std::string command{};
+        std::string parameter{};
+
+        selectionGUI.GenerateMenu("Enter selections ", parameters, "Use add, remove, and clear", true, 4);
+
+        if (!selected.empty()) {
+            std::cout << std::endl;
+            selectionGUI.GenerateMenu("Already Selected ", selected, "", true, 4);
+        }
+
+        std::cout << "\nEnter input:\n";
+        std::cin.clear();
+        std::cin.sync();
+        std::getline(std::cin, input);
+
+        //seperates the command
+        parameter = input;
+        int parameterindex{};
+        for (char i : input) {
+            if (i != ' ') {
+                if (std::isalpha(i)) {
+                    command.push_back(std::tolower(i));
+                    parameter.erase(0, 1);
+                }
+                else {
+                    command.push_back(i);
+                    parameter.erase(0, 1);
+                }
+            }
+            else {
+                parameter.erase(0, 1);
+                break;
+            }
+        }
+
+        if (HLib::IncludesString(command, commands)) {
+            if (command == "add") {
+                if (parameter != "all") {
+                    bool found{ false };
+                    for (std::string i : selected) {
+                        if (i == parameter) {
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        selected.push_back(parameter);
+                    }
+                    else {
+                        std::cout << "\nItem was already selected\n";
+                    }
+                }
+                else {
+                    selected.clear();
+                    for (std::string i : parameters) {
+                        selected.push_back(i);
+                    }
+                }
+            }
+            else if (command == "remove") {
+                int index{ -1 };
+                bool found{ false };
+                for (std::string i : selected) {
+                    index++;
+                    if (i == parameter) {
+                        selected.erase(selected.begin() + index);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    std::cout << "\nItem was not found\n";
+                }
+            }
+            else if (command == "clear") {
+                std::cout << "\nAre you sure you want to clear your selection?\n";
+                input.clear();
+                std::cin.clear();
+                std::cin.sync();
+                std::getline(std::cin, input);
+                input = HLib::InputCheck(input, "\nYes/No\nAre you sure you want to clear your selection?\n", { "Yes","No","yes","no" }, true, false);
+                if (input == "yes" || input == "Yes") {
+                    selected.clear();
+                }
+            }
+            input = command;
+        }
+        else {
+            std::cout << "\nInvalid Command, use 'help' for list of commands\n";
+        }
+
+    } while (input != "done");
+    return selected;
+}

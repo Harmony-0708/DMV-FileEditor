@@ -86,7 +86,7 @@ std::vector<Pack> HPack::merge(std::vector<std::vector<Pack>> PackSet)
     return std::vector<Pack>();
 }
 
-CommandObject* HPack::merge(std::vector<CommandObject*> HPackPack)
+CommandObject* HPack::merge(std::vector<HPack> HPackPack)
 {
 	HPack MergedHPack{};
 	int index{};
@@ -116,7 +116,9 @@ CommandObject* HPack::merge(std::vector<CommandObject*> HPackPack)
 			skip = false;
 		}
 	}
-	return &MergedHPack;
+    *this = MergedHPack;
+    CommandObject* newObject{ &MergedHPack };
+	return newObject;
 }
 
 void HPack::load(std::string fileName)
@@ -170,7 +172,7 @@ void HPack::load(std::string fileName)
 		}
 		if (!emptyPack && !myfile.eof()) {
 			newPack.load_pack(outputfile);
-			add_pack(newPack);
+			this->add_pack(newPack);
 			outputfile.close();
 		}
 	}
@@ -402,29 +404,41 @@ CommandObject* HPack::Load(CommandObject* currentHPack, std::vector<std::string>
     for (std::string i : nameOfFiles) {
         if (fileType == "hpck") {
             HPack newHPack{};
+            HPack newHPackcurrent{this->get_name()};
             i.erase(i.size() - 5, 5);
             newHPack.load(i);
             if (this->get_name() == "Default") { this->set_name(i); }
-            currentHPack = this->merge(std::vector<CommandObject*>{ currentHPack, &newHPack});
+            for (Pack i : this->get_packs()) {
+                newHPackcurrent.add_pack(i);
+            }
+            this->merge(std::vector<HPack>{ newHPackcurrent, newHPack});
         }
         else if (fileType == "pck") {
             HPack newHPack{};
+            HPack newHPackcurrent{ this->get_name() };
             Pack newPack{};
             i.erase(i.size() - 4, 4);
             newPack.load_pack(i);
             newHPack.add_pack(newPack);
-            currentHPack = this->merge(std::vector<CommandObject*>{currentHPack, &newHPack});
+            for (Pack i : this->get_packs()) {
+                newHPackcurrent.add_pack(i);
+            }
+            this->merge(std::vector<HPack>{ newHPackcurrent, newHPack});
         }
         else if (fileType == "orcbrew") {
             HPack newHPack{};
+            HPack newHPackcurrent{ this->get_name() };
             Orcbrew newPack{};
             i.erase(i.size() - 8, 8);
-            newHPack = newPack.load(i);
-            currentHPack = this->merge(std::vector<CommandObject*>{ currentHPack, &newHPack});
+            //newHPack = newPack.load(i);
+            for (Pack i : this->get_packs()) {
+                newHPackcurrent.add_pack(i);
+            }
+            this->merge(std::vector<HPack>{ newHPackcurrent, newHPack});
         }
     }
 
-    return currentHPack;
+    return this;
 }
 CommandObject* HPack::Save(CommandObject* currentHPack, std::vector<std::string> parameters) {
     if (parameters.at(0) == "hpck") {
@@ -467,11 +481,13 @@ CommandObject* HPack::Edit(CommandObject* currentHPack, std::vector<std::string>
     GrabObjectName(parameters, currentHPack, objectName, editType, loadedPack);
 
     if (editType == "race") {
-        Race newRace{ RaceConsole(RaceConsole(loadedPack.get_race(objectName))) };
+        Race newRace{ loadedPack.get_race(objectName) };
+        HPackConsole.Run(&newRace);
         if (newRace.get_name() != "%%CANCELED%%") { loadedPack.update_race(newRace); }
     }
     else if (editType == "spell") {
-        Spell newSpell{ SpellConsole(loadedPack.get_spell(objectName)) };
+        Spell newSpell{ loadedPack.get_spell(objectName) };
+        HPackConsole.Run(&newSpell);
         if (newSpell.get_name() != "%%CANCELED%%") { loadedPack.update_spell(newSpell); };
     }
     this->update_pack(loadedPack);
@@ -494,7 +510,7 @@ CommandObject* HPack::Add(CommandObject* currentHPack, std::vector<std::string> 
         if (objectName != "") {
             newRace.set_optionPack(objectName);
         }
-        newRace = RaceConsole(newRace);
+        HPackConsole.Run(&newRace);
         if (newRace.get_name() != "%%CANCELED%%") { newPack.set_races(newRace); newPack.set_name(newPack.get_races().at(0).get_optionPack()); }
     }
     else if (addType == "spell") {
@@ -502,7 +518,7 @@ CommandObject* HPack::Add(CommandObject* currentHPack, std::vector<std::string> 
         if (objectName != "") {
             newSpell.set_optionPack(objectName);
         }
-        newSpell = SpellConsole(newSpell);
+        HPackConsole.Run(&newSpell);
         if (newSpell.get_name() != "%%CANCELED%%") { newPack.set_spells(newSpell); newPack.set_name(newPack.get_spells().at(0).get_optionPack()); }
     }
     newPack.merge(this->get_packs());
@@ -525,11 +541,6 @@ CommandObject* HPack::ExecuteCommand(int cmdCode, CommandObject* currentHPack, s
         GUI HelpGui{};
         int index{};
         std::vector<std::string> commandsToDisplay{};
-        for (std::string i : Commands) {
-            commandsToDisplay.push_back(i);
-            commandsToDisplay.push_back(CommandDefs.at(index));
-            index++;
-        }
         if (!parameters.empty()) { commandsToDisplay.insert(std::end(commandsToDisplay), std::begin(parameters), std::end(parameters)); }
         HelpGui.GenerateMenu("Command - Definition", commandsToDisplay, "", true, 2);
         break;
@@ -539,6 +550,11 @@ CommandObject* HPack::ExecuteCommand(int cmdCode, CommandObject* currentHPack, s
     case 2: {
         std::vector<std::string> options{ "race" , "spell" };
         std::vector<std::string> optionDefs{ "Displays a race", "Displays a spell" };
+
+        if (this->get_packs().empty()) {
+            std::cout << "\nNo packs are currently loaded\n";
+            break;
+        }
 
         switch (HPackConsole.ValidateCommand("What would you like to display?", options, optionDefs, parameters))
         {
@@ -751,7 +767,7 @@ CommandObject* HPack::ExecuteCommand(int cmdCode, CommandObject* currentHPack, s
         std::cout << "\n\nAn error has occured, write down what you did and report it to the dev\n";
         break;
     }
-    if (context == "") {
+    if (context == "" || context == "console") {
         system("pause");
         system("cls");
     }

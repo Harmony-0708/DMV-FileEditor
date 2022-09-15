@@ -37,7 +37,7 @@ public:
 	Pack add_to_pack(Pack inPack, std::string command, std::string input, std::string packPart, std::string objectName);
 	Pack add_to_pack(Pack inPack, std::string command, std::vector<std::string> input, std::string packPart, std::string objectName);
 
-	HPack load(std::string fileName);
+	//HPack load(std::string fileName);
 	void save();
 	//HPack convert_pack_file();
 

@@ -955,7 +955,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_tool(i);
             }
             index++;
         }
@@ -966,7 +966,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_skillOption(i);
             }
             index++;
         }
@@ -977,7 +977,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_skillProf(i);
             }
             index++;
         }
@@ -988,7 +988,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_languageOption(i);
             }
             index++;
         }
@@ -999,7 +999,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_weaponOption(i);
             }
             index++;
         }
@@ -1010,7 +1010,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_weaponProf(i);
             }
             index++;
         }
@@ -1021,7 +1021,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_armorProf(i);
             }
             index++;
         }
@@ -1032,7 +1032,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_damageRes(i);
             }
             index++;
         }
@@ -1043,7 +1043,7 @@ CommandObject* Race::Add(CommandObject* currentRace, std::vector<std::string>& p
         int index{};
         for (std::string i : parameters) {
             if (HLib::IncludesString(i, compareBase)) {
-                this->insert_language(i);
+                this->insert_damageImmun(i);
             }
             index++;
         }
@@ -1761,6 +1761,11 @@ CommandObject* Race::ExecuteCommand(int cmdCode, CommandObject* currentRace, std
 
 		  //Add
 	case 3: {
+        if (parameters.size() > 0) {
+            if (parameters.at(0) == "add") {
+            parameters.erase(std::begin(parameters));
+            }
+        }
 		switch (RaceConsole.ValidateCommand("What would you like to add?", GlobalRaceOptions, GlobalRaceDefs, parameters))
 		{
 		case 0: {

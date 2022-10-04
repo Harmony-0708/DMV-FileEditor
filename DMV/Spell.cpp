@@ -229,6 +229,131 @@ void Spell::remove_class(int index)
 	this->ClassList = newClassList;
 }
 
+void Spell::print(std::ofstream& myfile)
+{
+    myfile
+        << this->get_key() << "{\n"
+        << "Name=\"" << this->get_name()
+        << "\"\nOptionPack=\"" << this->get_optionPack()
+        << "\"\nDescription=\"" << this->get_description()
+        << "\"\nSchool=\"" << this->get_school()
+        << "\"\nDuration=\"" << this->get_duration()
+        << "\"\nComponent=\"" << this->get_component()
+        << "\"\nCastingTime=\"" << this->get_castingTime()
+        << "\"\nRange=\"" << this->get_range()
+        << "\"\nLevel=" << this->get_level()
+        << std::boolalpha
+        << "\nVerbal=" << this->is_verbal()
+        << "\nSomatic=" << this->is_somatic()
+        << "\nMaterial=" << this->is_material()
+        << "\nRitual=" << this->is_ritual()
+        << "\nAttackRoll=" << this->is_attackRoll()
+        << std::boolalpha;
+    myfile
+        << "\nClassList={";
+    if (this->get_class().size() > 0) {
+        for (std::string k : this->get_class()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}\n}";
+}
+
+void Spell::load(std::string& declared, bool& inObject, std::string& variable, Spell& newSpell, std::vector<Spell>& mySpells, bool& inSpells)
+{
+    if (declared == "Name") {
+        inObject = true;
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newSpell.set_name(variableNew);
+    }
+    else if (declared == "OptionPack") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newSpell.set_optionPack(variableNew);
+    }
+    else if (declared == "School") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newSpell.set_school(variableNew);
+    }
+    else if (declared == "Description") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newSpell.set_description(variableNew);
+    }
+    else if (declared == "Duration") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newSpell.set_duration(variableNew);
+    }
+    else if (declared == "Component") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newSpell.set_component(variableNew);
+    }
+    else if (declared == "CastingTime") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newSpell.set_castingTime(variableNew);
+    }
+    else if (declared == "Range") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newSpell.set_range(variableNew);
+    }
+    else if (declared == "Level") {
+        newSpell.set_level(std::stoi(variable));
+    }
+    else if (declared == "Verbal") {
+        newSpell.set_verbal(HLib::StringToBool(variable));
+    }
+    else if (declared == "Somatic") {
+        newSpell.set_somatic(HLib::StringToBool(variable));
+    }
+    else if (declared == "Material") {
+        newSpell.set_material(HLib::StringToBool(variable));
+    }
+    else if (declared == "Ritual") {
+        newSpell.set_ritual(HLib::StringToBool(variable));
+    }
+    else if (declared == "AttackRoll") {
+        newSpell.set_attackRoll(HLib::StringToBool(variable));
+    }
+    else if (declared == "ClassList") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newSpell.set_classes(vector);
+    }
+    else if (inObject && declared == "}") {
+        if (newSpell.get_name() != "") {
+            mySpells.push_back(newSpell);
+        }
+        newSpell.clear();
+        inObject = false;
+    }
+    else if (!inObject && declared == "}") {
+        inSpells = false;
+    }
+}
+
 //Clear
 void Spell::clear()
 {

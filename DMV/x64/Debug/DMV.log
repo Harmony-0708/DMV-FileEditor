@@ -1,87 +1,13 @@
 ﻿  DMV.cpp
-D:\GitProjects\DMVApp\DMV\DMV\DMV.cpp(2256,26): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
-  GUI.cpp
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(31,36): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(58,26): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(356,73): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(357,39): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(468,25): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(474,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(554,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(559,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(639,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(644,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\GUI.cpp(728,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  harmonylib.cpp
-D:\GitProjects\DMVApp\DMV\DMV\harmonylib.cpp(207,36): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   HPack.cpp
   Item.cpp
   Orcbrew.cpp
-D:\GitProjects\DMVApp\DMV\DMV\Orcbrew.cpp(344,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Orcbrew.cpp(474,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Orcbrew.cpp(645,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(344,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(474,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(645,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   Pack.cpp
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(173,37): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(174,44): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(196,42): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(197,49): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(203,42): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(204,49): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(227,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(228,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(233,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(234,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(239,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(240,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(455,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(456,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(461,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(462,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(467,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(468,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(473,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(474,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(479,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(480,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(485,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(486,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(491,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(492,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(497,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(498,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(594,38): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(595,45): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(621,42): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(622,49): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(628,42): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(629,49): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(652,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(653,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(658,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(659,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(664,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(665,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(880,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(881,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(886,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(887,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(892,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(893,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(898,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(899,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(904,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(905,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(910,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(911,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(916,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(917,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(922,41): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\GitProjects\DMVApp\DMV\DMV\Pack.cpp(923,48): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-  Race.cpp
-  Spell.cpp
-  Trait.cpp
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(171,38): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(172,45): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
   Generating Code...
-D:\GitProjects\DMVApp\DMV\DMV\Trait.cpp(41): warning C4715: 'Trait::get_typename': not all control paths return a value
-D:\GitProjects\DMVApp\DMV\DMV\Race.cpp(128): warning C4715: 'Race::get_sizename': not all control paths return a value
-D:\GitProjects\DMVApp\DMV\DMV\Race.cpp(346): warning C4715: 'Race::get_spell': not all control paths return a value
-  DMV.vcxproj -> D:\GitProjects\DMVApp\DMV\x64\Debug\DMV.exe
+C:\Users\arhea\source\repos\DMV\DMV\HPack.cpp(121): warning C4172: returning address of local variable or temporary: MergedHPack
+  DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe

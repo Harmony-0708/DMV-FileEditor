@@ -1,8 +1,0 @@
-﻿  HPack.cpp
-  Generating code
-C:\Users\arhea\source\repos\DMV\DMV\HPack.cpp(121): warning C4172: returning address of local variable or temporary: MergedHPack
-  3 of 1592 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    23 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Release\DMV.exe

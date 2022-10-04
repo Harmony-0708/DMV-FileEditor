@@ -20,14 +20,12 @@
 #include "Trait.h"
 #include "Item.h"
 #include "Spell.h"
-#include "CommandObject.h"
 
 class Pack
 {
 private:
 	std::string Name{};
 	std::vector<Race> Races{};
-	std::vector<Trait> Traits{};
 	std::vector<Spell> Spells{};
 	std::vector<Item> Items{};
 
@@ -45,13 +43,10 @@ public:
 	void set_name(std::string name);
 
 	void update_race(Race inputRace);
-	void update_trait(Trait inputTrait);
 	void update_spell(Spell inputSpell);
 	void update_item(Item inputItem);
 	void set_races(Race inputRace);
 	void set_races(std::vector<Race> inputRaces);
-	void set_traits(Trait inputTrait);
-	void set_traits(std::vector<Trait> inputTraits);
 	void set_spells(Spell inputSpell);
 	void set_spells(std::vector<Spell> inputSpells);
 	void set_items(Item inputItem);
@@ -61,19 +56,9 @@ public:
 
 	int load_pack(std::string packName);
 	Pack load_pack(std::fstream& myfile);
-	Pack load_orcbrew(std::fstream& myfile);
 	void save_pack();
 	void save_pack(std::ofstream& myfile);
 	void print_pack();
 	void print_pack(bool multi, std::ofstream& outputfile);
 
-	//Virtual Overrides
-	/*CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
-	void Display();
-	std::string get_title();
-	bool IsDone(std::string input);
-	std::vector<std::string> get_commands();
-	std::vector<std::string> get_command_defs();*/
-
 };
-

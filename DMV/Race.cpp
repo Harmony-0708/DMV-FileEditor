@@ -783,6 +783,413 @@ void Race::insert_spell(std::vector<std::vector<Spell>> spellList)
 //}
 
 
+void Race::print(std::ofstream& myfile)
+{
+    myfile
+        << this->get_key() << "{\n"
+        << "Name=\"" << this->get_name()
+        << "\"\nOptionPack=\"" << this->get_optionPack()
+        << "\"\nDescription=\"" << this->get_description()
+        << "\"\nSize=" << this->get_sizename()
+        << "\nStr=" << this->get_str()
+        << "\nDex=" << this->get_dex()
+        << "\nCon=" << this->get_con()
+        << "\nInt=" << this->get_int()
+        << "\nWis=" << this->get_wis()
+        << "\nCha=" << this->get_cha()
+        << "\nSpeed=" << this->get_speed()
+        << "\nFlySpeed=" << this->get_flySpeed()
+        << "\nSwimSpeed=" << this->get_swimSpeed()
+        << "\nDarkVision=" << this->get_darkVision()
+        << "\nSKOC=" << this->get_skillOptionsCount()
+        << "\nLNOC=" << this->get_languageOptionsCount()
+        << "\nWPOC=" << this->get_weaponOptionsCount()
+        << "\nLizFolkAC=" << this->get_lizFolkAC()
+        << "\nTortAC=" << this->get_tortAC();
+    myfile
+        << "\nLanguages={";
+    if (this->get_language().size() > 0) {
+        for (std::string k : this->get_language()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nLanguageOptions={";
+    if (this->get_languageOption().size() > 0) {
+        for (std::string k : this->get_languageOption()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nSkillProf={";
+    if (this->get_skillProf().size() > 0) {
+        for (std::string k : this->get_skillProf()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nSkillOptions={";
+    if (this->get_skillOption().size() > 0) {
+        for (std::string k : this->get_skillOption()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nWeaponProf={";
+    if (this->get_weaponProf().size() > 0) {
+        for (std::string k : this->get_weaponProf()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nWeaponOptions={";
+    if (this->get_weaponOption().size() > 0) {
+        for (std::string k : this->get_weaponOption()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nDamageRes={";
+    if (this->get_damageRes().size() > 0) {
+        for (std::string k : this->get_damageRes()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nDamageImmun={";
+    if (this->get_damageImmun().size() > 0) {
+        for (std::string k : this->get_damageImmun()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nArmorProf={";
+    if (this->get_armorProf().size() > 0) {
+        for (std::string k : this->get_armorProf()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nTools={";
+    if (this->get_tool().size() > 0) {
+        for (std::string k : this->get_tool()) {
+            myfile
+                << "\"" << k << "\"";
+        }
+    }
+    myfile
+        << "}";
+    myfile
+        << "\nTraits={";
+    if (this->get_trait().size() > 0) {
+        for (Trait k : this->get_trait()) {
+            myfile
+                << "\n{name=\"" << k.get_name()
+                << "\"\ndescription=\"" << k.get_description()
+                << "\"\ntype=" << k.get_type()
+                << "\n}";
+        }
+    }
+    myfile
+        << "\n}\n}\n";
+}
+
+void Race::load(bool& inTraits, std::string& declared, bool& input, Race& newRace, Trait& newTrait, std::string& variable, bool& inObject, std::vector<Race>& myRaces, bool& inRaces)
+{
+    if (inTraits) {
+        if (declared == "}" && input) {
+            input = false;
+            newRace.insert_trait(newTrait);
+            newTrait.clear();
+        }
+        else if (declared == "}" && !input) {
+            inTraits = false;
+        }
+        else if (declared == "{name") {
+            unsigned first = variable.find("\"");
+            unsigned last = variable.find_last_of("\"");
+            std::string variableNew = variable.substr(first + 1, last - first - 1);
+            newTrait.set_name(variableNew);
+            input = true;
+        }
+        else if (declared == "description") {
+            unsigned first = variable.find("\"");
+            unsigned last = variable.find_last_of("\"");
+            std::string variableNew = variable.substr(first + 1, last - first - 1);
+            newTrait.set_description(variableNew);
+        }
+        else if (declared == "type") {
+            switch (std::stoi(variable)) {
+            case 0:
+                newTrait.set_type(TraitType::Action);
+                break;
+            case 1:
+                newTrait.set_type(TraitType::BAction);
+                break;
+            case 2:
+                newTrait.set_type(TraitType::Reaction);
+                break;
+            case 3:
+                newTrait.set_type(TraitType::Other);
+                break;
+            }
+        }
+    }
+    else if (declared == "Name") {
+        inObject = true;
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newRace.set_name(variableNew);
+    }
+    else if (declared == "OptionPack") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newRace.set_optionPack(variableNew);
+    }
+    else if (declared == "Description") {
+        unsigned first = variable.find("\"");
+        unsigned last = variable.find_last_of("\"");
+        std::string variableNew = variable.substr(first + 1, last - first - 1);
+        newRace.set_description(variableNew);
+    }
+    else if (declared == "Size") {
+        if (variable == "Small") {
+            newRace.set_size(SizeEnum::small);
+        }
+        else if (variable == "Medium") {
+            newRace.set_size(SizeEnum::medium);
+        }
+        else if (variable == "Large") {
+            newRace.set_size(SizeEnum::large);
+        }
+    }
+    else if (declared == "Str") {
+        newRace.set_str(std::stoi(variable));
+    }
+    else if (declared == "Dex") {
+        newRace.set_dex(std::stoi(variable));
+    }
+    else if (declared == "Con") {
+        newRace.set_con(std::stoi(variable));
+    }
+    else if (declared == "Int") {
+        newRace.set_int(std::stoi(variable));
+    }
+    else if (declared == "Wis") {
+        newRace.set_wis(std::stoi(variable));
+    }
+    else if (declared == "Cha") {
+        newRace.set_cha(std::stoi(variable));
+    }
+    else if (declared == "Speed") {
+        newRace.set_speed(std::stoi(variable));
+    }
+    else if (declared == "FlySpeed") {
+        newRace.set_flySpeed(std::stoi(variable));
+    }
+    else if (declared == "SwimSpeed") {
+        newRace.set_swimSpeed(std::stoi(variable));
+    }
+    else if (declared == "DarkVision") {
+        newRace.set_darkVision(std::stoi(variable));
+    }
+    else if (declared == "SKOC") {
+        newRace.set_skillOptionsCount(std::stoi(variable));
+    }
+    else if (declared == "LNOC") {
+        newRace.set_languageOptionsCount(std::stoi(variable));
+    }
+    else if (declared == "WPOC") {
+        newRace.set_weaponOptionsCount(std::stoi(variable));
+    }
+    else if (declared == "LizFolkAC") {
+        if (variable == "0") {
+            newRace.set_lizFolkAC(false);
+        }
+        else {
+            newRace.set_lizFolkAC(true);
+        }
+    }
+    else if (declared == "TortAC") {
+        if (variable == "0") {
+            newRace.set_tortAC(false);
+        }
+        else {
+            newRace.set_tortAC(true);
+        }
+    }
+    else if (declared == "Languages") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_language(vector);
+    }
+    else if (declared == "LanguageOptions") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_languageOption(vector);
+
+    }
+    else if (declared == "SkillProf") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_skillProf(vector);
+
+    }
+    else if (declared == "SkillOptions") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_skillOption(vector);
+
+    }
+    else if (declared == "WeaponProf") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_weaponProf(vector);
+
+    }
+    else if (declared == "WeaponOptions") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_weaponOption(vector);
+
+    }
+    else if (declared == "DamageRes") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_damageRes(vector);
+
+    }
+    else if (declared == "DamageImmun") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_damageImmun(vector);
+
+    }
+    else if (declared == "ArmorProf") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_armorProf(vector);
+
+    }
+    else if (declared == "Tools") {
+        std::stringstream ssvar(variable);
+        std::string segment{};
+        std::vector<std::string> vector{};
+        while (std::getline(ssvar, segment, '\"'))
+        {
+            if (segment != "{" && segment != "}" && segment != "\"\"" && segment != "{}" && segment != "") {
+                vector.push_back(segment);
+            }
+        }
+        newRace.insert_tool(vector);
+    }
+    else if (declared == "Traits") {
+        inTraits = true;
+    }
+    else if (inObject && !inTraits && declared == "}") {
+        if (newRace.get_name() != "") {
+            myRaces.push_back(newRace);
+        }
+        newRace.clear();
+        inObject = false;
+    }
+    else if (!inObject && declared == "}") {
+        inRaces = false;
+    }
+}
+
 //Display
 /// <summary>
 /// Displays the race and all of it's features

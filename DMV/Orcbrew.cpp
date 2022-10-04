@@ -735,251 +735,251 @@ Pack Orcbrew::add_to_pack(Pack inPack, std::string command, std::vector<std::str
     return inPack;
 }
 
-//HPack Orcbrew::load(std::string fileName)
-//{
-//    std::fstream myfile{};
-//    std::fstream tempfile{};
-//    
-//    myfile.open("OrcbrewPacks/" + fileName + ".orcbrew", std::ios::in | std::ios::out);
-//
-//    HPack convertedPack{};
-//    Pack newPack{};
-//
-//
-//    std::string line{};
-//    std::string combinedlines{};
-//    std::vector<std::string> brokenUpLine{};
-//    int counter{-1};
-//    bool isGrouping{};
-//    bool beginning{};
-//    bool input{};
-//    bool didItterate{};
-//    bool namemode{ false };
-//    std::string tempString{};
-//    std::string inputString{};
-//    int listSize{};
-//    int templistSize{};
-//
-//    while (std::getline(myfile, line)) {
-//        combinedlines += line;
-//    }
-//    for (char i : combinedlines) {
-//        input = false;
-//        inputString.clear();
-//        if ((i == '{' || i == '}' || i == '[' || i == ']') && !namemode) {
-//            if (tempString == "") {
-//                inputString.push_back(i);
-//                brokenUpLine.push_back(inputString);
-//                input = true;
-//            }
-//            else {
-//                inputString.push_back(i);
-//                brokenUpLine.push_back(tempString);
-//                brokenUpLine.push_back(inputString);
-//                tempString.clear();
-//                input = true;
-//            }
-//        }
-//        if ((i == ',' || i == ' ' || i == '\n' || i == '\t' || i == '#') && !namemode) {
-//            input = true;
-//        }
-//        if (i == '\"') {
-//            namemode = !namemode;
-//            if (!namemode) {
-//                tempString += "\"";
-//                input = true;
-//            }
-//        }
-//        if (i == ':') {
-//            tempString += "cmd ";
-//        }
-//
-//        if (!namemode) {
-//            if (!input) {
-//                tempString += i;
-//            }
-//            else if (tempString != "") {
-//                    brokenUpLine.push_back(tempString);
-//                    tempString.clear();
-//            }
-//        }
-//        else {
-//            tempString += i;
-//        }
-//
-//    }
-//    
-//    int index{};
-//    int toIndex{};
-//    bool inCommand{};
-//    bool inList{};
-//    bool inRaces{ false };
-//    bool inSpells{ false };
-//    bool inTraits{ false };
-//    std::string command{};
-//    std::string newString{};
-//    std::string raceName{};
-//    std::string spellName{};
-//    for (std::string i : brokenUpLine) {
-//        newString.clear();
-//        command.clear();
-//        if (didItterate) {
-//            index++;
-//            if (index != toIndex) {
-//                continue;
-//            }
-//            else {
-//                index--;
-//                didItterate = false;
-//            }
-//        }
-//
-//        if (i == "{" || i == "[") {
-//            index++;
-//            counter++;
-//            continue;
-//        }
-//        else if (i == "}" || i == "]") {
-//            index++;
-//            counter--;
-//            if (counter == 0) {
-//                convertedPack.add_pack(newPack);
-//                Pack resetPack{};
-//                newPack = resetPack;
-//                if (i[0] == '\"') {
-//                    i.erase(0, 1);
-//                    for (char k : i) {
-//                        if (k != '\"') {
-//                            newString.push_back(k);
-//                        }
-//                        else {
-//                            break;
-//                        }
-//                    }
-//                    newPack.set_name(newString);
-//                }
-//            }
-//            continue;
-//        }
-//
-//        if (i.size() > 3) {
-//            if (i[0] == 'c' && i[1] == 'm' && i[2] == 'd') {
-//                for (int k{ 0 }; k < i.size(); k++) {
-//                    if (k >= 5) {
-//                        command.push_back(i[k]);
-//                    }
-//                }
-//                inCommand = true;
-//            }
-//        }
-//        
-//        if (inCommand) {
-//            if (command == "orcpub.dnd.e5/races") {
-//                inRaces = true;
-//                inSpells = false;
-//            }
-//            else if (command == "orcpub.dnd.e5/spells") {
-//                inSpells = true;
-//                inRaces = false;
-//            }
-//            else if (inRaces) {
-//                if (counter >= 3) {
-//                    if (brokenUpLine[index + 1] == "{" || brokenUpLine[index + 1] == "[") {
-//                        int tempCounter{ counter };
-//                        counter++;
-//                        std::vector<std::string> inputVec{};
-//                        int incre{ 2 };
-//                        while (true) {
-//                            if (brokenUpLine[index + incre] == "{" || brokenUpLine[index + incre] == "[") {
-//                                counter++;
-//                            }
-//                            else if (brokenUpLine[index + incre] == "}" || brokenUpLine[index + incre] == "]") {
-//                                counter--;
-//                            }
-//                            if ((brokenUpLine[index + incre] != "}" && brokenUpLine[index + incre] != "]") || tempCounter != counter) {
-//                                inputVec.push_back(brokenUpLine[index + incre]);
-//                                incre++;
-//                            }
-//                            else {
-//                                break;
-//                            }
-//                        }
-//                        didItterate = true;
-//                        toIndex = index + incre + 2;
-//                        newPack = add_to_pack(newPack, command, inputVec, "race", raceName);
-//                    }
-//                    else {
-//                        didItterate = true;
-//                        toIndex = index + 2;
-//                        newPack = add_to_pack(newPack, command, brokenUpLine[index + 1], "race", raceName);
-//                    }
-//                }
-//                else if (counter != 0) {
-//                    raceName = command;
-//                    newPack = add_to_pack(newPack, "raceName", command, "race", raceName);
-//                }
-//            }
-//            else if (inSpells) {
-//                if (counter >= 3) {
-//                    if (brokenUpLine[index + 1] == "{" || brokenUpLine[index + 1] == "[") {
-//                        int tempCounter{ counter };
-//                        counter++;
-//                        std::vector<std::string> inputVec{};
-//                        int incre{ 2 };
-//                        while (true) {
-//                            if (brokenUpLine[index + incre] == "{" || brokenUpLine[index + incre] == "[") {
-//                                counter++;
-//                            }
-//                            else if (brokenUpLine[index + incre] == "}" || brokenUpLine[index + incre] == "]") {
-//                                counter--;
-//                            }
-//                            if ((brokenUpLine[index + incre] != "}" && brokenUpLine[index + incre] != "]") || tempCounter != counter) {
-//                                inputVec.push_back(brokenUpLine[index + incre]);
-//                                incre++;
-//                            }
-//                            else {
-//                                break;
-//                            }
-//                        }
-//                        didItterate = true;
-//                        toIndex = index + incre + 2;
-//                        newPack = add_to_pack(newPack, command, inputVec, "spell", spellName);
-//                    }
-//                    else {
-//                        didItterate = true;
-//                        toIndex = index + 2;
-//                        newPack = add_to_pack(newPack, command, brokenUpLine[index + 1], "spell", spellName);
-//                    }
-//                }
-//                else if (counter != 0) {
-//                    spellName = command;
-//                    newPack = add_to_pack(newPack, "spellName", command, "spell", spellName);
-//                }
-//            }
-//            inCommand = false;
-//        }
-//        if (counter == 0) {
-//            if (i[0] == '\"') {
-//                i.erase(0, 1);
-//                for (char k : i) {
-//                    if (k != '\"') {
-//                        newString.push_back(k);
-//                    }
-//                    else {
-//                        break;
-//                    }
-//                }
-//                newPack.set_name(newString);
-//            }
-//        }
-//        
-//        index++;
-//
-//    }
-//
-//    convertedPack.set_name(Name);
-//    return convertedPack;
-//}
+std::vector<Pack> Orcbrew::load(std::string fileName)
+{
+    std::fstream myfile{};
+    std::fstream tempfile{};
+    
+    myfile.open("OrcbrewPacks/" + fileName + ".orcbrew", std::ios::in | std::ios::out);
+
+    std::vector<Pack> convertedPack{};
+    Pack newPack{};
+
+
+    std::string line{};
+    std::string combinedlines{};
+    std::vector<std::string> brokenUpLine{};
+    int counter{-1};
+    bool isGrouping{};
+    bool beginning{};
+    bool input{};
+    bool didItterate{};
+    bool namemode{ false };
+    std::string tempString{};
+    std::string inputString{};
+    int listSize{};
+    int templistSize{};
+
+    while (std::getline(myfile, line)) {
+        combinedlines += line;
+    }
+    for (char i : combinedlines) {
+        input = false;
+        inputString.clear();
+        if ((i == '{' || i == '}' || i == '[' || i == ']') && !namemode) {
+            if (tempString == "") {
+                inputString.push_back(i);
+                brokenUpLine.push_back(inputString);
+                input = true;
+            }
+            else {
+                inputString.push_back(i);
+                brokenUpLine.push_back(tempString);
+                brokenUpLine.push_back(inputString);
+                tempString.clear();
+                input = true;
+            }
+        }
+        if ((i == ',' || i == ' ' || i == '\n' || i == '\t' || i == '#') && !namemode) {
+            input = true;
+        }
+        if (i == '\"') {
+            namemode = !namemode;
+            if (!namemode) {
+                tempString += "\"";
+                input = true;
+            }
+        }
+        if (i == ':') {
+            tempString += "cmd ";
+        }
+
+        if (!namemode) {
+            if (!input) {
+                tempString += i;
+            }
+            else if (tempString != "") {
+                    brokenUpLine.push_back(tempString);
+                    tempString.clear();
+            }
+        }
+        else {
+            tempString += i;
+        }
+
+    }
+    
+    int index{};
+    int toIndex{};
+    bool inCommand{};
+    bool inList{};
+    bool inRaces{ false };
+    bool inSpells{ false };
+    bool inTraits{ false };
+    std::string command{};
+    std::string newString{};
+    std::string raceName{};
+    std::string spellName{};
+    for (std::string i : brokenUpLine) {
+        newString.clear();
+        command.clear();
+        if (didItterate) {
+            index++;
+            if (index != toIndex) {
+                continue;
+            }
+            else {
+                index--;
+                didItterate = false;
+            }
+        }
+
+        if (i == "{" || i == "[") {
+            index++;
+            counter++;
+            continue;
+        }
+        else if (i == "}" || i == "]") {
+            index++;
+            counter--;
+            if (counter == 0) {
+                convertedPack.push_back(newPack);
+                Pack resetPack{};
+                newPack = resetPack;
+                if (i[0] == '\"') {
+                    i.erase(0, 1);
+                    for (char k : i) {
+                        if (k != '\"') {
+                            newString.push_back(k);
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    newPack.set_name(newString);
+                }
+            }
+            continue;
+        }
+
+        if (i.size() > 3) {
+            if (i[0] == 'c' && i[1] == 'm' && i[2] == 'd') {
+                for (int k{ 0 }; k < i.size(); k++) {
+                    if (k >= 5) {
+                        command.push_back(i[k]);
+                    }
+                }
+                inCommand = true;
+            }
+        }
+        
+        if (inCommand) {
+            if (command == "orcpub.dnd.e5/races") {
+                inRaces = true;
+                inSpells = false;
+            }
+            else if (command == "orcpub.dnd.e5/spells") {
+                inSpells = true;
+                inRaces = false;
+            }
+            else if (inRaces) {
+                if (counter >= 3) {
+                    if (brokenUpLine[index + 1] == "{" || brokenUpLine[index + 1] == "[") {
+                        int tempCounter{ counter };
+                        counter++;
+                        std::vector<std::string> inputVec{};
+                        int incre{ 2 };
+                        while (true) {
+                            if (brokenUpLine[index + incre] == "{" || brokenUpLine[index + incre] == "[") {
+                                counter++;
+                            }
+                            else if (brokenUpLine[index + incre] == "}" || brokenUpLine[index + incre] == "]") {
+                                counter--;
+                            }
+                            if ((brokenUpLine[index + incre] != "}" && brokenUpLine[index + incre] != "]") || tempCounter != counter) {
+                                inputVec.push_back(brokenUpLine[index + incre]);
+                                incre++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        didItterate = true;
+                        toIndex = index + incre + 2;
+                        newPack = add_to_pack(newPack, command, inputVec, "race", raceName);
+                    }
+                    else {
+                        didItterate = true;
+                        toIndex = index + 2;
+                        newPack = add_to_pack(newPack, command, brokenUpLine[index + 1], "race", raceName);
+                    }
+                }
+                else if (counter != 0) {
+                    raceName = command;
+                    newPack = add_to_pack(newPack, "raceName", command, "race", raceName);
+                }
+            }
+            else if (inSpells) {
+                if (counter >= 3) {
+                    if (brokenUpLine[index + 1] == "{" || brokenUpLine[index + 1] == "[") {
+                        int tempCounter{ counter };
+                        counter++;
+                        std::vector<std::string> inputVec{};
+                        int incre{ 2 };
+                        while (true) {
+                            if (brokenUpLine[index + incre] == "{" || brokenUpLine[index + incre] == "[") {
+                                counter++;
+                            }
+                            else if (brokenUpLine[index + incre] == "}" || brokenUpLine[index + incre] == "]") {
+                                counter--;
+                            }
+                            if ((brokenUpLine[index + incre] != "}" && brokenUpLine[index + incre] != "]") || tempCounter != counter) {
+                                inputVec.push_back(brokenUpLine[index + incre]);
+                                incre++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        didItterate = true;
+                        toIndex = index + incre + 2;
+                        newPack = add_to_pack(newPack, command, inputVec, "spell", spellName);
+                    }
+                    else {
+                        didItterate = true;
+                        toIndex = index + 2;
+                        newPack = add_to_pack(newPack, command, brokenUpLine[index + 1], "spell", spellName);
+                    }
+                }
+                else if (counter != 0) {
+                    spellName = command;
+                    newPack = add_to_pack(newPack, "spellName", command, "spell", spellName);
+                }
+            }
+            inCommand = false;
+        }
+        if (counter == 0) {
+            if (i[0] == '\"') {
+                i.erase(0, 1);
+                for (char k : i) {
+                    if (k != '\"') {
+                        newString.push_back(k);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                newPack.set_name(newString);
+            }
+        }
+        
+        index++;
+
+    }
+
+    //convertedPack.at(0).(Name);
+    return convertedPack;
+}
 
 void Orcbrew::save()
 {

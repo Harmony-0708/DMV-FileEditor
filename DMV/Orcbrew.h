@@ -16,7 +16,6 @@
 #include "GUI.h"
 #include "harmonylib.h"
 #include "Pack.h"
-#include "HPack.h"
 #include "CommandObject.h"
 
 class Orcbrew
@@ -37,7 +36,7 @@ public:
 	Pack add_to_pack(Pack inPack, std::string command, std::string input, std::string packPart, std::string objectName);
 	Pack add_to_pack(Pack inPack, std::string command, std::vector<std::string> input, std::string packPart, std::string objectName);
 
-	//HPack load(std::string fileName);
+	std::vector<Pack> load(std::string fileName);
 	void save();
 	//HPack convert_pack_file();
 

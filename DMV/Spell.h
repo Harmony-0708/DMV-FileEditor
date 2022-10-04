@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <fstream>
 #include <vector>
 #include "GUI.h"
 #include "Console.h"
@@ -129,6 +130,10 @@ public:
 	void insert_class(std::string input);
 	void remove_class(std::string input);
 	void remove_class(int index);
+
+	void print(std::ofstream& myfile);
+
+	void load(std::string& declared, bool& inObject, std::string& variable, Spell& newSpell, std::vector<Spell>& mySpells, bool& inSpells);
 
 	//Clear
 	void clear();

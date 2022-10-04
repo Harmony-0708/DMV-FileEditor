@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdlib>
@@ -149,8 +150,6 @@ public:
 	Race();
 	Race(std::string);
 
-
-
 	//Clear
 	void clear();
 
@@ -257,6 +256,10 @@ public:
 
 	//Race merge(Race r1, Race r2);
 
+	void print(std::ofstream& myfile);
+
+	void load(bool& inTraits, std::string& declared, bool& input, Race& newRace, Trait& newTrait, std::string& variable, bool& inObject, std::vector<Race>& myRaces, bool& inRaces);
+
 	//Gets all info on race, for display reasons
 	void display_info();
 
@@ -266,12 +269,12 @@ public:
 
 	CommandObject* Remove(CommandObject* currentRace, std::vector<std::string>& parameters);
 
-	//Virtual Overrides
-	CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
-	void Display();
-	std::string get_title();
-	bool IsDone(std::string input);
-	std::vector<std::string> get_commands();
-	std::vector<std::string> get_command_defs();
+		//Virtual Overrides
+		CommandObject* ExecuteCommand(int cmdCode, CommandObject* object, std::vector<std::string> parameters = {}, std::string context = {});
+		void Display();
+		std::string get_title();
+		bool IsDone(std::string input);
+		std::vector<std::string> get_commands();
+		std::vector<std::string> get_command_defs();
 };
 

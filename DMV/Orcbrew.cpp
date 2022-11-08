@@ -735,14 +735,14 @@ Pack Orcbrew::add_to_pack(Pack inPack, std::string command, std::vector<std::str
     return inPack;
 }
 
-HPack Orcbrew::load(std::string fileName)
+std::vector<Pack> Orcbrew::load(std::string fileName)
 {
     std::fstream myfile{};
     std::fstream tempfile{};
     
     myfile.open("OrcbrewPacks/" + fileName + ".orcbrew", std::ios::in | std::ios::out);
 
-    HPack convertedPack{};
+    std::vector<Pack> convertedPack{};
     Pack newPack{};
 
 
@@ -843,7 +843,7 @@ HPack Orcbrew::load(std::string fileName)
             index++;
             counter--;
             if (counter == 0) {
-                convertedPack.add_pack(newPack);
+                convertedPack.push_back(newPack);
                 Pack resetPack{};
                 newPack = resetPack;
                 if (i[0] == '\"') {
@@ -977,7 +977,7 @@ HPack Orcbrew::load(std::string fileName)
 
     }
 
-    convertedPack.set_name(Name);
+    //convertedPack.at(0).(Name);
     return convertedPack;
 }
 

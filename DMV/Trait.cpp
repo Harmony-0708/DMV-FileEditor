@@ -77,7 +77,7 @@ Trait Trait::create_trait(std::string name, std::string description, std::string
 	if (type == "") {
 		std::cout << "\nEnter type (Action, Bonus Action, Reaction, Other): ";
 		std::getline(std::cin, type);
-		type = HLib::InputCheck(type, "Enter type (Action, Bonus Action, Reaction, Other): ", true, false, std::vector<std::string>{"action", "bonus action", "reaction", "other"});
+		//type = HLib::InputCheck(type, "Enter type (Action, Bonus Action, Reaction, Other): ", true, false, std::vector<std::string>{"action", "bonus action", "reaction", "other"});
 	}
 	if (type == "action") {
 		newTrait.set_type(TraitType::Action);

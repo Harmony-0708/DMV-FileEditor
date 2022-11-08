@@ -15,12 +15,42 @@
 #include "GUI.h"
 #include "harmonylib.h"
 #include "Pack.h"
+#include "Orcbrew.h"
+#include "CommandObject.h"
 
-class HPack
+class HPack :
+	public CommandObject
 {
 private:
 	std::string Name{};
 	std::vector<Pack> Packs{};
+
+	Console HPackConsole{};
+	std::string Title{ "Menu" };
+	std::string DoneVariable{};
+	std::vector<std::string> Commands{
+		"exit",
+		"help",
+		"display",
+		"add",
+		"load",
+		"save",
+		"export",
+		"name",
+		"edit"
+	};
+	std::vector<std::string> CommandDefs{
+		"Closes the program",
+		"Displays Commands",
+		"Displays stuff",
+		"Add to pack",
+		"Load from a file",
+		"Save to a file",
+		"Export to Orcbrew",
+		"Rename Packs",
+		"Edit an item"
+	};
+
 
 public:
 	HPack();
@@ -39,11 +69,30 @@ public:
 	bool has_pack(Pack inputPack);
 
 	std::vector<Pack> merge(std::vector<std::vector<Pack>> PackSet);
-	HPack merge(std::vector<HPack> HPackPack);
+	CommandObject* merge(std::vector<HPack> HPackPack);
 
 	void load(std::string fileName);
 	void save();
-	//Orcbrew convert_pack_file();
+
+	void GrabObjectName(std::vector<std::string>& parameters, CommandObject*& currentHPack, std::string& objectName, std::string& displayType, Pack& loadedPack);
+
+	CommandObject* ObjectDisplay(CommandObject* currentHPack, std::vector<std::string> parameters);
+
+	CommandObject* Load(CommandObject* currentHPack, std::vector<std::string> parameters);
+
+	CommandObject* Save(CommandObject* currentHPack, std::vector<std::string> parameters);
+
+	CommandObject* Edit(CommandObject* currentHPack, std::vector<std::string> parameters);
+
+	CommandObject* Add(CommandObject* currentHPack, std::vector<std::string> parameters);
+
+	//Virtual Overrides
+	CommandObject* ExecuteCommand(int cmdCode, CommandObject* currentHPack, std::vector<std::string> parameters = {}, std::string context = {});
+	void Display();
+	std::string get_title();
+	bool IsDone(std::string input);
+	std::vector<std::string> get_commands();
+	std::vector<std::string> get_command_defs();
 
 };
 

@@ -427,12 +427,16 @@ CommandObject* HPack::Load(CommandObject* currentHPack, std::vector<std::string>
         }
         else if (fileType == "orcbrew") {
             HPack newHPack{};
+            std::vector<Pack> newPacks{};
             HPack newHPackcurrent{ this->get_name() };
             Orcbrew newPack{};
             i.erase(i.size() - 8, 8);
-            //newHPack = newPack.load(i);
+            newPacks = newPack.load(i);
             for (Pack i : this->get_packs()) {
                 newHPackcurrent.add_pack(i);
+            }
+            for (Pack i : newPacks) {
+                newHPack.add_pack(i);
             }
             this->merge(std::vector<HPack>{ newHPackcurrent, newHPack});
         }

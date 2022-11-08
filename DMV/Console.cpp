@@ -51,9 +51,12 @@ int Console::Run(CommandObject* object)
             if (command == "help" && parameter == "") {
                 object = object->ExecuteCommand(CommandCode(command, commands), object, combined, "console");
             }
-            else {
+            else if (command != "help") {
                 std::vector<std::string> parameters{ HLib::Split(parameter) };
                 object = object->ExecuteCommand(CommandCode(command, commands), object, parameters);
+            }
+            else {
+                std::cout << "\nInvalid Command, use 'help' for list of commands\n";
             }
             input = command;
         }

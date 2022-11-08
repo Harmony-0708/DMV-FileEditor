@@ -1,13 +1,3 @@
-﻿  DMV.cpp
-  HPack.cpp
-  Item.cpp
-  Orcbrew.cpp
-C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(344,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(474,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Orcbrew.cpp(645,37): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  Pack.cpp
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(171,38): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\arhea\source\repos\DMV\DMV\Pack.cpp(172,45): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-  Generating Code...
+﻿  HPack.cpp
 C:\Users\arhea\source\repos\DMV\DMV\HPack.cpp(121): warning C4172: returning address of local variable or temporary: MergedHPack
   DMV.vcxproj -> C:\Users\arhea\source\repos\DMV\x64\Debug\DMV.exe
